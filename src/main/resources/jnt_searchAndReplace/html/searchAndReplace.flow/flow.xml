@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.springframework.org/schema/webflow http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+    <var name="flowHandler" class="org.jahia.modules.searchandreplace.webflow.SearchAndReplaceFlowHandler"/>
+    <var name="searchAndReplace" class="org.jahia.modules.searchandreplace.webflow.model.SearchAndReplace"/>
+
+    <view-state id="searchAndReplaceFirstStep" model="searchAndReplace">
+        <binder>
+            <binding property="nodeType"/>
+            <binding property="startNode"/>
+        </binder>
+        <transition on="searchAndReplaceGoToSecondStep" to="searchAndReplaceSecondStep"/>
+    </view-state>
+
+    <view-state id="searchAndReplaceSecondStep" model="searchAndReplace">
+        <binder>
+            <binding property="nodeTypeField"/>
+            <binding property="termToReplace"/>
+            <binding property="matchType"/>
+            <binding property="replacementTerm"/>
+        </binder>
+        <transition on="searchAndReplacePrevious" to="searchAndReplaceFirstStep" validate="false"/>
+        <transition on="searchAndReplaceGoToThirdStep" to="searchAndReplaceThirdStep"/>
+    </view-state>
+
+    <view-state id="searchAndReplaceThirdStep" model="searchAndReplace">
+        <transition on="searchAndReplacePrevious" to="searchAndReplaceSecondStep" validate="false"/>
+        <transition on="searchAndReplaceSubmit" to="searchAndReplaceEnd"/>
+    </view-state>
+
+    <view-state id="searchAndReplaceEnd" model="searchAndReplace">
+        <!--<on-entry>
+            <evaluate expression="flowHandler.sendMailToUser(searchAndReplace, externalContext.requestMap.renderContext)"/>
+        </on-entry>-->
+    </view-state>
+
+    <global-transitions>
+        <transition on="searchAndReplaceCancel" to="searchAndReplaceFirstStep" bind="false" validate="false">
+            <evaluate expression="flowHandler.initSearchAndReplace()" result="flowScope.searchAndReplace"/>
+        </transition>
+    </global-transitions>
+</flow>

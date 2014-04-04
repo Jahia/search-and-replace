@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content xmlns:j="http://www.jahia.org/jahia/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0">
+    <modules jcr:primaryType="jnt:modules">
+        <jahia-global-replace j:dependencies="default siteSettings"
+                              j:modulePriority="0"
+                              j:moduleType="module"
+                              j:title="Jahia Global Replace"
+                              jcr:primaryType="jnt:module">
+            <portlets jcr:primaryType="jnt:portletFolder"/>
+            <files jcr:primaryType="jnt:folder"/>
+            <contents jcr:primaryType="jnt:contentFolder"/>
+            <templates j:rootTemplatePath="/base"
+                       jcr:primaryType="jnt:templatesFolder">
+                <site-settings-base j:view="siteSettings"
+                                    jcr:mixinTypes="jmix:useUILocale"
+                                    jcr:primaryType="jnt:template">
+                    <searchAndReplace j:applyOn="jnt:virtualsite"
+                                      j:defaultTemplate="false"
+                                      j:hiddenTemplate="true"
+                                      j:icon="/modules/searchandreplace/templates/files/users_into.png"
+                                      j:requiredPermissions=""
+                                      j:titleKey="jnt_searchAndReplace"
+                                      jcr:mixinTypes="jmix:rbTitle"
+                                      jcr:primaryType="jnt:contentTemplate">
+                        <pagecontent jcr:primaryType="jnt:contentList">
+                            <editLessVariables jcr:primaryType="jnt:searchAndReplace"/>
+                        </pagecontent>
+                    </searchAndReplace>
+                </site-settings-base>
+                <files jcr:primaryType="jnt:folder">
+                    <jnt_query.png j:height="16"
+                                   j:width="16"
+                                   jcr:mixinTypes="jmix:image"
+                                   jcr:primaryType="jnt:file">
+                        <jcr:content jcr:mimeType="image/png" jcr:primaryType="jnt:resource"/>
+                    </jnt_query.png>
+                </files>
+                <contents jcr:primaryType="jnt:contentFolder"/>
+            </templates>
+        </jahia-global-replace>
+    </modules>
+</content>
