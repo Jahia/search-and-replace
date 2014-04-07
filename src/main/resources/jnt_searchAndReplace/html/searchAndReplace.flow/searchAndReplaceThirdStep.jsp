@@ -40,32 +40,36 @@ ${searchAndReplace.replacementTerm}<br />
         <query:selector nodeTypeName="${searchAndReplace.nodeType}"/>
         <query:descendantNode path="${searchAndReplace.startNode}"/>
         <c:if test="${searchAndReplace.matchType eq '='}">
-            T dans le IF =
             <query:equalTo value="${searchAndReplace.termToReplace}" propertyName="${searchAndReplace.replacementTerm}"/>
         </c:if>
         <c:if test="${searchAndReplace.matchType eq 'like'}">
-            T dans le IF like
             <query:fullTextSearch searchExpression="${searchAndReplace.termToReplace}" propertyName="${searchAndReplace.replacementTerm}"/>
         </c:if>
     </jcr:jqom>
 
-    ${}
+    ${searchResult}
+
+    <c:forEach items="${searchResult.nodes}" var="matchedNode">
+    ${matchedNode.path}<br />
+    </c:forEach>
 
     <h2>Global field modification request : </h2>
     <p>
         Request summary :<br/><br>
-        . Node Type : ${searchAndReplace.nodeType}<br>
-        . From Node : ${searchAndReplace.startNode}<br/>
-        . For Field : ${searchAndReplace.nodeTypeField}<br/>
-        . Term to replace : ${searchAndReplace.termToReplace}<br/>
-        . Search Operator : ${searchAndReplace.matchType}<br />
-        . Replacement term : ${searchAndReplace.replacementTerm}<br/>
-        . in language : ${renderContext.mainResourceLocale}<br/>
+        <strong>. Node Type :</strong> ${searchAndReplace.nodeType}<br>
+        <strong>. From Node :</strong> ${searchAndReplace.startNode}<br/>
+        <strong>. For Field :</strong> ${searchAndReplace.nodeTypeField}<br/>
+        <strong>. Term to replace :</strong> ${searchAndReplace.termToReplace}<br/>
+        <strong>. Search Operator :</strong> ${searchAndReplace.matchType}<br />
+        <strong>. Replacement term :</strong> ${searchAndReplace.replacementTerm}<br/>
+        <strong>. in language :</strong> ${renderContext.mainResourceLocale}<br/>
         <br/>
         The following nodes will be modified : <br/><br/>
 
+        <h1>Preview</h1>
+
         <form:form action="${flowExecutionUrl}" method="post" cssClass="well form-horizontal" modelAttribute="searchAndReplace">
-            <c:forEach items="${searchResult.nodes}" var="matchedNode">
+            <%--<c:forEach items="${searchResult.nodes}" var="matchedNode">
                 <div class="control-group">
                     <div class="controls">
                         <label class="checkbox">
@@ -73,7 +77,7 @@ ${searchAndReplace.replacementTerm}<br />
                         </label>
                     </div>
                 </div>
-            </c:forEach>
+            </c:forEach>--%>
             <div class="control-group">
                 <button class="btn" name="_eventId_searchAndReplacePrevious">
                     <fmt:message key="label.previous"/>
@@ -83,7 +87,8 @@ ${searchAndReplace.replacementTerm}<br />
                 </button>
                 <%-- searchAndReplaceSubmit class is used by jQuery don't remove it !--%>
                 <button class="btn btn-primary" type="submit" name="_eventId_searchAndReplaceSubmit">
-                    <fmt:message key="label.submit"/>
+                    <%--<fmt:message key="label.submit"/>--%>
+                    Perform replace
                 </button>
             </div>
         </form:form>
