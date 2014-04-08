@@ -9,6 +9,7 @@ import org.springframework.binding.validation.ValidationContext;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Locale;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -24,12 +25,14 @@ public class SearchAndReplace implements Serializable {
 
     private static final String BUNDLE = "resources.jahia-global-replace";
 
+    private String searchNode;
     private String nodeType;
     private String startNode;
     private String termToReplace;
     private String matchType;
     private String replacementTerm;
     private String nodeTypeField;
+    private List<String> listNodes;
 
     public SearchAndReplace() {
     }
@@ -40,14 +43,19 @@ public class SearchAndReplace implements Serializable {
 
         boolean valid = true;
 
-        if (StringUtils.isBlank(nodeType)) {
+        if (StringUtils.isBlank(searchNode)) {
+            messages.addMessage(new MessageBuilder().error().source("searchNode").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.searchNode.error", locale)).build());
+            valid = false;
+        }
+
+        /*if (StringUtils.isBlank(nodeType)) {
             messages.addMessage(new MessageBuilder().error().source("nodeType").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.nodeType.error", locale)).build());
             valid = false;
         }
         if (StringUtils.isBlank(startNode)) {
             messages.addMessage(new MessageBuilder().error().source("startNode").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.startNode.error", locale)).build());
             valid = false;
-        }
+        }*/
 
         return valid;
     }
@@ -58,14 +66,14 @@ public class SearchAndReplace implements Serializable {
 
         boolean valid = true;
 
-        if (StringUtils.isBlank(termToReplace)) {
+        /*if (StringUtils.isBlank(termToReplace)) {
             messages.addMessage(new MessageBuilder().error().source("termToReplace").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.termToReplace.error", locale)).build());
             valid = false;
         }
         if (StringUtils.isBlank(replacementTerm)) {
             messages.addMessage(new MessageBuilder().error().source("replacementTerm").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.replacementTerm.error", locale)).build());
             valid = false;
-        }
+        }*/
 
         return valid;
     }
@@ -77,6 +85,10 @@ public class SearchAndReplace implements Serializable {
         boolean valid = true;
 
         return valid;
+    }
+
+    public void setSearchNode(String searchNode) {
+        this.searchNode = searchNode;
     }
 
     public void setNodeType(String nodeType) {
@@ -103,6 +115,14 @@ public class SearchAndReplace implements Serializable {
         this.replacementTerm = replacementTerm;
     }
 
+    public void setListNodes(List<String> listNodes) {
+        this.listNodes = listNodes;
+    }
+
+    public String getSearchNode() {
+        return searchNode;
+    }
+
     public String getNodeType() {
         return nodeType;
     }
@@ -125,5 +145,9 @@ public class SearchAndReplace implements Serializable {
 
     public String getReplacementTerm() {
         return replacementTerm;
+    }
+
+    public List<String> getListNodes() {
+        return listNodes;
     }
 }

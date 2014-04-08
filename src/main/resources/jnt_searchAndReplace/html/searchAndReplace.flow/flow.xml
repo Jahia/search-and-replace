@@ -8,19 +8,23 @@
 
     <view-state id="searchAndReplaceFirstStep" model="searchAndReplace">
         <binder>
-            <binding property="nodeType"/>
-            <binding property="startNode"/>
+            <binding property="searchNode"/>
+            <!--<binding property="nodeType"/>
+            <binding property="startNode"/>-->
         </binder>
         <transition on="searchAndReplaceGoToSecondStep" to="searchAndReplaceSecondStep"/>
     </view-state>
 
     <view-state id="searchAndReplaceSecondStep" model="searchAndReplace">
-        <binder>
+        <on-render>
+            <evaluate expression="flowHandler.getNodesContains(searchAndReplace, externalContext.requestMap.renderContext)" result="flowScope.listNodes"/>
+        </on-render>
+        <!--<binder>
             <binding property="nodeTypeField"/>
             <binding property="termToReplace"/>
             <binding property="matchType"/>
             <binding property="replacementTerm"/>
-        </binder>
+        </binder>-->
         <transition on="searchAndReplacePrevious" to="searchAndReplaceFirstStep" validate="false"/>
         <transition on="searchAndReplaceGoToThirdStep" to="searchAndReplaceThirdStep"/>
     </view-state>

@@ -24,20 +24,42 @@
             $('.searchAndReplaceSubmit').on('click', function(){
                 var boolean = true;
 
-                if($('#nodeType').val() == ""){
+                if($('#searchNode').val() == ""){
+                    $('#searchNodeError').fadeIn('slow').delay(4000).fadeOut('slow');
+                    boolean = false;
+                }
+
+                /*if($('#nodeType').val() == ""){
                     $('#nodeTypeError').fadeIn('slow').delay(4000).fadeOut('slow');
                     boolean = false;
                 }
                 if($('#startNode').val() == ""){
                     $('#startNodeError').fadeIn('slow').delay(4000).fadeOut('slow');
                     boolean = false;
-                }
+                }*/
                 return boolean;
             })
         });
     </script>
 </template:addResources>
 
+<h1>Search And Replace</h1>
+<form:form action="${flowExecutionUrl}" method="post" cssClass="box-1" modelAttribute="searchAndReplace">
+    <h2>Search</h2>
+    <div class="input-append">
+        <form:input path="searchNode" cssClass="span6"/>
+            <%-- searchAndReplaceSubmit class is used by jQuery don't remove it !--%>
+        <button class="btn btn-primary searchAndReplaceSubmit" name="_eventId_searchAndReplaceGoToSecondStep" type="submit">
+            <i class="icon-search icon-white"></i>
+            <fmt:message key="jnt_searchAndReplace.searchNode"/>
+        </button>
+    </div>
+    <span id="searchNodeError" class="hide text-error"><fmt:message key="jnt_searchAndReplace.searchNode.error"/></span>
+    <form:errors path="searchNode" cssClass="text-error"/>
+</form:form>
+
+
+<%--
 <jcr:propertyInitializers var="nodesTypesList" nodeType="jnt:searchAndReplace" name="nodesTypes"/>
 
 <div>
@@ -69,10 +91,11 @@
             </div>
         </div>
         <div class="control-group">
-                <%-- searchAndReplaceSubmit class is used by jQuery don't remove it !--%>
+                &lt;%&ndash; searchAndReplaceSubmit class is used by jQuery don't remove it !&ndash;%&gt;
             <button class="btn btn-primary searchAndReplaceSubmit" type="submit" name="_eventId_searchAndReplaceGoToSecondStep">
                 <fmt:message key="label.next"/>
             </button>
         </div>
     </form:form>
 </div>
+--%>
