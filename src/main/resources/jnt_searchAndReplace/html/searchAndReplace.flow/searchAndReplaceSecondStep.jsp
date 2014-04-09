@@ -19,8 +19,9 @@
 <%--@elvariable id="workspace" type="java.lang.String"--%>
 <%--@elvariable id="searchAndReplace" type="org.jahia.modules.searchandreplace.webflow.model.SearchAndReplace"--%>
 
-<template:addResources type="javascript" resources="jquery.min.js,jquery-ui.min.js,jquery.blockUI.js,workInProgress.js,admin-bootstrap.js"/>
+<template:addResources type="javascript" resources="jquery.min.js,jquery-ui.min.js,admin-bootstrap.js"/>
 <template:addResources type="javascript" resources="datatables/jquery.dataTables.js,i18n/jquery.dataTables-${currentResource.locale}.js,datatables/dataTables.bootstrap-ext.js"/>
+<template:addResources type="javascript" resources="bootbox.min.js"/>
 
 
 
@@ -48,6 +49,18 @@
                 return boolean;
             })
         });
+
+        function checkAll(){
+            if($(".selectAll").is(':checked')){
+                $(".select").prop('checked', true);
+            }else{
+                $(".select").prop('checked', false);
+            }
+        }
+
+        function bbDisplay(name, url){
+            bootbox.alert("<h1>" + name + "</h1><br />" + url + ".html.ajax", function(){});
+        }
     </script>
 </template:addResources>
 
@@ -57,16 +70,15 @@
         <thead>
             <tr>
                 <th>
-                    <label class="checkbox">
-                        <input type="checkbox" value="">
-                        Select All
-                    </label>
+                    <input type="checkbox" value="" class="selectAll" onclick="checkAll()">
+                    <br />
+                    Select All
                 </th>
                 <th>
                     Nodes
                 </th>
                 <th>
-                    Creation
+                    <fmt:message key='mix_created'/>
                 </th>
                 <th>
                     Node Path
@@ -75,16 +87,20 @@
         </thead>
         <tbody>
             <c:forEach items="${listNodes}" var="id">
-                <c:set property="${renderContext.mainResource.node.session.getNodeByIdentifier(id)}" value="node"/>
+                <jcr:node var="node" uuid="${id}"/>
                 <tr>
                     <td>
-                        <input type="checkbox" value="">
+                        <input type="checkbox" value="" class="select">
                     </td>
                     <td>
-                        ${node.name}
+                        <a href="#" onclick="bbDisplay('${functions:escapeJavaScript(node.name)}','${url.context}${url.basePreview}${functions:escapeJavaScript(node.path)}');return false;" style="text-decoration: none;">
+                            ${node.name}
+                        </a>
                     </td>
                     <td>
-                        ${node.created}
+                        <em><fmt:formatDate value="${node.properties['jcr:created'].date.time}" pattern="dd, MMMM yyyy HH:mm"/></em>
+                        &nbsp;<fmt:message key="by"/>&nbsp;
+                        <strong>${node.properties['jcr:createdBy'].string}</strong>
                     </td>
                     <td>
                         ${node.path}
@@ -93,9 +109,6 @@
             </c:forEach>
         </tbody>
     </table>
-
-
-    ${listNodes}
 </div>
 
 
