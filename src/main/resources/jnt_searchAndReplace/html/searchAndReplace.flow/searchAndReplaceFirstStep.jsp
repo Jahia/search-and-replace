@@ -24,8 +24,8 @@
             $('.searchAndReplaceSubmit').on('click', function(){
                 var boolean = true;
 
-                if($('#searchNode').val() == ""){
-                    $('#searchNodeError').fadeIn('slow').delay(4000).fadeOut('slow');
+                if($('#searchNodes').val() == ""){
+                    $('#searchNodesError').fadeIn('slow').delay(4000).fadeOut('slow');
                     boolean = false;
                 }
 
@@ -47,15 +47,15 @@
 <form:form action="${flowExecutionUrl}" method="post" cssClass="box-1" modelAttribute="searchAndReplace">
     <h2>Search</h2>
     <div class="input-append">
-        <form:input path="searchNode" cssClass="span6"/>
-            <%-- searchAndReplaceSubmit class is used by jQuery don't remove it !--%>
+        <form:input path="searchNodes" cssClass="span6"/>
+        <%-- searchAndReplaceSubmit class is used by jQuery don't remove it !--%>
         <button class="btn btn-primary searchAndReplaceSubmit" name="_eventId_searchAndReplaceGoToSecondStep" type="submit">
             <i class="icon-search icon-white"></i>
-            <fmt:message key="jnt_searchAndReplace.searchNode"/>
+            <fmt:message key="jnt_searchAndReplace.searchNodes"/>
         </button>
     </div>
-    <span id="searchNodeError" class="hide text-error"><fmt:message key="jnt_searchAndReplace.searchNode.error"/></span>
-    <form:errors path="searchNode" cssClass="text-error"/>
+    <span id="searchNodesError" class="hide text-error"><fmt:message key="jnt_searchAndReplace.searchNodes.error"/></span>
+    <form:errors path="searchNodes" cssClass="text-error"/>
 </form:form>
 
 

@@ -42,7 +42,7 @@ public class SearchAndReplaceFlowHandler implements Serializable {
         try{
             JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
             QueryManager qm = session.getWorkspace().getQueryManager();
-            Query q = qm.createQuery("SELECT * FROM [nt:base] as result where isdescendantnode(result, '" + sitePath + "') and CONTAINS(result.*,'" + searchAndReplace.getSearchNode() + "')", Query.JCR_SQL2);
+            Query q = qm.createQuery("SELECT * FROM [nt:base] as result where isdescendantnode(result, '" + sitePath + "') and CONTAINS(result.*,'" + searchAndReplace.getSearchNodes() + "')", Query.JCR_SQL2);
             NodeIterator ni = q.execute().getNodes();
             while (ni.hasNext()) {
                 JCRNodeWrapper next = (JCRNodeWrapper) ni.next();

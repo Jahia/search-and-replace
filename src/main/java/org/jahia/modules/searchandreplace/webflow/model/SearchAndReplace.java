@@ -9,8 +9,7 @@ import org.springframework.binding.validation.ValidationContext;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -25,14 +24,11 @@ public class SearchAndReplace implements Serializable {
 
     private static final String BUNDLE = "resources.jahia-global-replace";
 
-    private String searchNode;
+    private String searchNodes;
     private String nodeType;
-    private String startNode;
-    private String termToReplace;
     private String matchType;
-    private String replacementTerm;
-    private String nodeTypeField;
     private List<String> listNodes;
+    private Map<String, NodeToUpdate> listNodesToBeUpdated = new HashMap<String, NodeToUpdate>();
 
     public SearchAndReplace() {
     }
@@ -43,17 +39,13 @@ public class SearchAndReplace implements Serializable {
 
         boolean valid = true;
 
-        if (StringUtils.isBlank(searchNode)) {
-            messages.addMessage(new MessageBuilder().error().source("searchNode").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.searchNode.error", locale)).build());
+        if (StringUtils.isBlank(searchNodes)) {
+            messages.addMessage(new MessageBuilder().error().source("searchNodes").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.searchNodes.error", locale)).build());
             valid = false;
         }
 
         /*if (StringUtils.isBlank(nodeType)) {
             messages.addMessage(new MessageBuilder().error().source("nodeType").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.nodeType.error", locale)).build());
-            valid = false;
-        }
-        if (StringUtils.isBlank(startNode)) {
-            messages.addMessage(new MessageBuilder().error().source("startNode").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.startNode.error", locale)).build());
             valid = false;
         }*/
 
@@ -61,6 +53,20 @@ public class SearchAndReplace implements Serializable {
     }
 
     public boolean validateSearchAndReplaceSecondStep(ValidationContext context) {
+        Locale locale = LocaleContextHolder.getLocale();
+        MessageContext messages = context.getMessageContext();
+
+        boolean valid = true;
+
+        if (listNodesToBeUpdated == null){
+            messages.addMessage(new MessageBuilder().error().source("listNodesToBeUpdated").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.listNodesToBeUpdated.error", locale)).build());
+            valid = false;
+        }
+
+        return valid;
+    }
+
+    public boolean validateSearchAndReplaceThirdStep(ValidationContext context) {
         Locale locale = LocaleContextHolder.getLocale();
         MessageContext messages = context.getMessageContext();
 
@@ -78,76 +84,49 @@ public class SearchAndReplace implements Serializable {
         return valid;
     }
 
-    public boolean validateSearchAndReplaceThirdStep(ValidationContext context) {
-        Locale locale = LocaleContextHolder.getLocale();
-        MessageContext messages = context.getMessageContext();
-
-        boolean valid = true;
-
-        return valid;
-    }
-
-    public void setSearchNode(String searchNode) {
-        this.searchNode = searchNode;
+    public void setSearchNodes(String searchNodes) {
+        this.searchNodes = searchNodes;
     }
 
     public void setNodeType(String nodeType) {
         this.nodeType = nodeType;
     }
 
-    public void setStartNode(String startNode) {
-        this.startNode = startNode;
-    }
-
-    public void setNodeTypeField(String nodeTypeField) {
-        this.nodeTypeField = nodeTypeField;
-    }
-
-    public void setTermToReplace(String termToReplace) {
-        this.termToReplace = termToReplace;
-    }
-
     public void setMatchType(String matchType) {
         this.matchType = matchType;
-    }
-
-    public void setReplacementTerm(String replacementTerm) {
-        this.replacementTerm = replacementTerm;
     }
 
     public void setListNodes(List<String> listNodes) {
         this.listNodes = listNodes;
     }
 
-    public String getSearchNode() {
-        return searchNode;
+    /*public void setListNodesToBeUpdated(Map<String, NodeToUpdate> listNodesToBeUpdated) {
+        this.listNodesToBeUpdated = listNodesToBeUpdated;
+    }*/
+
+    public void setListNodesToBeUpdated(List<String> listNodesToBeUpdated) {
+        for(String nodesId : listNodesToBeUpdated){
+            this.listNodesToBeUpdated.put(nodesId, new NodeToUpdate());
+        }
+    }
+
+    public String getSearchNodes() {
+        return searchNodes;
     }
 
     public String getNodeType() {
         return nodeType;
     }
 
-    public String getStartNode() {
-        return startNode;
-    }
-
-    public String getNodeTypeField() {
-        return nodeTypeField;
-    }
-
-    public String getTermToReplace() {
-        return termToReplace;
-    }
-
     public String getMatchType() {
         return matchType;
     }
 
-    public String getReplacementTerm() {
-        return replacementTerm;
-    }
-
     public List<String> getListNodes() {
         return listNodes;
+    }
+
+    public Map<String, NodeToUpdate> getListNodesToBeUpdated() {
+        return listNodesToBeUpdated;
     }
 }
