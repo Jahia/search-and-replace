@@ -1,19 +1,15 @@
 package org.jahia.modules.searchandreplace.webflow;
 
-
 import org.jahia.modules.searchandreplace.webflow.model.SearchAndReplace;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRSessionWrapper;
-import org.jahia.services.query.QueryWrapper;
 import org.jahia.services.render.RenderContext;
 import org.slf4j.Logger;
 
-import javax.jcr.NodeIterator;
-import javax.jcr.RepositoryException;
+import javax.jcr.*;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,16 +38,79 @@ public class SearchAndReplaceFlowHandler implements Serializable {
         try{
             JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
             QueryManager qm = session.getWorkspace().getQueryManager();
-            Query q = qm.createQuery("SELECT * FROM [nt:base] as result where isdescendantnode(result, '" + sitePath + "') and CONTAINS(result.*,'" + searchAndReplace.getSearchNodes() + "')", Query.JCR_SQL2);
+            Query q = qm.createQuery("SELECT * FROM [nt:base] as result where isdescendantnode(result, '" + sitePath + "') and CONTAINS(result.*,'" + searchAndReplace.getTermToReplace() + "')", Query.JCR_SQL2);
             NodeIterator ni = q.execute().getNodes();
             while (ni.hasNext()) {
                 JCRNodeWrapper next = (JCRNodeWrapper) ni.next();
                 listNodes.add(next.getIdentifier());
             }
         }catch(RepositoryException e){
-            logger.error("error getNodes(name) : ",e);
+            logger.error(e.getMessage(), e);
         }
 
         return listNodes;
+    }
+
+    public boolean haveNodeToUpdate(SearchAndReplace searchAndReplace) {
+        if(searchAndReplace.getListNodesToBeUpdated().size() > 0){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public void skipThisNode(SearchAndReplace searchAndReplace) {
+        String nodeID = searchAndReplace.getCurrentNodeInThirdStep();
+
+        searchAndReplace.getListNodesToBeUpdated().remove(searchAndReplace.getListNodesToBeUpdated().indexOf(nodeID));
+        searchAndReplace.addUUIDToListNodesSkipped(nodeID);
+    }
+
+    public void replaceThisNode(SearchAndReplace searchAndReplace, RenderContext renderContext) {
+        String nodeID = searchAndReplace.getCurrentNodeInThirdStep();
+
+        try{
+            JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
+            JCRNodeWrapper node = session.getNodeByUUID(nodeID);
+            PropertyIterator pi = node.getProperties();
+            while (pi.hasNext()){
+                Property next = pi.nextProperty();
+                if(next.getType() == PropertyType.STRING){
+                    if(next.getString().contains(searchAndReplace.getTermToReplace())){
+                        next.setValue(next.getString().replace(searchAndReplace.getTermToReplace(), searchAndReplace.getReplacementTerm()));
+                        searchAndReplace.getListNodesToBeUpdated().remove(searchAndReplace.getListNodesToBeUpdated().indexOf(nodeID));
+                        searchAndReplace.addUUIDToListNodesUpdateSuccess(nodeID);
+                    }
+                }
+            }
+            session.save();
+        }catch (RepositoryException e){
+            searchAndReplace.addUUIDToListNodesUpdateFail(nodeID);
+            logger.error(e.getMessage(), e);
+        }
+    }
+
+    public void replaceAllNodes(SearchAndReplace searchAndReplace, RenderContext renderContext) {
+        for(String nodeID : searchAndReplace.getListNodesToBeUpdated()){
+            try{
+                JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
+                JCRNodeWrapper node = session.getNodeByUUID(nodeID);
+                PropertyIterator pi = node.getProperties();
+                while (pi.hasNext()){
+                    Property next = pi.nextProperty();
+                    if(next.getType() == PropertyType.STRING){
+                        if(next.getString().contains(searchAndReplace.getTermToReplace())){
+                            next.setValue(next.getString().replace(searchAndReplace.getTermToReplace(), searchAndReplace.getReplacementTerm()));
+                            searchAndReplace.addUUIDToListNodesUpdateSuccess(nodeID);
+                        }
+                    }
+                }
+                session.save();
+            }catch (RepositoryException e){
+                searchAndReplace.addUUIDToListNodesUpdateFail(nodeID);
+                logger.error(e.getMessage(), e);
+            }
+        }
+        searchAndReplace.getListNodesToBeUpdated().clear();
     }
 }

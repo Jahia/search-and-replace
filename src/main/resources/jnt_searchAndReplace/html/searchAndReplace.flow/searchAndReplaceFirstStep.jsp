@@ -24,19 +24,11 @@
             $('.searchAndReplaceSubmit').on('click', function(){
                 var boolean = true;
 
-                if($('#searchNodes').val() == ""){
-                    $('#searchNodesError').fadeIn('slow').delay(4000).fadeOut('slow');
+                if($('#termToReplace').val() == ""){
+                    $('#termToReplaceError').fadeIn('slow').delay(4000).fadeOut('slow');
                     boolean = false;
                 }
 
-                /*if($('#nodeType').val() == ""){
-                    $('#nodeTypeError').fadeIn('slow').delay(4000).fadeOut('slow');
-                    boolean = false;
-                }
-                if($('#startNode').val() == ""){
-                    $('#startNodeError').fadeIn('slow').delay(4000).fadeOut('slow');
-                    boolean = false;
-                }*/
                 return boolean;
             })
         });
@@ -47,55 +39,13 @@
 <form:form action="${flowExecutionUrl}" method="post" cssClass="box-1" modelAttribute="searchAndReplace">
     <h2>Search</h2>
     <div class="input-append">
-        <form:input path="searchNodes" cssClass="span6"/>
+        <form:input path="termToReplace" cssClass="span6"/>
         <%-- searchAndReplaceSubmit class is used by jQuery don't remove it !--%>
         <button class="btn btn-primary searchAndReplaceSubmit" name="_eventId_searchAndReplaceGoToSecondStep" type="submit">
             <i class="icon-search icon-white"></i>
-            <fmt:message key="jnt_searchAndReplace.searchNodes"/>
+            <fmt:message key="jnt_searchAndReplace.termToReplace"/>
         </button>
     </div>
-    <span id="searchNodesError" class="hide text-error"><fmt:message key="jnt_searchAndReplace.searchNodes.error"/></span>
-    <form:errors path="searchNodes" cssClass="text-error"/>
+    <span id="termToReplaceError" class="hide text-error"><fmt:message key="jnt_searchAndReplace.termToReplace.error"/></span>
+    <form:errors path="termToReplace" cssClass="text-error"/>
 </form:form>
-
-
-<%--
-<jcr:propertyInitializers var="nodesTypesList" nodeType="jnt:searchAndReplace" name="nodesTypes"/>
-
-<div>
-    <h1>Search And Replace</h1>
-    <form:form action="${flowExecutionUrl}" method="post" cssClass="well form-horizontal" modelAttribute="searchAndReplace">
-        <div class="control-group">
-            <form:label path="nodeType" cssClass="control-label">
-                <fmt:message key="jnt_searchAndReplace.nodeType"/>
-            </form:label>
-            <div class="controls">
-                <form:select path="nodeType">
-                    <form:option value=""><fmt:message key="selection.label"/> ...</form:option>
-                    <c:forEach items="${nodesTypesList}" var="nodeType">
-                        <option value="${nodeType.value.string}">${nodeType.displayName}</option>
-                    </c:forEach>
-                </form:select>
-                <span id="nodeTypeError" class="hide text-error"><fmt:message key="jnt_searchAndReplace.nodeType.error"/></span>
-                <form:errors path="nodeType" cssClass="text-error"/>
-            </div>
-        </div>
-        <div class="control-group">
-            <form:label path="startNode" cssClass="control-label">
-                <fmt:message key="jnt_searchAndReplace.startNode"/>
-            </form:label>
-            <div class="controls">
-                <form:input path="startNode" value="${renderContext.site.path}/home/test.html" />
-                <span id="startNodeError" class="hide text-error"><fmt:message key="jnt_searchAndReplace.startNode.error"/></span>
-                <form:errors path="startNode" cssClass="text-error"/>
-            </div>
-        </div>
-        <div class="control-group">
-                &lt;%&ndash; searchAndReplaceSubmit class is used by jQuery don't remove it !&ndash;%&gt;
-            <button class="btn btn-primary searchAndReplaceSubmit" type="submit" name="_eventId_searchAndReplaceGoToSecondStep">
-                <fmt:message key="label.next"/>
-            </button>
-        </div>
-    </form:form>
-</div>
---%>

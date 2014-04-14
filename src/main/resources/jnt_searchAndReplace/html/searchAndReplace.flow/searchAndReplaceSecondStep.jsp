@@ -54,10 +54,6 @@
                 $(".select").prop('checked', false);
             }
         }
-
-        function bbDisplay(name, url){
-            bootbox.alert("<h1>" + name + "</h1><br />" + url + ".html.ajax", function(){});
-        }
     </script>
 </template:addResources>
 
@@ -91,7 +87,7 @@
                             <form:checkbox path="listNodesToBeUpdated" value="${id}" cssClass="select"/>
                         </td>
                         <td>
-                            <a href="#" onclick="bbDisplay('${functions:escapeJavaScript(node.name)}','${url.context}${url.basePreview}${functions:escapeJavaScript(node.path)}');return false;" style="text-decoration: none;">
+                            <a href="#modal_${id}" role="button" data-toggle="modal" style="text-decoration: none;">
                                 ${node.name}
                             </a>
                         </td>
@@ -122,4 +118,20 @@
             <form:errors path="listNodesToBeUpdated" cssClass="text-error"/>
         </div>
     </form:form>
+
+    <c:forEach items="${listNodes}" var="id">
+        <jcr:node var="node" uuid="${id}"/>
+        <div class="modal hide fade" id="modal_${id}" tabindex="-1" role="dialog" aria-labelledby="modalTitle_${id}" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3 id="modalTitle_${id}">${node.name}</h3>
+            </div>
+            <div class="modal-body">
+                <template:module node="${node}"/>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-primary" data-dismiss="modal">OK</a>
+            </div>
+        </div>
+    </c:forEach>
 </div>

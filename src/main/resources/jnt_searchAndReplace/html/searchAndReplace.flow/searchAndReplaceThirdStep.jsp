@@ -24,10 +24,7 @@
         $(document).ready(function(){
             $('.searchAndReplaceSubmit').on('click', function(){
                 var boolean = true;
-                if($('.termToReplace').val() == ""){
-                    $('#termToReplaceError').fadeIn('slow').delay(4000).fadeOut('slow');
-                    boolean = false;
-                }
+
                 if($('#replacementTerm').val() == ""){
                     $('#replacementTermError').fadeIn('slow').delay(4000).fadeOut('slow');
                     boolean = false;
@@ -41,124 +38,49 @@
 <div>
     <h1>Search And Replace</h1>
     <form:form action="${flowExecutionUrl}" method="post" cssClass="well form-horizontal" modelAttribute="searchAndReplace">
-        <c:forEach items="${searchAndReplace.listNodesToBeUpdated}" var="mapObject">
-            <jcr:node var="node" uuid="${mapObject.key}"/>
-            <jcr:nodeType var="nodeTypeFields" name="${node.properties['jcr:primaryType'].string}"/>
-            <div class="box-1">
-                <div class="control-group">
-                    <form:label path="${mapObject.value.nodeTypeField}" cssClass="control-label">
-                        <fmt:message key="jnt_searchAndReplace.nodeTypeField"/>
-                    </form:label>
-                    <div class="controls">
-                        <form:select path="${mapObject.value.nodeTypeField}">
-                            <c:forEach items="${nodeTypeFields.declaredPropertyDefinitions}" var="nodeTypeField">
-                                <option value="${nodeTypeField.name}">${nodeTypeField.name}</option>
-                            </c:forEach>
-                        </form:select>
-                    </div>
-                </div>
-                <div class="control-group">
-                    <form:label path="${mapObject.value.termToReplace}" cssClass="control-label">
-                        <fmt:message key="jnt_searchAndReplace.termToReplace"/>
-                    </form:label>
-                    <div class="controls">
-                        <form:input cssClass="termToReplace" path="${mapObject.value.termToReplace}"/>
-                        <span id="termToReplaceError_${mapObject.key}" class="hide text-error"><fmt:message key="jnt_searchAndReplace.termToReplace.error"/></span>
-                        <form:errors path="${mapObject.value.termToReplace}" cssClass="text-error"/>
-                    </div>
-                </div>
-                <div class="control-group">
-                    <form:label path="${mapObject.value.replacementTerm}" cssClass="control-label">
-                        <fmt:message key="jnt_searchAndReplace.replacementTerm"/>
-                    </form:label>
-                    <div class="controls">
-                        <form:input cssClass="replacementTerm" path="${mapObject.value.replacementTerm}"/>
-                        <span id="replacementTermError_${mapObject.key}" class="hide text-error"><fmt:message key="jnt_searchAndReplace.replacementTerm.error"/></span>
-                        <form:errors path="${mapObject.value.replacementTerm}" cssClass="text-error"/>
-                    </div>
+        <div class="box-1">
+            <div class="control-group">
+                <form:label path="replacementTerm" cssClass="control-label">
+                    <fmt:message key="jnt_searchAndReplace.replacementTerm"/>
+                </form:label>
+                <div class="controls">
+                    <form:input path="replacementTerm" value="${searchAndReplace.replacementTerm}"/>
+                    <span id="replacementTermError" class="hide text-error"><fmt:message key="jnt_searchAndReplace.replacementTerm.error"/></span>
+                    <form:errors path="replacementTerm" cssClass="text-error"/>
                 </div>
             </div>
-        </c:forEach>
+            <c:forEach items="${searchAndReplace.listNodesToBeUpdated}" var="id" varStatus="status">
+                <c:if test="${status.first}">
+                    <form:hidden path="currentNodeInThirdStep" value="${id}"/>
+                    <jcr:node var="node" uuid="${id}"/>
+                    <div>
+                        <h1>Preview node : ${id}</h1>
+                        <br />
+                        <template:module node="${node}"/>
+                    </div>
+                </c:if>
+            </c:forEach>
+        </div>
         <div class="control-group">
-            <button class="btn" name="_eventId_searchAndReplacePrevious">
-                <fmt:message key="label.previous"/>
-            </button>
             <button class="btn btn-danger" name="_eventId_searchAndReplaceCancel">
                 <fmt:message key="label.cancel"/>
             </button>
+            <c:if test="${fn:length(searchAndReplace.listNodesToBeUpdated) gt 1}">
+                <button class="btn" name="_eventId_searchAndReplaceSkipThisNode">
+                    <fmt:message key="jnt_searchAndReplace.skipThisNode"/>
+                </button>
+            </c:if>
             <%--searchAndReplaceSubmit class is used by jQuery don't remove it !--%>
-            <button class="btn btn-primary searchAndReplaceSubmit" type="submit" name="_eventId_searchAndReplaceGoToFourthStep">
-                <fmt:message key="label.next"/>
+            <button class="btn btn-primary searchAndReplaceSubmit" name="_eventId_searchAndReplaceInCurrentNode">
+                <fmt:message key="jnt_searchAndReplace.replaceInCurrentNode"/>
             </button>
+            <c:if test="${fn:length(searchAndReplace.listNodesToBeUpdated) gt 1}">
+                <%--searchAndReplaceSubmit class is used by jQuery don't remove it !--%>
+                <button class="btn btn-success searchAndReplaceSubmit" name="_eventId_searchAndReplaceAllNode">
+                    <fmt:message key="jnt_searchAndReplace.replaceAllNode"/>
+                </button>
+            </c:if>
         </div>
     </form:form>
 </div>
 
-<%--
-${searchAndReplace.nodeType}<br />
-${searchAndReplace.startNode}<br />
-${searchAndReplace.termToReplace}<br />
-${searchAndReplace.matchType}<br />
-${searchAndReplace.replacementTerm}<br />
-
-<div>
-    <h1>Search And Replace</h1>
-
-    <jcr:jqom var="searchResult">
-        <query:selector nodeTypeName="${searchAndReplace.nodeType}"/>
-        <query:descendantNode path="${searchAndReplace.startNode}"/>
-        <c:if test="${searchAndReplace.matchType eq '='}">
-            <query:equalTo value="${searchAndReplace.termToReplace}" propertyName="${searchAndReplace.replacementTerm}"/>
-        </c:if>
-        <c:if test="${searchAndReplace.matchType eq 'like'}">
-            <query:fullTextSearch searchExpression="${searchAndReplace.termToReplace}" propertyName="${searchAndReplace.replacementTerm}"/>
-        </c:if>
-    </jcr:jqom>
-
-    ${searchResult}
-
-    <c:forEach items="${searchResult.nodes}" var="matchedNode">
-    ${matchedNode.path}<br />
-    </c:forEach>
-
-    <h2>Global field modification request : </h2>
-    <p>
-        Request summary :<br/><br>
-        <strong>. Node Type :</strong> ${searchAndReplace.nodeType}<br>
-        <strong>. From Node :</strong> ${searchAndReplace.startNode}<br/>
-        <strong>. For Field :</strong> ${searchAndReplace.nodeTypeField}<br/>
-        <strong>. Term to replace :</strong> ${searchAndReplace.termToReplace}<br/>
-        <strong>. Search Operator :</strong> ${searchAndReplace.matchType}<br />
-        <strong>. Replacement term :</strong> ${searchAndReplace.replacementTerm}<br/>
-        <strong>. in language :</strong> ${renderContext.mainResourceLocale}<br/>
-        <br/>
-        The following nodes will be modified : <br/><br/>
-
-        <h1>Preview</h1>
-
-        <form:form action="${flowExecutionUrl}" method="post" cssClass="well form-horizontal" modelAttribute="searchAndReplace">
-            <c:forEach items="${searchResult.nodes}" var="matchedNode">
-                <div class="control-group">
-                    <div class="controls">
-                        <label class="checkbox">
-                            <input type="checkbox" name="nodesToUpdate" value="${matchedNode.path}"/>${matchedNode.path}
-                        </label>
-                    </div>
-                </div>
-            </c:forEach>
-            <div class="control-group">
-                <button class="btn" name="_eventId_searchAndReplacePrevious">
-                    <fmt:message key="label.previous"/>
-                </button>
-                <button class="btn btn-danger" name="_eventId_searchAndReplaceCancel">
-                    <fmt:message key="label.cancel"/>
-                </button>
-                &lt;%&ndash; searchAndReplaceSubmit class is used by jQuery don't remove it !&ndash;%&gt;
-                <button class="btn btn-primary" type="submit" name="_eventId_searchAndReplaceSubmit">
-                    &lt;%&ndash;<fmt:message key="label.submit"/>&ndash;%&gt;
-                    Perform replace
-                </button>
-            </div>
-        </form:form>
-    </p>
-</div>--%>

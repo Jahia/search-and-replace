@@ -24,11 +24,15 @@ public class SearchAndReplace implements Serializable {
 
     private static final String BUNDLE = "resources.jahia-global-replace";
 
-    private String searchNodes;
+    private String termToReplace;
     private String nodeType;
     private String matchType;
-    private List<String> listNodes;
-    private Map<String, NodeToUpdate> listNodesToBeUpdated = new HashMap<String, NodeToUpdate>();
+    private String replacementTerm;
+    private String currentNodeInThirdStep;
+    private List<String> listNodesToBeUpdated = new ArrayList<String>();
+    private List<String> listNodesUpdateSuccess = new ArrayList<String>();
+    private List<String> listNodesUpdateFail = new ArrayList<String>();
+    private List<String> listNodesSkipped = new ArrayList<String>();
 
     public SearchAndReplace() {
     }
@@ -39,15 +43,10 @@ public class SearchAndReplace implements Serializable {
 
         boolean valid = true;
 
-        if (StringUtils.isBlank(searchNodes)) {
-            messages.addMessage(new MessageBuilder().error().source("searchNodes").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.searchNodes.error", locale)).build());
+        if (StringUtils.isBlank(termToReplace)) {
+            messages.addMessage(new MessageBuilder().error().source("termToReplace").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.searchNodes.error", locale)).build());
             valid = false;
         }
-
-        /*if (StringUtils.isBlank(nodeType)) {
-            messages.addMessage(new MessageBuilder().error().source("nodeType").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.nodeType.error", locale)).build());
-            valid = false;
-        }*/
 
         return valid;
     }
@@ -72,20 +71,20 @@ public class SearchAndReplace implements Serializable {
 
         boolean valid = true;
 
-        /*if (StringUtils.isBlank(termToReplace)) {
-            messages.addMessage(new MessageBuilder().error().source("termToReplace").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.termToReplace.error", locale)).build());
-            valid = false;
-        }
         if (StringUtils.isBlank(replacementTerm)) {
             messages.addMessage(new MessageBuilder().error().source("replacementTerm").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.replacementTerm.error", locale)).build());
             valid = false;
-        }*/
+        }
+
+        if (!currentNodeInThirdStep.equals(listNodesToBeUpdated.get(0))) {
+            valid = false;
+        }
 
         return valid;
     }
 
-    public void setSearchNodes(String searchNodes) {
-        this.searchNodes = searchNodes;
+    public void setTermToReplace(String termToReplace) {
+        this.termToReplace = termToReplace;
     }
 
     public void setNodeType(String nodeType) {
@@ -96,22 +95,32 @@ public class SearchAndReplace implements Serializable {
         this.matchType = matchType;
     }
 
-    public void setListNodes(List<String> listNodes) {
-        this.listNodes = listNodes;
+    public void setReplacementTerm(String replacementTerm) {
+        this.replacementTerm = replacementTerm;
     }
 
-    /*public void setListNodesToBeUpdated(Map<String, NodeToUpdate> listNodesToBeUpdated) {
-        this.listNodesToBeUpdated = listNodesToBeUpdated;
-    }*/
+    public void setCurrentNodeInThirdStep(String currentNodeInThirdStep) {
+        this.currentNodeInThirdStep = currentNodeInThirdStep;
+    }
 
     public void setListNodesToBeUpdated(List<String> listNodesToBeUpdated) {
-        for(String nodesId : listNodesToBeUpdated){
-            this.listNodesToBeUpdated.put(nodesId, new NodeToUpdate());
-        }
+        this.listNodesToBeUpdated = listNodesToBeUpdated;
     }
 
-    public String getSearchNodes() {
-        return searchNodes;
+    public void setListNodesUpdateSuccess(List<String> listNodesUpdateSuccess) {
+        this.listNodesUpdateSuccess = listNodesUpdateSuccess;
+    }
+
+    public void setListNodesUpdateFail(List<String> listNodesUpdateFail) {
+        this.listNodesUpdateFail = listNodesUpdateFail;
+    }
+
+    public void setListNodesSkipped(List<String> listNodesSkipped) {
+        this.listNodesSkipped = listNodesSkipped;
+    }
+
+    public String getTermToReplace() {
+        return termToReplace;
     }
 
     public String getNodeType() {
@@ -122,11 +131,45 @@ public class SearchAndReplace implements Serializable {
         return matchType;
     }
 
-    public List<String> getListNodes() {
-        return listNodes;
+    public String getReplacementTerm() {
+        return replacementTerm;
     }
 
-    public Map<String, NodeToUpdate> getListNodesToBeUpdated() {
+    public String getCurrentNodeInThirdStep() {
+        return currentNodeInThirdStep;
+    }
+
+    public List<String> getListNodesToBeUpdated() {
         return listNodesToBeUpdated;
+    }
+
+    public List<String> getListNodesUpdateSuccess() {
+        return listNodesUpdateSuccess;
+    }
+
+    public List<String> getListNodesUpdateFail() {
+        return listNodesUpdateFail;
+    }
+
+    public List<String> getListNodesSkipped() {
+        return listNodesSkipped;
+    }
+
+    public void addUUIDToListNodesUpdateSuccess(String uuid){
+        if(!listNodesUpdateSuccess.contains(uuid)){
+            listNodesUpdateSuccess.add(uuid);
+        }
+    }
+
+    public void addUUIDToListNodesUpdateFail(String uuid){
+        if(!listNodesUpdateFail.contains(uuid)){
+            listNodesUpdateFail.add(uuid);
+        }
+    }
+
+    public void addUUIDToListNodesSkipped(String uuid){
+        if(!listNodesSkipped.contains(uuid)){
+            listNodesSkipped.add(uuid);
+        }
     }
 }
