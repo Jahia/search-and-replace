@@ -43,7 +43,7 @@
         <%-- searchAndReplaceSubmit class is used by jQuery don't remove it !--%>
         <button class="btn btn-primary searchAndReplaceSubmit" name="_eventId_searchAndReplaceGoToSecondStep" type="submit">
             <i class="icon-search icon-white"></i>
-            <fmt:message key="jnt_searchAndReplace.termToReplace"/>
+            <fmt:message key="jnt_searchAndReplace.searchButton"/>
         </button>
     </div>
     <span id="termToReplaceError" class="hide text-error"><fmt:message key="jnt_searchAndReplace.termToReplace.error"/></span>
