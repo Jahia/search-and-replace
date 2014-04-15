@@ -19,6 +19,9 @@
 <%--@elvariable id="workspace" type="java.lang.String"--%>
 <%--@elvariable id="searchAndReplace" type="org.jahia.modules.searchandreplace.webflow.model.SearchAndReplace"--%>
 
+<template:addResources type="javascript" resources="jquery.min.js,jquery-ui.min.js,admin-bootstrap.js"/>
+<template:addResources type="javascript" resources="jquery.highlight.js"/>
+
 <template:addResources type="inlinejavascript">
     <script type="text/javascript">
         $(document).ready(function(){
@@ -31,6 +34,10 @@
                 }
                 return boolean;
             })
+
+            $('.preview').highlight('${searchAndReplace.termToReplace}', { caseSensitive: true });
+
+            $('.highlight').css({ backgroundColor: '#ED6A32' });
         });
     </script>
 </template:addResources>
@@ -38,29 +45,32 @@
 <div>
     <h1>Search And Replace</h1>
     <form:form action="${flowExecutionUrl}" method="post" cssClass="well form-horizontal" modelAttribute="searchAndReplace">
-        <div class="box-1">
-            <div class="control-group">
-                <form:label path="replacementTerm" cssClass="control-label">
-                    <fmt:message key="jnt_searchAndReplace.replacementTerm"/>
-                </form:label>
-                <div class="controls">
-                    <form:input path="replacementTerm" value="${searchAndReplace.replacementTerm}"/>
-                    <span id="replacementTermError" class="hide text-error"><fmt:message key="jnt_searchAndReplace.replacementTerm.error"/></span>
-                    <form:errors path="replacementTerm" cssClass="text-error"/>
-                </div>
+        <div class="alert alert-info">
+            <h4><fmt:message key="jnt_searchAndReplace.termToReplace"/></h4>
+            ${searchAndReplace.termToReplace}
+        </div>
+        <div class="control-group">
+            <form:label path="replacementTerm" cssClass="control-label">
+                <fmt:message key="jnt_searchAndReplace.replacementTerm"/>
+            </form:label>
+            <div class="controls">
+                <form:input path="replacementTerm" value="${searchAndReplace.replacementTerm}"/>
+                <span id="replacementTermError" class="hide text-error"><fmt:message key="jnt_searchAndReplace.replacementTerm.error"/></span>
+                <form:errors path="replacementTerm" cssClass="text-error"/>
             </div>
-            <c:forEach items="${searchAndReplace.listNodesToBeUpdated}" var="id" varStatus="status">
-                <c:if test="${status.first}">
-                    <form:hidden path="currentNodeInThirdStep" value="${id}"/>
-                    <jcr:node var="node" uuid="${id}"/>
-                    <div>
-                        <h1>Preview node : ${id}</h1>
-                        <br />
+        </div>
+        <c:forEach items="${searchAndReplace.listNodesToBeUpdated}" var="id" varStatus="status">
+            <c:if test="${status.first}">
+                <form:hidden path="currentNodeInThirdStep" value="${id}"/>
+                <jcr:node var="node" uuid="${id}"/>
+                <div class="box-1">
+                    <h1><fmt:message key="jnt_searchAndReplace.previewOfModification"/>&nbsp;${functions:abbreviate(node.displayableName,100,120,'...')}</h1>
+                    <div class="preview">
                         <template:module node="${node}"/>
                     </div>
-                </c:if>
-            </c:forEach>
-        </div>
+                </div>
+            </c:if>
+        </c:forEach>
         <div class="control-group">
             <button class="btn btn-danger" name="_eventId_searchAndReplaceCancel">
                 <fmt:message key="label.cancel"/>
