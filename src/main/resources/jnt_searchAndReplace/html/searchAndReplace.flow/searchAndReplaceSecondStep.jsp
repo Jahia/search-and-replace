@@ -21,15 +21,13 @@
 
 <template:addResources type="javascript" resources="jquery.min.js,jquery-ui.min.js,admin-bootstrap.js"/>
 <template:addResources type="javascript" resources="datatables/jquery.dataTables.js,i18n/jquery.dataTables-${currentResource.locale}.js,datatables/dataTables.bootstrap-ext.js"/>
-<template:addResources type="javascript" resources="bootbox.min.js"/>
-
-
+<template:addResources type="javascript" resources="jquery.highlight.js"/>
 
 <template:addResources type="inlinejavascript">
     <script type="text/javascript">
         $(document).ready(function(){
-            $('#listNodes_table').dataTable({
-                "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
+            var oTable = $('#listNodes_table').dataTable({
+                "sDom": "<'row-fluid'<'span6'l><'span6 text-right'f>r>t<'row-fluid'<'span6'i><'span6 text-right'p>>",
                 "iDisplayLength":25,
                 "sPaginationType": "bootstrap",
                 "aaSorting": [] //this option disable sort by default, the user steal can use column names to sort the table
@@ -44,43 +42,39 @@
                 }
                 return boolean;
             })
+
+            $('#selectAll').click(function() {
+                $('input', oTable.fnGetNodes()).attr('checked',this.checked);
+            });
+
+            $('.preview').highlight('${searchAndReplace.termToReplace}', { caseSensitive: true });
+
+            $('.highlight').css({ backgroundColor: '#ED6A32' });
         });
-
-        function checkAll(){
-            if($(".selectAll").is(':checked')){
-                $(".select").prop('checked', true);
-
-            }else{
-                $(".select").prop('checked', false);
-            }
-        }
     </script>
 </template:addResources>
 
-<div>
+
     <h1>Search And Replace</h1>
-    <form:form action="${flowExecutionUrl}" method="post" cssClass="well form-horizontal" modelAttribute="searchAndReplace">
+    <form:form action="${flowExecutionUrl}" method="post" cssClass="box-1" modelAttribute="searchAndReplace">
         <table cellpadding="0" cellspacing="0" border="0" class="table table-hover table-bordered" id="listNodes_table">
             <thead>
                 <tr>
                     <th>
-                        <input type="checkbox" value="" class="selectAll" onclick="checkAll()">
+                        <form:checkbox path="selectAll" value="true" id="selectAll"/>
                         <br />
-                        Select All
+                        <fmt:message key='jnt_searchAndReplace.selectAll'/>
                     </th>
                     <th>
-                        Nodes
+                        <fmt:message key='jnt_searchAndReplace.nodes'/>
                     </th>
                     <th>
-                        <fmt:message key='mix_created'/>
-                    </th>
-                    <th>
-                        Node Path
+                        <fmt:message key='jmix_contentmetadata.j_lastModificationDate'/>
                     </th>
                 </tr>
             </thead>
             <tbody>
-                <c:forEach items="${listNodes}" var="id">
+                <c:forEach items="${searchAndReplace.listNodes}" var="id">
                     <jcr:node var="node" uuid="${id}"/>
                     <tr>
                         <td>
@@ -88,16 +82,13 @@
                         </td>
                         <td>
                             <a href="#modal_${id}" role="button" data-toggle="modal" style="text-decoration: none;">
-                                ${node.name}
+                                ${functions:abbreviate(node.displayableName,100,120,'...')}
                             </a>
                         </td>
                         <td>
-                            <em><fmt:formatDate value="${node.properties['jcr:created'].date.time}" pattern="dd, MMMM yyyy HH:mm"/></em>
-                            &nbsp;<fmt:message key="by"/>&nbsp;
-                            <strong>${node.properties['jcr:createdBy'].string}</strong>
-                        </td>
-                        <td>
-                            ${node.path}
+                            <em><fmt:formatDate value="${node.properties['jcr:lastModified'].date.time}" pattern="dd, MMMM yyyy HH:mm"/></em>
+                            &nbsp;<fmt:message key="label.by"/>&nbsp;
+                            <strong>${node.properties['jcr:lastModifiedBy'].string}</strong>
                         </td>
                     </tr>
                 </c:forEach>
@@ -119,14 +110,14 @@
         </div>
     </form:form>
 
-    <c:forEach items="${listNodes}" var="id">
+    <c:forEach items="${searchAndReplace.listNodes}" var="id">
         <jcr:node var="node" uuid="${id}"/>
         <div class="modal hide fade" id="modal_${id}" tabindex="-1" role="dialog" aria-labelledby="modalTitle_${id}" aria-hidden="true">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h3 id="modalTitle_${id}">${node.name}</h3>
+                <h3 id="modalTitle_${id}">${functions:abbreviate(node.displayableName,100,120,'...')}</h3>
             </div>
-            <div class="modal-body">
+            <div class="modal-body preview">
                 <template:module node="${node}"/>
             </div>
             <div class="modal-footer">
@@ -134,4 +125,4 @@
             </div>
         </div>
     </c:forEach>
-</div>
+

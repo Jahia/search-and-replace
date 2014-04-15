@@ -31,24 +31,30 @@ public class SearchAndReplaceFlowHandler implements Serializable {
         return searchAndReplace;
     }
 
-    public List <String> getNodesContains(SearchAndReplace searchAndReplace, RenderContext renderContext){
+    public void getNodesContains(SearchAndReplace searchAndReplace, RenderContext renderContext){
         String sitePath = renderContext.getSite().getPath();
-        List <String> listNodes = new ArrayList<String>();
 
         try{
             JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
             QueryManager qm = session.getWorkspace().getQueryManager();
-            Query q = qm.createQuery("SELECT * FROM [nt:base] as result where isdescendantnode(result, '" + sitePath + "') and CONTAINS(result.*,'" + searchAndReplace.getTermToReplace() + "')", Query.JCR_SQL2);
+            Query q = qm.createQuery("SELECT * FROM [nt:base] AS result WHERE ISDESCENDANTNODE(result, '" + sitePath + "') AND CONTAINS(result.*,'" + searchAndReplace.getTermToReplace() + "') AND ([jcr:primaryType] NOT LIKE 'jnt:file' OR [jcr:primaryType] NOT LIKE 'jnt:resource')", Query.JCR_SQL2);
+            q.setLimit(1000);
             NodeIterator ni = q.execute().getNodes();
             while (ni.hasNext()) {
                 JCRNodeWrapper next = (JCRNodeWrapper) ni.next();
-                listNodes.add(next.getIdentifier());
+                PropertyIterator pi = next.getProperties();
+                while (pi.hasNext()){
+                    Property nextProperty = pi.nextProperty();
+                    if(nextProperty.getType() == PropertyType.STRING){
+                        if(nextProperty.getString().contains(searchAndReplace.getTermToReplace())){
+                            searchAndReplace.addUUIDToListNodes(next.getIdentifier());
+                        }
+                    }
+                }
             }
         }catch(RepositoryException e){
             logger.error(e.getMessage(), e);
         }
-
-        return listNodes;
     }
 
     public boolean haveNodeToUpdate(SearchAndReplace searchAndReplace) {

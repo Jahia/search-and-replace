@@ -29,6 +29,8 @@ public class SearchAndReplace implements Serializable {
     private String matchType;
     private String replacementTerm;
     private String currentNodeInThirdStep;
+    private boolean selectAll;
+    private List<String> listNodes = new ArrayList<String>();
     private List<String> listNodesToBeUpdated = new ArrayList<String>();
     private List<String> listNodesUpdateSuccess = new ArrayList<String>();
     private List<String> listNodesUpdateFail = new ArrayList<String>();
@@ -60,6 +62,11 @@ public class SearchAndReplace implements Serializable {
         if (listNodesToBeUpdated == null){
             messages.addMessage(new MessageBuilder().error().source("listNodesToBeUpdated").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.listNodesToBeUpdated.error", locale)).build());
             valid = false;
+        }
+
+        if (selectAll == true) {
+            listNodesToBeUpdated.clear();
+            listNodesToBeUpdated = listNodes;
         }
 
         return valid;
@@ -103,6 +110,14 @@ public class SearchAndReplace implements Serializable {
         this.currentNodeInThirdStep = currentNodeInThirdStep;
     }
 
+    public void setSelectAll(boolean selectAll) {
+        this.selectAll = selectAll;
+    }
+
+    public void setListNodes(List<String> listNodes) {
+        this.listNodes = listNodes;
+    }
+
     public void setListNodesToBeUpdated(List<String> listNodesToBeUpdated) {
         this.listNodesToBeUpdated = listNodesToBeUpdated;
     }
@@ -139,6 +154,14 @@ public class SearchAndReplace implements Serializable {
         return currentNodeInThirdStep;
     }
 
+    public boolean isSelectAll() {
+        return selectAll;
+    }
+
+    public List<String> getListNodes() {
+        return listNodes;
+    }
+
     public List<String> getListNodesToBeUpdated() {
         return listNodesToBeUpdated;
     }
@@ -153,6 +176,12 @@ public class SearchAndReplace implements Serializable {
 
     public List<String> getListNodesSkipped() {
         return listNodesSkipped;
+    }
+
+    public void addUUIDToListNodes(String uuid){
+        if(!listNodes.contains(uuid)){
+            listNodes.add(uuid);
+        }
     }
 
     public void addUUIDToListNodesUpdateSuccess(String uuid){

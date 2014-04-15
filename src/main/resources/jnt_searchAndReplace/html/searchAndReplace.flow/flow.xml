@@ -12,13 +12,14 @@
         </binder>
         <transition on="searchAndReplaceGoToSecondStep" to="searchAndReplaceSecondStep"/>
         <on-exit>
-            <evaluate expression="flowHandler.getNodesContains(searchAndReplace, externalContext.requestMap.renderContext)" result="flowScope.listNodes"/>
+            <evaluate expression="flowHandler.getNodesContains(searchAndReplace, externalContext.requestMap.renderContext)"/>
         </on-exit>
     </view-state>
 
     <view-state id="searchAndReplaceSecondStep" model="searchAndReplace">
         <binder>
             <binding property="listNodesToBeUpdated"/>
+            <binding property="selectAll"/>
         </binder>
         <transition on="searchAndReplacePrevious" to="searchAndReplaceFirstStep" validate="false"/>
         <transition on="searchAndReplaceGoToThirdStep" to="searchAndReplaceThirdStep"/>
