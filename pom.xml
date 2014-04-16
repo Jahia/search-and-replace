@@ -112,6 +112,7 @@
           <instructions>
             <Jahia-Depends>default,siteSettings</Jahia-Depends>
             <Import-Package>javax.jcr.query,${jahia.plugin.projectPackageImport},*</Import-Package>
+            <Export-Package>{local-packages}</Export-Package>
           </instructions>
         </configuration>
       </plugin>

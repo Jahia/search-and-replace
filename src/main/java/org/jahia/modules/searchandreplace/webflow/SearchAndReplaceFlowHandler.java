@@ -1,17 +1,21 @@
 package org.jahia.modules.searchandreplace.webflow;
 
+import org.jahia.modules.searchandreplace.GlobalReplaceService;
 import org.jahia.modules.searchandreplace.webflow.model.SearchAndReplace;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRSessionWrapper;
 import org.jahia.services.render.RenderContext;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.jcr.*;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
+import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -25,6 +29,13 @@ public class SearchAndReplaceFlowHandler implements Serializable {
     private static final long serialVersionUID = -16287862741718967L;
 
     private static final String BUNDLE = "resources.jahia-global-replace";
+
+    @Autowired
+    private transient GlobalReplaceService replaceService;
+
+    public void setReplaceService(GlobalReplaceService replaceService) {
+        this.replaceService = replaceService;
+    }
 
     public SearchAndReplace initSearchAndReplace() {
         SearchAndReplace searchAndReplace = new SearchAndReplace();
@@ -75,47 +86,50 @@ public class SearchAndReplaceFlowHandler implements Serializable {
     public void replaceThisNode(SearchAndReplace searchAndReplace, RenderContext renderContext) {
         String nodeID = searchAndReplace.getCurrentNodeInThirdStep();
 
-        try{
+        try
+        {
+            //Getting JCR Session
             JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
+
+            //Building List of NodesId to be replaced
             JCRNodeWrapper node = session.getNodeByUUID(nodeID);
-            PropertyIterator pi = node.getProperties();
-            while (pi.hasNext()){
-                Property next = pi.nextProperty();
-                if(next.getType() == PropertyType.STRING){
-                    if(next.getString().contains(searchAndReplace.getTermToReplace())){
-                        next.setValue(next.getString().replace(searchAndReplace.getTermToReplace(), searchAndReplace.getReplacementTerm()));
-                        searchAndReplace.getListNodesToBeUpdated().remove(searchAndReplace.getListNodesToBeUpdated().indexOf(nodeID));
-                        searchAndReplace.addUUIDToListNodesUpdateSuccess(nodeID);
-                    }
-                }
-            }
-            session.save();
-        }catch (RepositoryException e){
-            searchAndReplace.addUUIDToListNodesUpdateFail(nodeID);
+            List<String> uuids = new ArrayList<String>();
+            uuids.add(node.getIdentifier());
+
+            //Calling Replace Service
+            Map<GlobalReplaceService.ReplaceStatus,List<String>> replaceResult = replaceService.replaceByUuid(uuids,searchAndReplace.getTermToReplace(), searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH,session);
+
+            //Getting Failed Replaced Nodes
+            searchAndReplace.setListNodesUpdateFail(replaceResult.get(GlobalReplaceService.ReplaceStatus.FAILED));
+
+            //Getting Successfully Replaced Nodes
+            searchAndReplace.setListNodesUpdateSuccess(replaceResult.get(GlobalReplaceService.ReplaceStatus.SUCCESS));
+        }
+        catch (RepositoryException e)
+        {
             logger.error(e.getMessage(), e);
         }
     }
 
     public void replaceAllNodes(SearchAndReplace searchAndReplace, RenderContext renderContext) {
-        for(String nodeID : searchAndReplace.getListNodesToBeUpdated()){
-            try{
-                JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
-                JCRNodeWrapper node = session.getNodeByUUID(nodeID);
-                PropertyIterator pi = node.getProperties();
-                while (pi.hasNext()){
-                    Property next = pi.nextProperty();
-                    if(next.getType() == PropertyType.STRING){
-                        if(next.getString().contains(searchAndReplace.getTermToReplace())){
-                            next.setValue(next.getString().replace(searchAndReplace.getTermToReplace(), searchAndReplace.getReplacementTerm()));
-                            searchAndReplace.addUUIDToListNodesUpdateSuccess(nodeID);
-                        }
-                    }
-                }
-                session.save();
-            }catch (RepositoryException e){
-                searchAndReplace.addUUIDToListNodesUpdateFail(nodeID);
-                logger.error(e.getMessage(), e);
-            }
+        try
+        {
+            //Getting session
+            JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
+
+
+            //Calling Replace Service
+            Map<GlobalReplaceService.ReplaceStatus,List<String>> replaceResult = replaceService.replaceByUuid(searchAndReplace.getListNodesToBeUpdated(), searchAndReplace.getTermToReplace(), searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, session);
+
+            //Getting Failed Replaced Nodes
+            searchAndReplace.setListNodesUpdateFail(replaceResult.get(GlobalReplaceService.ReplaceStatus.FAILED));
+
+            //Getting Successfully Replaced Nodes
+            searchAndReplace.setListNodesUpdateSuccess(replaceResult.get(GlobalReplaceService.ReplaceStatus.SUCCESS));
+        }
+        catch(RepositoryException e)
+        {
+            logger.error("replaceAllNodes() - Failed replacing given nodes ",e);
         }
         searchAndReplace.getListNodesToBeUpdated().clear();
     }
