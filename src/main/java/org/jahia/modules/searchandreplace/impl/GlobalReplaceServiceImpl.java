@@ -4,13 +4,14 @@ import com.google.common.collect.Lists;
 import org.jahia.modules.searchandreplace.GlobalReplaceService;
 import org.jahia.modules.searchandreplace.SearchResult;
 import org.jahia.services.content.JCRNodeWrapper;
-import org.jahia.services.content.JCRPropertyWrapper;
 import org.jahia.services.content.JCRSessionWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.commons.lang.StringUtils;
 
-import javax.jcr.*;
+import javax.jcr.Property;
+import javax.jcr.PropertyType;
+import javax.jcr.RepositoryException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.regex.Pattern;
 public class GlobalReplaceServiceImpl implements GlobalReplaceService
 {
     private static Logger logger = LoggerFactory.getLogger(GlobalReplaceServiceImpl.class);
+
     public Map<ReplaceStatus,List<String>> replaceByUuid(List<String> nodesUuid, String termToReplace, String replacementTerm, SearchMode searchMode, JCRSessionWrapper session)
     {
         Map<ReplaceStatus,List<String>> resultList = new HashMap<ReplaceStatus,List<String>>();
@@ -43,6 +45,10 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService
     }
 
     @Override
+    /**
+     * Replace in nodes function
+     */
+
     public Map<ReplaceStatus, List<String>> replaceInNodes(List<JCRNodeWrapper> nodes, String termToReplace, String replacementTerm, SearchMode searchMode, JCRSessionWrapper session)
     {
         Map<ReplaceStatus,List<String>> resultList = new HashMap<ReplaceStatus,List<String>>();
@@ -68,8 +74,7 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService
     }
 
     @Override
-    public List<SearchResult> getReplaceableProperties(List<String> nodesUuid, String termToReplace, SearchMode searchMode, JCRSessionWrapper session)
-    {
+    public List<SearchResult> getReplaceableProperties(List<String> nodesUuid, String termToReplace, SearchMode searchMode, JCRSessionWrapper session) {
         return null;
     }
 
@@ -92,16 +97,16 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService
 
             if(!node.isLocked())
             {
-                //Building Regex Pattern
-                Pattern p = Pattern.compile(termToReplace);
-
                 for(Property nextProperty : propertiesList)
                 {
-                    //Setting Regex Matcher
-                    Matcher m = p.matcher(nextProperty.getString());
+
                     logger.debug("replaceNode() - Scanning : " + nextProperty.getName());
                     if(!nextProperty.getDefinition().isProtected() && nextProperty.getType() == PropertyType.STRING)
                     {
+                        //Building Regex Matcher
+                        Pattern p = Pattern.compile("\\b"+termToReplace+"\\b");
+                        Matcher m = p.matcher(nextProperty.getString());
+
                         //Apply the replacement
                         switch (searchMode)
                         {

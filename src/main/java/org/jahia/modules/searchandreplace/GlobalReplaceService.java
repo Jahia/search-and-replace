@@ -3,7 +3,6 @@ package org.jahia.modules.searchandreplace;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRSessionWrapper;
 
-import javax.jcr.RepositoryException;
 import java.util.List;
 import java.util.Map;
 

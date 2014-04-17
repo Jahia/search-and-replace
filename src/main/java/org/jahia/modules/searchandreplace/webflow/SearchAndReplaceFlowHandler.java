@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.jcr.*;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
-import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,10 +31,6 @@ public class SearchAndReplaceFlowHandler implements Serializable {
 
     @Autowired
     private transient GlobalReplaceService replaceService;
-
-    public void setReplaceService(GlobalReplaceService replaceService) {
-        this.replaceService = replaceService;
-    }
 
     public SearchAndReplace initSearchAndReplace() {
         SearchAndReplace searchAndReplace = new SearchAndReplace();
@@ -86,8 +81,7 @@ public class SearchAndReplaceFlowHandler implements Serializable {
     public void replaceThisNode(SearchAndReplace searchAndReplace, RenderContext renderContext) {
         String nodeID = searchAndReplace.getCurrentNodeInThirdStep();
 
-        try
-        {
+        try{
             //Getting JCR Session
             JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
 
@@ -104,19 +98,15 @@ public class SearchAndReplaceFlowHandler implements Serializable {
 
             //Getting Successfully Replaced Nodes
             searchAndReplace.setListNodesUpdateSuccess(replaceResult.get(GlobalReplaceService.ReplaceStatus.SUCCESS));
-        }
-        catch (RepositoryException e)
-        {
-            logger.error(e.getMessage(), e);
+        }catch (RepositoryException e){
+            logger.error("replaceThisNodes() - Failed replacing the node ", e);
         }
     }
 
     public void replaceAllNodes(SearchAndReplace searchAndReplace, RenderContext renderContext) {
-        try
-        {
+        try{
             //Getting session
             JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
-
 
             //Calling Replace Service
             Map<GlobalReplaceService.ReplaceStatus,List<String>> replaceResult = replaceService.replaceByUuid(searchAndReplace.getListNodesToBeUpdated(), searchAndReplace.getTermToReplace(), searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, session);
@@ -126,11 +116,13 @@ public class SearchAndReplaceFlowHandler implements Serializable {
 
             //Getting Successfully Replaced Nodes
             searchAndReplace.setListNodesUpdateSuccess(replaceResult.get(GlobalReplaceService.ReplaceStatus.SUCCESS));
-        }
-        catch(RepositoryException e)
-        {
+        }catch (RepositoryException e){
             logger.error("replaceAllNodes() - Failed replacing given nodes ",e);
         }
         searchAndReplace.getListNodesToBeUpdated().clear();
+    }
+
+    public void setReplaceService(GlobalReplaceService replaceService) {
+        this.replaceService = replaceService;
     }
 }
