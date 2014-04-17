@@ -19,9 +19,11 @@
 <%--@elvariable id="workspace" type="java.lang.String"--%>
 <%--@elvariable id="searchAndReplace" type="org.jahia.modules.searchandreplace.webflow.model.SearchAndReplace"--%>
 
-<template:addResources type="javascript" resources="jquery.min.js,jquery-ui.min.js,admin-bootstrap.js"/>
+<template:addResources type="javascript" resources="jquery.min.js,jquery-ui.min.js,jquery.blockUI.js,admin-bootstrap.js,workInProgress.js"/>
 <template:addResources type="javascript" resources="datatables/jquery.dataTables.js,i18n/jquery.dataTables-${currentResource.locale}.js,datatables/dataTables.bootstrap-ext.js"/>
 <template:addResources type="javascript" resources="jquery.highlight.js"/>
+
+<fmt:message key="label.workInProgressTitle" var="i18nWaiting"/><c:set var="i18nWaiting" value="${functions:escapeJavaScript(i18nWaiting)}"/>
 
 <template:addResources type="inlinejavascript">
     <script type="text/javascript">
@@ -189,7 +191,7 @@
         </c:if>
     </div>
 
-    <form:form action="${flowExecutionUrl}" method="post" modelAttribute="searchAndReplace">
+    <form:form action="${flowExecutionUrl}" method="post" modelAttribute="searchAndReplace" onsubmit="workInProgress('${i18nWaiting}')">
         <div class="control-group">
             <button class="btn btn-primary" name="_eventId_searchAndReplaceCancel">
                 <fmt:message key="jnt_searchAndReplace.otherResearch"/>
