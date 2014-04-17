@@ -18,6 +18,9 @@
 <%--@elvariable id="workspace" type="java.lang.String"--%>
 <%--@elvariable id="searchAndReplace" type="org.jahia.modules.searchandreplace.webflow.model.SearchAndReplace"--%>
 
+<template:addResources type="javascript" resources="jquery.min.js,jquery.blockUI.js,workInProgress.js"/>
+<fmt:message key="label.workInProgressTitle" var="i18nWaiting"/><c:set var="i18nWaiting" value="${functions:escapeJavaScript(i18nWaiting)}"/>
+
 <template:addResources type="inlinejavascript">
     <script type="text/javascript">
         $(document).ready(function(){
@@ -36,7 +39,7 @@
 </template:addResources>
 
 <h1>Search And Replace</h1>
-<form:form action="${flowExecutionUrl}" method="post" cssClass="box-1" modelAttribute="searchAndReplace">
+<form:form action="${flowExecutionUrl}" method="post" cssClass="box-1" modelAttribute="searchAndReplace" onsubmit="workInProgress('${i18nWaiting}')">
     <h2>Search</h2>
     <div class="input-append">
         <form:input path="termToReplace" cssClass="span6"/>
