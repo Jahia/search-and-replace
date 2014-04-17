@@ -47,6 +47,10 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService
     }
 
     @Override
+    /**
+     * Replace in nodes function
+     */
+
     public Map<ReplaceStatus, List<String>> replaceInNodes(List<JCRNodeWrapper> nodes, String termToReplace, String replacementTerm, SearchMode searchMode, JCRSessionWrapper session)
     {
         Map<ReplaceStatus,List<String>> resultList = new HashMap<ReplaceStatus,List<String>>();
