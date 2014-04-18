@@ -124,6 +124,9 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService
         List<Property> propertiesList;
         Map<String, String> propertiesMap = new HashMap<String, String>();
 
+        //Building Regex Pattern
+        Pattern p = Pattern.compile(termToReplace);
+
         try
         {
             for(String nodeUuid : nodesUuid)
@@ -133,9 +136,6 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService
                 propertiesList = Lists.newArrayList(nodeToTest.getProperties());
                 logger.debug("getReplaceableProperties() - Node : " + nodeToTest.getName());
                 logger.debug("getReplaceableProperties() - Term To Replace : " + termToReplace);
-
-                //Building Regex Pattern
-                Pattern p = Pattern.compile(termToReplace);
 
                 for(Property nextProperty : propertiesList)
                 {
