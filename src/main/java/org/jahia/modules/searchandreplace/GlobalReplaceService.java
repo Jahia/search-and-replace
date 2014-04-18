@@ -36,7 +36,19 @@ public interface GlobalReplaceService
      * @param searchMode mandatory parameter defining the term search algorithm (possible values found in the searchModes Enum)
      * @param session the session that will be used to access the nodes
      */
-    public Map<ReplaceStatus,List<String>> replaceInNodes(List<JCRNodeWrapper> nodes, String termToReplace, String replacementTerm, SearchMode searchMode, JCRSessionWrapper session);
+    public Map<ReplaceStatus,List<String>> replaceByNodes(List<JCRNodeWrapper> nodes, String termToReplace, String replacementTerm, SearchMode searchMode, JCRSessionWrapper session);
+
+    /**
+     * Jahia Node Properties Replace Function (By Nodes list)
+     * @author Rizak
+     *
+     * @param searchResults The nodes list corresponding to the nodes on which apply the term replacement
+     * @param termToReplace madatory parameter
+     * @param replacementTerm mandatory parameter
+     * @param searchMode mandatory parameter defining the term search algorithm (possible values found in the searchModes Enum)
+     * @param session the session that will be used to access the nodes
+     */
+    public Map<ReplaceStatus,List<String>> replaceBySearchResult(List<SearchResult> searchResults, String termToReplace, String replacementTerm, SearchMode searchMode, JCRSessionWrapper session);
 
     /**
      * Jahia Node Properties Replace Function (By Nodes list)
@@ -47,5 +59,5 @@ public interface GlobalReplaceService
      * @param searchMode mandatory parameter defining the term search algorithm (possible values found in the searchModes Enum)
      * @param session the session that will be used to access the nodes
      */
-    public List<SearchResult> getReplaceableProperties(List<String> nodesUuid, String termToReplace, SearchMode searchMode, JCRSessionWrapper session);
+    public Map<ReplaceStatus,List<SearchResult>> getReplaceableProperties(List<String> nodesUuid, String termToReplace, SearchMode searchMode, JCRSessionWrapper session);
 }

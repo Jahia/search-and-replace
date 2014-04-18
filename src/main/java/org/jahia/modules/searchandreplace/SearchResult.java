@@ -11,7 +11,7 @@ public class SearchResult implements Serializable
     private String nodeUuid;
     private Map<String,String> replaceableProperties;
 
-    public void SearchResult(String nodeUuid, Map<String,String> replaceableProperties)
+    public SearchResult(String nodeUuid, Map<String,String> replaceableProperties)
     {
         this.replaceableProperties = replaceableProperties;
         this.nodeUuid = nodeUuid;
