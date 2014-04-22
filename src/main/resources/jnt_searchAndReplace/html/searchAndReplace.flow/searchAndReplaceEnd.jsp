@@ -228,7 +228,7 @@
                                                 ${properties.key}
                                             </td>
                                             <td>
-                                                ${properties.value}
+                                                ${node.properties[properties.key].string}
                                             </td>
                                         </tr>
                                     </c:forEach>
@@ -272,7 +272,7 @@
                                             ${properties.key}
                                         </td>
                                         <td>
-                                            ${properties.value}
+                                            ${node.properties[properties.key].string}
                                         </td>
                                     </tr>
                                 </c:forEach>
@@ -316,7 +316,7 @@
                                             ${properties.key}
                                         </td>
                                         <td>
-                                            ${properties.value}
+                                            ${node.properties[properties.key].string}
                                         </td>
                                     </tr>
                                 </c:forEach>
