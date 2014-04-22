@@ -37,4 +37,10 @@ public class SearchResult implements Serializable
     {
         this.getReplaceableProperties().put(propertyName,propertyValue);
     }
+
+    @Override
+    protected SearchResult clone()
+    {
+        return new SearchResult(this.getNodeUuid(),this.getReplaceableProperties());
+    }
 }
