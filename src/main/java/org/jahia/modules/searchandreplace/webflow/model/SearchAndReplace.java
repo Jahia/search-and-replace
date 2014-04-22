@@ -1,6 +1,7 @@
 package org.jahia.modules.searchandreplace.webflow.model;
 
 import org.apache.commons.lang.StringUtils;
+import org.jahia.modules.searchandreplace.SearchResult;
 import org.jahia.utils.i18n.Messages;
 import org.slf4j.Logger;
 import org.springframework.binding.message.MessageBuilder;
@@ -30,11 +31,11 @@ public class SearchAndReplace implements Serializable {
     private String replacementTerm;
     private String currentNodeInThirdStep;
     private boolean selectAll;
-    private List<String> listNodes = new ArrayList<String>();
     private List<String> listNodesToBeUpdated = new ArrayList<String>();
     private List<String> listNodesUpdateSuccess = new ArrayList<String>();
     private List<String> listNodesUpdateFail = new ArrayList<String>();
     private List<String> listNodesSkipped = new ArrayList<String>();
+    private List<SearchResult> searchResultList;
 
     public SearchAndReplace() {
     }
@@ -66,7 +67,9 @@ public class SearchAndReplace implements Serializable {
 
         if (selectAll == true) {
             listNodesToBeUpdated.clear();
-            listNodesToBeUpdated = listNodes;
+            for(SearchResult node : searchResultList){
+                listNodesToBeUpdated.add(node.getNodeUuid());
+            }
         }
 
         return valid;
@@ -114,10 +117,6 @@ public class SearchAndReplace implements Serializable {
         this.selectAll = selectAll;
     }
 
-    public void setListNodes(List<String> listNodes) {
-        this.listNodes = listNodes;
-    }
-
     public void setListNodesToBeUpdated(List<String> listNodesToBeUpdated) {
         this.listNodesToBeUpdated = listNodesToBeUpdated;
     }
@@ -158,10 +157,6 @@ public class SearchAndReplace implements Serializable {
         return selectAll;
     }
 
-    public List<String> getListNodes() {
-        return listNodes;
-    }
-
     public List<String> getListNodesToBeUpdated() {
         return listNodesToBeUpdated;
     }
@@ -178,22 +173,12 @@ public class SearchAndReplace implements Serializable {
         return listNodesSkipped;
     }
 
-    public void addUUIDToListNodes(String uuid){
-        if(!listNodes.contains(uuid)){
-            listNodes.add(uuid);
-        }
+    public List<SearchResult> getSearchResultList() {
+        return searchResultList;
     }
 
-    public void addUUIDToListNodesUpdateSuccess(String uuid){
-        if(!listNodesUpdateSuccess.contains(uuid)){
-            listNodesUpdateSuccess.add(uuid);
-        }
-    }
-
-    public void addUUIDToListNodesUpdateFail(String uuid){
-        if(!listNodesUpdateFail.contains(uuid)){
-            listNodesUpdateFail.add(uuid);
-        }
+    public void setSearchResultList(List<SearchResult> searchResultList) {
+        this.searchResultList = searchResultList;
     }
 
     public void addUUIDToListNodesSkipped(String uuid){

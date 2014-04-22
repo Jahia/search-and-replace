@@ -1,6 +1,7 @@
 package org.jahia.modules.searchandreplace.webflow;
 
 import org.jahia.modules.searchandreplace.GlobalReplaceService;
+import org.jahia.modules.searchandreplace.SearchResult;
 import org.jahia.modules.searchandreplace.webflow.model.SearchAndReplace;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRSessionWrapper;
@@ -39,6 +40,7 @@ public class SearchAndReplaceFlowHandler implements Serializable {
 
     public void getNodesContains(SearchAndReplace searchAndReplace, RenderContext renderContext){
         String sitePath = renderContext.getSite().getPath();
+        List<String> listNodes = new ArrayList<String>();
 
         try{
             JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
@@ -48,7 +50,7 @@ public class SearchAndReplaceFlowHandler implements Serializable {
             NodeIterator ni = q.execute().getNodes();
             while (ni.hasNext()) {
                 JCRNodeWrapper next = (JCRNodeWrapper) ni.next();
-                PropertyIterator pi = next.getProperties();
+                /*PropertyIterator pi = next.getProperties();
                 while (pi.hasNext()){
                     Property nextProperty = pi.nextProperty();
                     if(nextProperty.getType() == PropertyType.STRING){
@@ -56,8 +58,10 @@ public class SearchAndReplaceFlowHandler implements Serializable {
                             searchAndReplace.addUUIDToListNodes(next.getIdentifier());
                         }
                     }
-                }
+                }*/
+                listNodes.add(next.getIdentifier());
             }
+            searchAndReplace.setSearchResultList(replaceService.getReplaceableProperties(listNodes, searchAndReplace.getTermToReplace(), GlobalReplaceService.SearchMode.EXACT_MATCH, session).get(GlobalReplaceService.ReplaceStatus.SUCCESS));
         }catch(RepositoryException e){
             logger.error(e.getMessage(), e);
         }

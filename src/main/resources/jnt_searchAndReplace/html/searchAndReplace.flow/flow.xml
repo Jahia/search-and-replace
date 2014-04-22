@@ -23,6 +23,7 @@
         </binder>
         <transition on="searchAndReplacePrevious" to="searchAndReplaceFirstStep" validate="false"/>
         <transition on="searchAndReplaceGoToThirdStep" to="searchAndReplaceThirdStep"/>
+        <!--<transition on="" to=""/>-->
     </view-state>
 
     <view-state id="searchAndReplaceThirdStep" model="searchAndReplace">

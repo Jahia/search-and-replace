@@ -68,7 +68,34 @@
                 <div class="box-1">
                     <h1><fmt:message key="jnt_searchAndReplace.previewOfModification"/>&nbsp;${functions:abbreviate(node.displayableName,100,120,'...')}</h1>
                     <div class="preview">
-                        <template:module node="${node}"/>
+                        <c:forEach items="${searchAndReplace.searchResultList}" var="searchResultNode">
+                            <c:if test="${searchResultNode.nodeUuid eq id}">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                <fmt:message key="label.properties"/>
+                                            </th>
+                                            <th>
+                                                <fmt:message key="label.value"/>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <c:forEach items="${searchResultNode.replaceableProperties}" var="properties">
+                                            <tr>
+                                                <td class="span2">
+                                                    ${properties.key}
+                                                </td>
+                                                <td>
+                                                    ${properties.value}
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
+                                    </tbody>
+                                </table>
+                            </c:if>
+                        </c:forEach>
                     </div>
                 </div>
             </c:if>

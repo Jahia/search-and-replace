@@ -179,14 +179,14 @@
             </tr>
         </thead>
         <tbody>
-            <c:forEach items="${searchAndReplace.listNodes}" var="id">
-                <jcr:node var="node" uuid="${id}"/>
+            <c:forEach items="${searchAndReplace.searchResultList}" var="searchResultNode">
+                <jcr:node var="node" uuid="${searchResultNode.nodeUuid}"/>
                 <tr>
                     <td>
-                        <form:checkbox path="listNodesToBeUpdated" value="${id}" cssClass="select"/>
+                        <form:checkbox path="listNodesToBeUpdated" value="${searchResultNode.nodeUuid}" cssClass="select"/>
                     </td>
                     <td>
-                        <a href="#modal_${id}" role="button" data-toggle="modal" style="text-decoration: none;">
+                        <a href="#modal_${searchResultNode.nodeUuid}" role="button" data-toggle="modal" style="text-decoration: none;">
                             ${functions:abbreviate(node.displayableName,100,120,'...')}
                         </a>
                     </td>
@@ -215,15 +215,38 @@
     </div>
 </form:form>
 
-<c:forEach items="${searchAndReplace.listNodes}" var="id">
-    <jcr:node var="node" uuid="${id}"/>
-    <div class="modal hide fade" id="modal_${id}" tabindex="-1" role="dialog" aria-labelledby="modalTitle_${id}" aria-hidden="true">
+<c:forEach items="${searchAndReplace.searchResultList}" var="searchResultNode">
+    <jcr:node var="node" uuid="${searchResultNode.nodeUuid}"/>
+    <div class="modal hide fade" id="modal_${searchResultNode.nodeUuid}" tabindex="-1" role="dialog" aria-labelledby="modalTitle_${searchResultNode.nodeUuid}" aria-hidden="true">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h3 id="modalTitle_${id}">${functions:abbreviate(node.displayableName,100,120,'...')}</h3>
+            <h3 id="modalTitle_${searchResultNode.nodeUuid}">${functions:abbreviate(node.displayableName,100,120,'...')}</h3>
         </div>
         <div class="modal-body preview">
-            <template:module node="${node}"/>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="span2">
+                            <fmt:message key="label.properties"/>
+                        </th>
+                        <th>
+                            <fmt:message key="label.value"/>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:forEach items="${searchResultNode.replaceableProperties}" var="properties">
+                        <tr>
+                            <td>
+                                ${properties.key}
+                            </td>
+                            <td>
+                                ${properties.value}
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
         </div>
         <div class="modal-footer">
             <a href="#" class="btn btn-primary" data-dismiss="modal">OK</a>
