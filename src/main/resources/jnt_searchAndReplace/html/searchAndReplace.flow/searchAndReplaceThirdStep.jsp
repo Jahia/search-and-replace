@@ -47,9 +47,13 @@
 <div>
     <h1>Search And Replace</h1>
     <form:form action="${flowExecutionUrl}" method="post" cssClass="well form-horizontal" modelAttribute="searchAndReplace" onsubmit="workInProgress('${i18nWaiting}')">
-        <div class="alert alert-info">
-            <h4><fmt:message key="jnt_searchAndReplace.termToReplace"/></h4>
-            ${searchAndReplace.termToReplace}
+        <div class="control-group">
+            <form:label path="termToReplace" cssClass="control-label">
+                <fmt:message key="jnt_searchAndReplace.termToReplace"/>
+            </form:label>
+            <div class="controls">
+                <form:input path="termToReplace" value="${searchAndReplace.replacementTerm}" disabled="true"/>
+            </div>
         </div>
         <div class="control-group">
             <form:label path="replacementTerm" cssClass="control-label">
@@ -68,7 +72,34 @@
                 <div class="box-1">
                     <h1><fmt:message key="jnt_searchAndReplace.previewOfModification"/>&nbsp;${functions:abbreviate(node.displayableName,100,120,'...')}</h1>
                     <div class="preview">
-                        <template:module node="${node}"/>
+                        <c:forEach items="${searchAndReplace.searchResultList}" var="searchResultNode">
+                            <c:if test="${searchResultNode.nodeUuid eq id}">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                <fmt:message key="label.properties"/>
+                                            </th>
+                                            <th>
+                                                <fmt:message key="label.value"/>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <c:forEach items="${searchResultNode.replaceableProperties}" var="properties">
+                                            <tr>
+                                                <td class="span2">
+                                                    ${properties.key}
+                                                </td>
+                                                <td>
+                                                    ${properties.value}
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
+                                    </tbody>
+                                </table>
+                            </c:if>
+                        </c:forEach>
                     </div>
                 </div>
             </c:if>

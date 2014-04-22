@@ -1,14 +1,18 @@
 package org.jahia.modules.searchandreplace.webflow;
 
 import org.jahia.modules.searchandreplace.GlobalReplaceService;
+import org.jahia.modules.searchandreplace.SearchResult;
 import org.jahia.modules.searchandreplace.webflow.model.SearchAndReplace;
+import org.jahia.services.content.JCRNodeIteratorWrapper;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRSessionWrapper;
+import org.jahia.services.content.nodetypes.NodeTypeRegistry;
 import org.jahia.services.render.RenderContext;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.jcr.*;
+import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import java.io.Serializable;
@@ -38,26 +42,25 @@ public class SearchAndReplaceFlowHandler implements Serializable {
     }
 
     public void getNodesContains(SearchAndReplace searchAndReplace, RenderContext renderContext){
+        List<String> listNodes = new ArrayList<String>();
         String sitePath = renderContext.getSite().getPath();
+        String subStringType = "";
+
+        if(!searchAndReplace.getNodeType().isEmpty()){
+            subStringType = "AND ([jcr:primaryType] LIKE '" + searchAndReplace.getNodeType() + "')";
+        }
 
         try{
             JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
             QueryManager qm = session.getWorkspace().getQueryManager();
-            Query q = qm.createQuery("SELECT * FROM [nt:base] AS result WHERE ISDESCENDANTNODE(result, '" + sitePath + "') AND CONTAINS(result.*,'" + searchAndReplace.getTermToReplace() + "') AND ([jcr:primaryType] NOT LIKE 'jnt:file' OR [jcr:primaryType] NOT LIKE 'jnt:resource')", Query.JCR_SQL2);
+            Query q = qm.createQuery("SELECT * FROM [nt:base] AS result WHERE ISDESCENDANTNODE(result, '" + sitePath + "') AND CONTAINS(result.*,'" + searchAndReplace.getTermToReplace() + "') AND ([jcr:primaryType] NOT LIKE 'jnt:file' OR [jcr:primaryType] NOT LIKE 'jnt:resource')" + subStringType, Query.JCR_SQL2);
             q.setLimit(1000);
             NodeIterator ni = q.execute().getNodes();
             while (ni.hasNext()) {
                 JCRNodeWrapper next = (JCRNodeWrapper) ni.next();
-                PropertyIterator pi = next.getProperties();
-                while (pi.hasNext()){
-                    Property nextProperty = pi.nextProperty();
-                    if(nextProperty.getType() == PropertyType.STRING){
-                        if(nextProperty.getString().contains(searchAndReplace.getTermToReplace())){
-                            searchAndReplace.addUUIDToListNodes(next.getIdentifier());
-                        }
-                    }
-                }
+                listNodes.add(next.getIdentifier());
             }
+            searchAndReplace.setSearchResultList(replaceService.getReplaceableProperties(listNodes, searchAndReplace.getTermToReplace(), GlobalReplaceService.SearchMode.EXACT_MATCH, session).get(GlobalReplaceService.ReplaceStatus.SUCCESS));
         }catch(RepositoryException e){
             logger.error(e.getMessage(), e);
         }
@@ -120,6 +123,21 @@ public class SearchAndReplaceFlowHandler implements Serializable {
             logger.error("replaceAllNodes() - Failed replacing given nodes ",e);
         }
         searchAndReplace.getListNodesToBeUpdated().clear();
+    }
+
+    public void getNodesTypesList(SearchAndReplace searchAndReplace, RenderContext renderContext) {
+        searchAndReplace.getListNodesTypes().clear();
+        for(SearchResult searchResult : searchAndReplace.getSearchResultList()){
+            try{
+                JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
+                JCRNodeWrapper node = session.getNodeByIdentifier(searchResult.getNodeUuid());
+                if(!searchAndReplace.getListNodesTypes().contains(node.getPrimaryNodeTypeName())) {
+                    searchAndReplace.getListNodesTypes().add(node.getPrimaryNodeTypeName());
+                }
+            }catch (RepositoryException e){
+                logger.error(e.getMessage(), e);
+            }
+        }
     }
 
     public void setReplaceService(GlobalReplaceService replaceService) {

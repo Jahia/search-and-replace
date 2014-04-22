@@ -87,7 +87,7 @@
                                     <tr>
                                         <td>
                                             <a href="#modal_${id}" role="button" data-toggle="modal" style="text-decoration: none;">
-                                                    ${functions:abbreviate(node.displayableName,100,120,'...')}
+                                                ${functions:abbreviate(node.displayableName,100,120,'...')}
                                             </a>
                                         </td>
                                         <td>
@@ -199,49 +199,136 @@
         </div>
     </form:form>
 
-    <c:forEach items="${searchAndReplace.listNodesUpdateSuccess}" var="id">
-        <jcr:node var="node" uuid="${id}"/>
-        <div class="modal hide fade" id="modal_${id}" tabindex="-1" role="dialog" aria-labelledby="modalTitle_${id}" aria-hidden="true">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h3 id="modalTitle_${id}">${functions:abbreviate(node.displayableName,100,120,'...')}</h3>
+    <c:if test="${fn:length(searchAndReplace.listNodesUpdateSuccess) gt 0}">
+        <c:forEach items="${searchAndReplace.listNodesUpdateSuccess}" var="id">
+            <jcr:node var="node" uuid="${id}"/>
+            <div class="modal hide fade" id="modal_${id}" tabindex="-1" role="dialog" aria-labelledby="modalTitle_${id}" aria-hidden="true">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3 id="modalTitle_${id}">${functions:abbreviate(node.displayableName,100,120,'...')}</h3>
+                </div>
+                <div class="modal-body preview">
+                    <c:forEach items="${searchAndReplace.searchResultList}" var="searchResultNode">
+                        <c:if test="${searchResultNode.nodeUuid eq id}">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="span2">
+                                            <fmt:message key="label.properties"/>
+                                        </th>
+                                        <th>
+                                            <fmt:message key="label.value"/>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:forEach items="${searchResultNode.replaceableProperties}" var="properties">
+                                        <tr>
+                                            <td>
+                                                ${properties.key}
+                                            </td>
+                                            <td>
+                                                ${node.properties[properties.key].string}
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </c:if>
+                    </c:forEach>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-primary" data-dismiss="modal">OK</a>
+                </div>
             </div>
-            <div class="modal-body preview">
-                <template:module node="${node}"/>
+        </c:forEach>
+    </c:if>
+    <c:if test="${fn:length(searchAndReplace.listNodesSkipped) gt 0}">
+        <c:forEach items="${searchAndReplace.listNodesSkipped}" var="id">
+            <jcr:node var="node" uuid="${id}"/>
+            <div class="modal hide fade" id="modal_${id}" tabindex="-1" role="dialog" aria-labelledby="modalTitle_${id}" aria-hidden="true">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3 id="modalTitle_${id}">${functions:abbreviate(node.displayableName,100,120,'...')}</h3>
+                </div>
+                <div class="modal-body preview">
+                    <c:forEach items="${searchAndReplace.searchResultList}" var="searchResultNode">
+                        <c:if test="${searchResultNode.nodeUuid eq id}">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th class="span2">
+                                        <fmt:message key="label.properties"/>
+                                    </th>
+                                    <th>
+                                        <fmt:message key="label.value"/>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <c:forEach items="${searchResultNode.replaceableProperties}" var="properties">
+                                    <tr>
+                                        <td>
+                                            ${properties.key}
+                                        </td>
+                                        <td>
+                                            ${node.properties[properties.key].string}
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                                </tbody>
+                            </table>
+                        </c:if>
+                    </c:forEach>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-primary" data-dismiss="modal">OK</a>
+                </div>
             </div>
-            <div class="modal-footer">
-                <a href="#" class="btn btn-primary" data-dismiss="modal">OK</a>
+        </c:forEach>
+    </c:if>
+    <c:if test="${fn:length(searchAndReplace.listNodesUpdateFail) gt 0}">
+        <c:forEach items="${searchAndReplace.listNodesUpdateFail}" var="id">
+            <jcr:node var="node" uuid="${id}"/>
+            <div class="modal hide fade" id="modal_${id}" tabindex="-1" role="dialog" aria-labelledby="modalTitle_${id}" aria-hidden="true">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3 id="modalTitle_${id}">${functions:abbreviate(node.displayableName,100,120,'...')}</h3>
+                </div>
+                <div class="modal-body preview">
+                    <c:forEach items="${searchAndReplace.searchResultList}" var="searchResultNode">
+                        <c:if test="${searchResultNode.nodeUuid eq id}">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th class="span2">
+                                        <fmt:message key="label.properties"/>
+                                    </th>
+                                    <th>
+                                        <fmt:message key="label.value"/>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <c:forEach items="${searchResultNode.replaceableProperties}" var="properties">
+                                    <tr>
+                                        <td>
+                                            ${properties.key}
+                                        </td>
+                                        <td>
+                                            ${node.properties[properties.key].string}
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                                </tbody>
+                            </table>
+                        </c:if>
+                    </c:forEach>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-primary" data-dismiss="modal">OK</a>
+                </div>
             </div>
-        </div>
-    </c:forEach>
-    <c:forEach items="${searchAndReplace.listNodesSkipped}" var="id">
-        <jcr:node var="node" uuid="${id}"/>
-        <div class="modal hide fade" id="modal_${id}" tabindex="-1" role="dialog" aria-labelledby="modalTitle_${id}" aria-hidden="true">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h3 id="modalTitle_${id}">${functions:abbreviate(node.displayableName,100,120,'...')}</h3>
-            </div>
-            <div class="modal-body preview">
-                <template:module node="${node}"/>
-            </div>
-            <div class="modal-footer">
-                <a href="#" class="btn btn-primary" data-dismiss="modal">OK</a>
-            </div>
-        </div>
-    </c:forEach>
-    <c:forEach items="${searchAndReplace.listNodesUpdateFail}" var="id">
-        <jcr:node var="node" uuid="${id}"/>
-        <div class="modal hide fade" id="modal_${id}" tabindex="-1" role="dialog" aria-labelledby="modalTitle_${id}" aria-hidden="true">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h3 id="modalTitle_${id}">${functions:abbreviate(node.displayableName,100,120,'...')}</h3>
-            </div>
-            <div class="modal-body preview">
-                <template:module node="${node}"/>
-            </div>
-            <div class="modal-footer">
-                <a href="#" class="btn btn-primary" data-dismiss="modal">OK</a>
-            </div>
-        </div>
-    </c:forEach>
+        </c:forEach>
+    </c:if>
 </div>

@@ -11,18 +11,21 @@
             <binding property="termToReplace"/>
         </binder>
         <transition on="searchAndReplaceGoToSecondStep" to="searchAndReplaceSecondStep"/>
-        <on-exit>
-            <evaluate expression="flowHandler.getNodesContains(searchAndReplace, externalContext.requestMap.renderContext)"/>
-        </on-exit>
     </view-state>
 
     <view-state id="searchAndReplaceSecondStep" model="searchAndReplace">
         <binder>
             <binding property="listNodesToBeUpdated"/>
             <binding property="selectAll"/>
+            <binding property="nodeType"/>
         </binder>
+        <on-render>
+            <evaluate expression="flowHandler.getNodesContains(searchAndReplace, externalContext.requestMap.renderContext)"/>
+            <evaluate expression="flowHandler.getNodesTypesList(searchAndReplace, externalContext.requestMap.renderContext)"/>
+        </on-render>
         <transition on="searchAndReplacePrevious" to="searchAndReplaceFirstStep" validate="false"/>
         <transition on="searchAndReplaceGoToThirdStep" to="searchAndReplaceThirdStep"/>
+        <transition on="searchAndReplaceAdvancedSearch" to="searchAndReplaceSecondStep"/>
     </view-state>
 
     <view-state id="searchAndReplaceThirdStep" model="searchAndReplace">
