@@ -66,74 +66,94 @@
     <fmt:message key='jnt_searchAndReplace.advancedSearch'/>
 </a>
 
-<div id="advancedSearch" class="hide">
-<%--    <form:form action="${flowExecutionUrl}" method="post" cssClass="box-1" modelAttribute="searchAndReplace">
+<div id="advancedSearch" <c:if test="${searchAndReplace.nodeType eq ''}">class="hide"</c:if>>
+    <form:form action="${flowExecutionUrl}" method="post" cssClass="box-1 form-horizontal" modelAttribute="searchAndReplace" onsubmit="workInProgress('${i18nWaiting}')">
         <fieldset>
-            <legend><fmt:message key="jnt_searchAndReplace.text.title"/></legend>
             <div class="control-group">
                 <form:label path="termToReplace" cssClass="control-label">
                     <fmt:message key="jnt_searchAndReplace.searchButton"/>
                 </form:label>
                 <div class="controls">
-                    <form:input path="termToReplace" value="${searchAndReplace.replacementTerm}"/>
+                    <form:input path="termToReplace" value="${searchAndReplace.replacementTerm}" disabled="true"/>
                 </div>
             </div>
-        </fieldset>
+                <div class="control-group">
+                    <form:label path="nodeType" cssClass="control-label">
+                        <fmt:message key="jnt_searchAndReplace.selectNodeType"/>
+                    </form:label>
+                    <div class="controls">
+                        <form:select path="nodeType">
+                            <c:if test="${fn:length(searchAndReplace.listNodesTypes) gt 1}">
+                                <form:option value=""></form:option>
+                                <c:forEach items="${searchAndReplace.listNodesTypes}" var="nodeType">
+                                    <form:option value="${nodeType}">${nodeType}</form:option>
+                                </c:forEach>
+                            </c:if>
+                            <c:if test="${fn:length(searchAndReplace.listNodesTypes) eq 1}">
+                                <c:forEach items="${searchAndReplace.listNodesTypes}" var="nodeType">
+                                    <form:option value="${nodeType}">${nodeType}</form:option>
+                                </c:forEach>
+                                <form:option value=""></form:option>
+                            </c:if>
+                        </form:select>
+                    </div>
+                </div>
+            <%--</fieldset>
+            <fieldset>
+                    <legend><fmt:message key="jnt_searchAndReplace.authorAndDate.title"/></legend>
+                    <div class="control-group">
+                        <form:label class="control-label" path="searchCreatedBy">
+                            <fmt:message key="jnt_searchAndReplace.authorAndDate.createdBy"/>
+                        </form:label>
+                        <div class="controls">
+                            <form:input path="searchCreatedBy"/>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <form:label class="control-label" path="searchCreated">
+                            <fmt:message key="jnt_searchAndReplace.authorAndDate.created"/>
+                        </form:label>
+                        <div class="controls">
+                            <form:select path="searchCreated">
+                                <form:option value=""></form:option>
+                                <form:option value="anytime"><fmt:message key="jnt_searchAndReplace.createdModified.option1"/></form:option>
+                                <form:option value="today"><fmt:message key="jnt_searchAndReplace.createdModified.option2"/></form:option>
+                                <form:option value="week"><fmt:message key="jnt_searchAndReplace.createdModified.option3"/></form:option>
+                                <form:option value="month"><fmt:message key="jnt_searchAndReplace.createdModified.option4"/></form:option>
+                                <form:option value="3month"><fmt:message key="jnt_searchAndReplace.createdModified.option5"/></form:option>
+                                <form:option value="6month"><fmt:message key="jnt_searchAndReplace.createdModified.option6"/></form:option>
+                                <form:option value="year"><fmt:message key="jnt_searchAndReplace.createdModified.option7"/></form:option>
+                            </form:select>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <form:label class="control-label" path="searchLastModifiedBy">
+                            <fmt:message key="jnt_searchAndReplace.authorAndDate.modifiedBy"/>
+                        </form:label>
+                        <div class="controls">
+                            <form:input path="searchLastModifiedBy"/>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <form:label class="control-label" path="searchLastModified">
+                            <fmt:message key="jnt_searchAndReplace.authorAndDate.modified"/>
+                        </form:label>
+                        <div class="controls">
+                            <form:select path="searchLastModified">
+                                <form:option value=""></form:option>
+                                <form:option value="anytime"><fmt:message key="jnt_searchAndReplace.createdModified.option1"/></form:option>
+                                <form:option value="today"><fmt:message key="jnt_searchAndReplace.createdModified.option2"/></form:option>
+                                <form:option value="week"><fmt:message key="jnt_searchAndReplace.createdModified.option3"/></form:option>
+                                <form:option value="month"><fmt:message key="jnt_searchAndReplace.createdModified.option4"/></form:option>
+                                <form:option value="3month"><fmt:message key="jnt_searchAndReplace.createdModified.option5"/></form:option>
+                                <form:option value="6month"><fmt:message key="jnt_searchAndReplace.createdModified.option6"/></form:option>
+                                <form:option value="year"><fmt:message key="jnt_searchAndReplace.createdModified.option7"/></form:option>
+                            </form:select>
+                        </div>
+                    </div>
+                </fieldset>
         <fieldset>
-            <legend><fmt:message key="jnt_searchAndReplace.authorAndDate.title"/></legend>
-            <div class="control-group">
-                <form:label class="control-label" path="searchCreatedBy">
-                    <fmt:message key="jnt_searchAndReplace.authorAndDate.createdBy"/>
-                </form:label>
-                <div class="controls">
-                    <form:input path="searchCreatedBy"/>
-                </div>
-            </div>
-            <div class="control-group">
-                <form:label class="control-label" path="searchCreated">
-                    <fmt:message key="jnt_searchAndReplace.authorAndDate.created"/>
-                </form:label>
-                <div class="controls">
-                    <form:select path="searchCreated">
-                        <form:option value=""></form:option>
-                        <form:option value="anytime"><fmt:message key="jnt_searchAndReplace.createdModified.option1"/></form:option>
-                        <form:option value="today"><fmt:message key="jnt_searchAndReplace.createdModified.option2"/></form:option>
-                        <form:option value="week"><fmt:message key="jnt_searchAndReplace.createdModified.option3"/></form:option>
-                        <form:option value="month"><fmt:message key="jnt_searchAndReplace.createdModified.option4"/></form:option>
-                        <form:option value="3month"><fmt:message key="jnt_searchAndReplace.createdModified.option5"/></form:option>
-                        <form:option value="6month"><fmt:message key="jnt_searchAndReplace.createdModified.option6"/></form:option>
-                        <form:option value="year"><fmt:message key="jnt_searchAndReplace.createdModified.option7"/></form:option>
-                    </form:select>
-                </div>
-            </div>
-            <div class="control-group">
-                <form:label class="control-label" path="searchLastModifiedBy">
-                    <fmt:message key="jnt_searchAndReplace.authorAndDate.modifiedBy"/>
-                </form:label>
-                <div class="controls">
-                    <form:input path="searchLastModifiedBy"/>
-                </div>
-            </div>
-            <div class="control-group">
-                <form:label class="control-label" path="searchLastModified">
-                    <fmt:message key="jnt_searchAndReplace.authorAndDate.modified"/>
-                </form:label>
-                <div class="controls">
-                    <form:select path="searchLastModified">
-                        <form:option value=""></form:option>
-                        <form:option value="anytime"><fmt:message key="jnt_searchAndReplace.createdModified.option1"/></form:option>
-                        <form:option value="today"><fmt:message key="jnt_searchAndReplace.createdModified.option2"/></form:option>
-                        <form:option value="week"><fmt:message key="jnt_searchAndReplace.createdModified.option3"/></form:option>
-                        <form:option value="month"><fmt:message key="jnt_searchAndReplace.createdModified.option4"/></form:option>
-                        <form:option value="3month"><fmt:message key="jnt_searchAndReplace.createdModified.option5"/></form:option>
-                        <form:option value="6month"><fmt:message key="jnt_searchAndReplace.createdModified.option6"/></form:option>
-                        <form:option value="year"><fmt:message key="jnt_searchAndReplace.createdModified.option7"/></form:option>
-                    </form:select>
-                </div>
-            </div>
-        </fieldset>
-        <fieldset>
-            <legend><fmt:message key="jnt_searchAndReplace.miscellanea.title"/></legend>
+            <%--<legend><fmt:message key="jnt_searchAndReplace.miscellanea.title"/></legend>
             <div class="control-group">
                 <form:label class="control-label" path="searchPagePath">
                     <fmt:message key="jnt_searchAndReplace.pagePath"/>
@@ -141,7 +161,6 @@
                 <div class="controls">
                     <form:input path="searchPagePath"/>
                 </div>
-                &lt;%&ndash;<s:pagePath id="searchPagePath"/>&ndash;%&gt;
             </div>
             <div class="control-group">
                 <div class="controls">
@@ -150,15 +169,16 @@
                         <fmt:message key="jnt_searchAndReplace.pagePath"/>
                     </form:label>
                 </div>
-            </div>
+            </div>--%>
             <div class="control-group">
-                &lt;%&ndash;searchAndReplaceSubmit class is used by jQuery don't remove it !&ndash;%&gt;
-                <button class="btn btn-primary searchAndReplaceSubmit" name="_eventId_advancedSearch">
-                    <fmt:message key="label.submit"/>
-                </button>
+                <div class="controls">
+                    <button class="btn btn-primary" name="_eventId_searchAndReplaceAdvancedSearch">
+                        <fmt:message key="label.submit"/>
+                    </button>
+                </div>
             </div>
         </fieldset>
-    </form:form>--%>
+    </form:form>
 </div>
 
 <form:form action="${flowExecutionUrl}" method="post" cssClass="box-1" modelAttribute="searchAndReplace" onsubmit="workInProgress('${i18nWaiting}')">
