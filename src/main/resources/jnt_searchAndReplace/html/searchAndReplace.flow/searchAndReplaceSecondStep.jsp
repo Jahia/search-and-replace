@@ -31,6 +31,58 @@
 
 <template:addResources type="inlinejavascript">
     <script type="text/javascript">
+        var hiddenFieldsBoolean;
+        var oTable;
+        /*
+         * Function: fnGetHiddenTrNodes
+         * Purpose:  Get all of the hidden TR nodes (i.e. the ones which aren't on display)
+         * Returns:  array:
+         * Inputs:   object:oSettings - DataTables settings object
+         */
+        $.fn.dataTableExt.oApi.fnGetHiddenTrNodes = function ( oSettings )
+        {
+            /* Note the use of a DataTables 'private' function thought the 'oApi' object */
+            var anNodes = this.oApi._fnGetTrNodes( oSettings );
+            var anDisplay = $('tbody tr', oSettings.nTable);
+
+            /* Remove nodes which are being displayed */
+            for ( var i=0 ; i<anDisplay.length ; i++ )
+            {
+                var iIndex = jQuery.inArray( anDisplay[i], anNodes );
+                if ( iIndex != -1 )
+                {
+                    anNodes.splice( iIndex, 1 );
+                }
+            }
+
+            /* Fire back the array to the caller */
+            return anNodes;
+        }
+
+        function getDatatableHiddenRows(dataTable)
+        {
+            //Getting datatable hiddenRows
+            var hiddenRows = $(dataTable.fnGetHiddenTrNodes());
+            var hiddenData=new Array();
+            var hiddenDataIndex = 0;
+            //Getting the checked elements from hiddenRows
+            hiddenRows.find("input[type=checkbox]:checked").each(function(){
+                hiddenData[hiddenDataIndex] = $(this).val();
+                hiddenDataIndex++;
+            });
+            //Adding hidden Input tag for each hidden checked checkbox
+            $.each(hiddenData, function(index,value)
+            {
+                if(($(".hiddenFields").html().indexOf(value) == -1))
+                {
+                    var inputTag = "<input type=\"hidden\" value=\""+value+"\" name=\"listNodesToBeUpdated\"/>";
+                    $(".hiddenFields").append(inputTag);
+                }
+                //Empty Form boolean
+                hiddenFieldsBoolean=true;
+            });
+        }
+
         $(document).ready(function(){
             var oTable = $('#listNodes_table').dataTable({
                 "sDom": "<'row-fluid'<'span6'l><'span6 text-right'f>r>t<'row-fluid'<'span6'i><'span6 text-right'p>>",
@@ -40,9 +92,10 @@
             });
 
             $('.searchAndReplaceSubmit').on('click', function(){
+                getDatatableHiddenRows(oTable);
                 var boolean = true;
 
-                if(!$(".select").is(':checked')){
+                if(!$(".select").is(':checked') && !hiddenFieldsBoolean){
                     $('#listNodesToBeUpdatedError').fadeIn('slow').delay(4000).fadeOut('slow');
                     boolean = false;
                 }
@@ -187,6 +240,8 @@
 </div>
 
 <form:form action="${flowExecutionUrl}" method="post" cssClass="box-1" modelAttribute="searchAndReplace" onsubmit="workInProgress('${i18nWaiting}')">
+    <div class="hiddenFields hide">
+    </div>
     <table cellpadding="0" cellspacing="0" border="0" class="table table-hover table-bordered" id="listNodes_table">
         <thead>
             <tr>
