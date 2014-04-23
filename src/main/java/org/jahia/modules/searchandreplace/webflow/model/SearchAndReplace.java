@@ -12,6 +12,8 @@ import org.springframework.webflow.validation.DefaultValidationContext;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -26,11 +28,19 @@ public class SearchAndReplace implements Serializable {
 
     private static final String BUNDLE = "resources.jahia-global-replace";
 
+    private static final String DEFAULT_REGEXP = "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$";
+
+    private Pattern defaultPattern = Pattern.compile(DEFAULT_REGEXP);
+
     private String termToReplace;
     private String nodeType = "";
     private String matchType;
     private String replacementTerm;
     private String currentNodeInThirdStep;
+    private String dateCreatedBefore = "";
+    private String dateCreatedAfter = "";
+    private String dateModifiedBefore = "";
+    private String dateModifiedAfter = "";
     private boolean selectAll;
     private List<String> listNodesTypes = new ArrayList<String>();
     private List<String> listNodesToBeUpdated = new ArrayList<String>();
@@ -76,6 +86,41 @@ public class SearchAndReplace implements Serializable {
             }
         }
 
+        if(context.getUserEvent().equals("searchAndReplaceAdvancedSearch")){
+            Matcher dateCreatedBeforeMatcher = defaultPattern.matcher(dateCreatedBefore);
+            Matcher dateCreatedAfterMatcher = defaultPattern.matcher(dateCreatedAfter);
+            Matcher dateModifiedBeforeMatcher = defaultPattern.matcher(dateModifiedBefore);
+            Matcher dateModifiedAfterMatcher = defaultPattern.matcher(dateModifiedAfter);
+
+            if(!StringUtils.isBlank(dateCreatedBefore)) {
+                if (!dateCreatedBeforeMatcher.matches()) {
+                    messages.addMessage(new MessageBuilder().error().source("dateCreatedBefore").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.dateCreatedBefore.error", locale)).build());
+                    valid = false;
+                }
+            }
+
+            if(!StringUtils.isBlank(dateCreatedAfter)) {
+                if (!dateCreatedAfterMatcher.matches()) {
+                    messages.addMessage(new MessageBuilder().error().source("dateCreatedAfter").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.dateCreatedAfter.error", locale)).build());
+                    valid = false;
+                }
+            }
+
+            if(!StringUtils.isBlank(dateModifiedBefore)) {
+                if (!dateModifiedBeforeMatcher.matches()) {
+                    messages.addMessage(new MessageBuilder().error().source("dateModifiedBefore").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.dateModifiedBefore.error", locale)).build());
+                    valid = false;
+                }
+            }
+
+            if(!StringUtils.isBlank(dateModifiedAfter)) {
+                if (!dateModifiedAfterMatcher.matches()) {
+                    messages.addMessage(new MessageBuilder().error().source("dateModifiedAfter").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.dateModifiedAfter.error", locale)).build());
+                    valid = false;
+                }
+            }
+        }
+
         return valid;
     }
 
@@ -115,6 +160,22 @@ public class SearchAndReplace implements Serializable {
 
     public void setCurrentNodeInThirdStep(String currentNodeInThirdStep) {
         this.currentNodeInThirdStep = currentNodeInThirdStep;
+    }
+
+    public void setDateCreatedBefore(String dateCreatedBefore) {
+        this.dateCreatedBefore = dateCreatedBefore;
+    }
+
+    public void setDateCreatedAfter(String dateCreatedAfter) {
+        this.dateCreatedAfter = dateCreatedAfter;
+    }
+
+    public void setDateModifiedBefore(String dateModifiedBefore) {
+        this.dateModifiedBefore = dateModifiedBefore;
+    }
+
+    public void setDateModifiedAfter(String dateModifiedAfter) {
+        this.dateModifiedAfter = dateModifiedAfter;
     }
 
     public void setSelectAll(boolean selectAll) {
@@ -163,6 +224,22 @@ public class SearchAndReplace implements Serializable {
 
     public String getCurrentNodeInThirdStep() {
         return currentNodeInThirdStep;
+    }
+
+    public String getDateCreatedBefore() {
+        return dateCreatedBefore;
+    }
+
+    public String getDateCreatedAfter() {
+        return dateCreatedAfter;
+    }
+
+    public String getDateModifiedBefore() {
+        return dateModifiedBefore;
+    }
+
+    public String getDateModifiedAfter() {
+        return dateModifiedAfter;
     }
 
     public boolean isSelectAll() {

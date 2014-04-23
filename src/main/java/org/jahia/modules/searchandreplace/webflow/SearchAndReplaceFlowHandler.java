@@ -45,15 +45,35 @@ public class SearchAndReplaceFlowHandler implements Serializable {
         List<String> listNodes = new ArrayList<String>();
         String sitePath = renderContext.getSite().getPath();
         String subStringType = "";
+        String dateCreatedBefore = "";
+        String dateCreatedAfter = "";
+        String dateModifiedBefore = "";
+        String dateModifiedAfter = "";
 
         if(!searchAndReplace.getNodeType().isEmpty()){
-            subStringType = "AND ([jcr:primaryType] LIKE '" + searchAndReplace.getNodeType() + "')";
+            subStringType = " AND ([jcr:primaryType] LIKE '" + searchAndReplace.getNodeType() + "')";
+        }
+
+        if(!searchAndReplace.getDateCreatedBefore().isEmpty()){
+            dateCreatedBefore = " AND ([jcr:created] < CAST ('+" + searchAndReplace.getDateCreatedBefore() + "T23:59:59.999Z' as date))";
+        }
+
+        if(!searchAndReplace.getDateCreatedAfter().isEmpty()){
+            dateCreatedAfter = " AND ([jcr:created] > CAST ('+" + searchAndReplace.getDateCreatedAfter() + "T00:00:00.000Z' as date))";
+        }
+
+        if(!searchAndReplace.getDateModifiedBefore().isEmpty()){
+            dateModifiedBefore = " AND ([jcr:lastModified] < CAST ('+" + searchAndReplace.getDateModifiedBefore() + "T23:59:59.999Z' as date))";
+        }
+
+        if(!searchAndReplace.getDateModifiedAfter().isEmpty()){
+            dateModifiedAfter = " AND ([jcr:lastModified] > CAST ('+" + searchAndReplace.getDateModifiedAfter() + "T00:00:00.000Z' as date))";
         }
 
         try{
             JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
             QueryManager qm = session.getWorkspace().getQueryManager();
-            Query q = qm.createQuery("SELECT * FROM [nt:base] AS result WHERE ISDESCENDANTNODE(result, '" + sitePath + "') AND CONTAINS(result.*,'" + searchAndReplace.getTermToReplace() + "') AND ([jcr:primaryType] NOT LIKE 'jnt:file' OR [jcr:primaryType] NOT LIKE 'jnt:resource')" + subStringType, Query.JCR_SQL2);
+            Query q = qm.createQuery("SELECT * FROM [nt:base] AS result WHERE ISDESCENDANTNODE(result, '" + sitePath + "') AND CONTAINS(result.*,'" + searchAndReplace.getTermToReplace() + "') AND ([jcr:primaryType] NOT LIKE 'jnt:file' OR [jcr:primaryType] NOT LIKE 'jnt:resource')" + subStringType + dateCreatedBefore + dateCreatedAfter + dateModifiedBefore + dateModifiedAfter, Query.JCR_SQL2);
             q.setLimit(1000);
             NodeIterator ni = q.execute().getNodes();
             while (ni.hasNext()) {

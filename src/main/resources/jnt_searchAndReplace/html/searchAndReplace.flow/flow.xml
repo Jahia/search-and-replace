@@ -18,6 +18,10 @@
             <binding property="listNodesToBeUpdated"/>
             <binding property="selectAll"/>
             <binding property="nodeType"/>
+            <binding property="dateCreatedBefore"/>
+            <binding property="dateCreatedAfter"/>
+            <binding property="dateModifiedBefore"/>
+            <binding property="dateModifiedAfter"/>
         </binder>
         <on-render>
             <evaluate expression="flowHandler.getNodesContains(searchAndReplace, externalContext.requestMap.renderContext)"/>
