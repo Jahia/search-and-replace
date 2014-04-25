@@ -208,9 +208,13 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService
         int nodeIndex = -1;
         List<Property> propertiesList;
         Map<String, String> propertiesMap = new HashMap<String, String>();
-
-        //Building Regex Pattern
-        Pattern p = Pattern.compile(termToReplace);
+        Pattern p=null;
+        Matcher m=null;
+        if(searchMode.equals(SearchMode.REGEXP))
+        {
+            //Building Regex Pattern
+            p = Pattern.compile(termToReplace);
+        }
 
         try
         {
@@ -227,8 +231,11 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService
                     logger.debug("replaceNode() - Scanning : " + nextProperty.getName());
                     if(!nextProperty.getDefinition().isProtected() && nextProperty.getType() == PropertyType.STRING && (nextProperty.getDefinition().getValueConstraints() == null || nextProperty.getDefinition().getValueConstraints().length==0))
                     {
-                        //Setting Regex Matcher
-                        Matcher m = p.matcher(nextProperty.getString());
+                        if(searchMode.equals(SearchMode.REGEXP))
+                        {
+                            //Setting Regex Matcher
+                            m = p.matcher(nextProperty.getString());
+                        }
 
                         //Apply the replacement
                         switch (searchMode)

@@ -1,5 +1,6 @@
 package org.jahia.modules.searchandreplace.webflow;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.jahia.modules.searchandreplace.GlobalReplaceService;
 import org.jahia.modules.searchandreplace.SearchResult;
 import org.jahia.modules.searchandreplace.webflow.model.SearchAndReplace;
@@ -73,14 +74,14 @@ public class SearchAndReplaceFlowHandler implements Serializable {
         try{
             JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
             QueryManager qm = session.getWorkspace().getQueryManager();
-            Query q = qm.createQuery("SELECT * FROM [nt:base] AS result WHERE ISDESCENDANTNODE(result, '" + sitePath + "') AND CONTAINS(result.*,'" + searchAndReplace.getTermToReplace() + "') AND ([jcr:primaryType] NOT LIKE 'jnt:file' OR [jcr:primaryType] NOT LIKE 'jnt:resource')" + subStringType + dateCreatedBefore + dateCreatedAfter + dateModifiedBefore + dateModifiedAfter, Query.JCR_SQL2);
+            Query q = qm.createQuery("SELECT * FROM [nt:base] AS result WHERE ISDESCENDANTNODE(result, '" + sitePath + "') AND CONTAINS(result.*," + searchAndReplace.getEscapedTermToReplace() + ") AND ([jcr:primaryType] NOT LIKE 'jnt:file') AND ([jcr:primaryType] NOT LIKE 'jnt:resource')" + subStringType + dateCreatedBefore + dateCreatedAfter + dateModifiedBefore + dateModifiedAfter, Query.JCR_SQL2);
             q.setLimit(1000);
             NodeIterator ni = q.execute().getNodes();
             while (ni.hasNext()) {
                 JCRNodeWrapper next = (JCRNodeWrapper) ni.next();
                 listNodes.add(next.getIdentifier());
             }
-            searchAndReplace.setSearchResultList(replaceService.getReplaceableProperties(listNodes, searchAndReplace.getTermToReplace(), GlobalReplaceService.SearchMode.EXACT_MATCH, session).get(GlobalReplaceService.ReplaceStatus.SUCCESS));
+            searchAndReplace.setSearchResultList(replaceService.getReplaceableProperties(listNodes, searchAndReplace.getEscapedTermToReplace(), GlobalReplaceService.SearchMode.EXACT_MATCH, session).get(GlobalReplaceService.ReplaceStatus.SUCCESS));
         }catch(RepositoryException e){
             logger.error(e.getMessage(), e);
         }
@@ -114,7 +115,7 @@ public class SearchAndReplaceFlowHandler implements Serializable {
             uuids.add(node.getIdentifier());
 
             //Calling Replace Service
-            Map<GlobalReplaceService.ReplaceStatus,List<String>> replaceResult = replaceService.replaceByUuid(uuids,searchAndReplace.getTermToReplace(), searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH,session);
+            Map<GlobalReplaceService.ReplaceStatus,List<String>> replaceResult = replaceService.replaceByUuid(uuids,searchAndReplace.getEscapedTermToReplace(), searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH,session);
 
             //Getting Failed Replaced Nodes
             searchAndReplace.setListNodesUpdateFail(replaceResult.get(GlobalReplaceService.ReplaceStatus.FAILED));
@@ -124,6 +125,7 @@ public class SearchAndReplaceFlowHandler implements Serializable {
         }catch (RepositoryException e){
             logger.error("replaceThisNodes() - Failed replacing the node ", e);
         }
+        searchAndReplace.getListNodesToBeUpdated().remove(nodeID);
     }
 
     public void replaceAllNodes(SearchAndReplace searchAndReplace, RenderContext renderContext) {
@@ -132,7 +134,7 @@ public class SearchAndReplaceFlowHandler implements Serializable {
             JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
 
             //Calling Replace Service
-            Map<GlobalReplaceService.ReplaceStatus,List<String>> replaceResult = replaceService.replaceByUuid(searchAndReplace.getListNodesToBeUpdated(), searchAndReplace.getTermToReplace(), searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, session);
+            Map<GlobalReplaceService.ReplaceStatus,List<String>> replaceResult = replaceService.replaceByUuid(searchAndReplace.getListNodesToBeUpdated(), searchAndReplace.getEscapedTermToReplace(), searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, session);
 
             //Getting Failed Replaced Nodes
             searchAndReplace.setListNodesUpdateFail(replaceResult.get(GlobalReplaceService.ReplaceStatus.FAILED));
