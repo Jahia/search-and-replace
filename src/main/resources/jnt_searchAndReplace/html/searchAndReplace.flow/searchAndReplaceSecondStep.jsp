@@ -137,6 +137,20 @@
                 pickTime: false,
                 language: '${renderContext.UILocale}'
             });
+
+            $('#nodeType').on('change', function(){
+                if($('#nodeType').val() != ""){
+                    var data = {};
+                    data['nodeType'] = $('#nodeType').val();
+                    $.post("<c:url value='${url.baseEdit}${renderContext.site.path}.getNodePropertiesList.do'/>", data, function(result){
+                        console.log(result);
+//                        if(result['userExist'] == 'false'){
+//                            $('#usernameError3').fadeIn('slow').delay(4000).fadeOut('slow');
+//                            $('#username').focus();
+//                        }
+                    }, 'json');
+                }
+            })
         });
     </script>
 </template:addResources>
@@ -177,6 +191,18 @@
                             </c:forEach>
                             <form:option value=""></form:option>
                         </c:if>
+                    </form:select>
+                </div>
+            </div>
+            <div class="control-group">
+                <form:label path="listSelectedFieldsOfNodeType" cssClass="control-label">
+                    <fmt:message key="jnt_searchAndReplace.selectFields"/>
+                </form:label>
+                <div class="controls">
+                    <form:select multiple="multiple" path="listSelectedFieldsOfNodeType">
+                        <c:forEach items="${searchAndReplace.listFieldsOfNodeType}" var="fied">
+                            <form:option value="${fied}">${fied}</form:option>
+                        </c:forEach>
                     </form:select>
                 </div>
             </div>
@@ -321,7 +347,7 @@
                                 ${properties.key}
                             </td>
                             <td>
-                                ${properties.value}
+                                ${node.properties[properties.key].string}
                             </td>
                         </tr>
                     </c:forEach>

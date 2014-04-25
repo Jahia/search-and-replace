@@ -8,7 +8,6 @@ import org.springframework.binding.message.MessageBuilder;
 import org.springframework.binding.message.MessageContext;
 import org.springframework.binding.validation.ValidationContext;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.webflow.validation.DefaultValidationContext;
 
 import java.io.Serializable;
 import java.util.*;
@@ -43,6 +42,8 @@ public class SearchAndReplace implements Serializable {
     private String dateModifiedAfter = "";
     private boolean selectAll;
     private List<String> listNodesTypes = new ArrayList<String>();
+    private List<String> listFieldsOfNodeType = new ArrayList<String>();
+    private List<String> listSelectedFieldsOfNodeType = new ArrayList<String>();
     private List<String> listNodesToBeUpdated = new ArrayList<String>();
     private List<String> listNodesUpdateSuccess = new ArrayList<String>();
     private List<String> listNodesUpdateFail = new ArrayList<String>();
@@ -186,6 +187,14 @@ public class SearchAndReplace implements Serializable {
         this.listNodesTypes = listNodesTypes;
     }
 
+    public void setListFieldsOfNodeType(List<String> listFieldsOfNodeType) {
+        this.listFieldsOfNodeType = listFieldsOfNodeType;
+    }
+
+    public void setListSelectedFieldsOfNodeType(List<String> listSelectedFieldsOfNodeType) {
+        this.listSelectedFieldsOfNodeType = listSelectedFieldsOfNodeType;
+    }
+
     public void setListNodesToBeUpdated(List<String> listNodesToBeUpdated) {
         this.listNodesToBeUpdated = listNodesToBeUpdated;
     }
@@ -248,6 +257,14 @@ public class SearchAndReplace implements Serializable {
 
     public List<String> getListNodesTypes() {
         return listNodesTypes;
+    }
+
+    public List<String> getListFieldsOfNodeType() {
+        return listFieldsOfNodeType;
+    }
+
+    public List<String> getListSelectedFieldsOfNodeType() {
+        return listSelectedFieldsOfNodeType;
     }
 
     public List<String> getListNodesToBeUpdated() {

@@ -4,8 +4,14 @@
        xmlns:osgi="http://www.eclipse.org/gemini/blueprint/schema/blueprint"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
                         http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
-<bean id="GlobalReplaceService" class="org.jahia.modules.searchandreplace.impl.GlobalReplaceServiceImpl"/>
 
-<osgi:service id="GlobalReplaceServiceOSGi" ref="GlobalReplaceService" interface="org.jahia.modules.searchandreplace.GlobalReplaceService"/>
+    <bean id="GlobalReplaceService" class="org.jahia.modules.searchandreplace.impl.GlobalReplaceServiceImpl"/>
 
+    <osgi:service id="GlobalReplaceServiceOSGi" ref="GlobalReplaceService" interface="org.jahia.modules.searchandreplace.GlobalReplaceService"/>
+
+    <bean class="org.jahia.modules.searchandreplace.actions.getNodePropertiesListAction">
+        <property name="searchAndReplace" ref="searchAndReplace"/>
+    </bean>
+
+    <bean id="searchAndReplace" class="org.jahia.modules.searchandreplace.webflow.model.SearchAndReplace"/>
 </beans>

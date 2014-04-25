@@ -3,16 +3,13 @@ package org.jahia.modules.searchandreplace.webflow;
 import org.jahia.modules.searchandreplace.GlobalReplaceService;
 import org.jahia.modules.searchandreplace.SearchResult;
 import org.jahia.modules.searchandreplace.webflow.model.SearchAndReplace;
-import org.jahia.services.content.JCRNodeIteratorWrapper;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRSessionWrapper;
-import org.jahia.services.content.nodetypes.NodeTypeRegistry;
 import org.jahia.services.render.RenderContext;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.jcr.*;
-import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import java.io.Serializable;
@@ -73,7 +70,7 @@ public class SearchAndReplaceFlowHandler implements Serializable {
         try{
             JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
             QueryManager qm = session.getWorkspace().getQueryManager();
-            Query q = qm.createQuery("SELECT * FROM [nt:base] AS result WHERE ISDESCENDANTNODE(result, '" + sitePath + "') AND CONTAINS(result.*,'" + searchAndReplace.getTermToReplace() + "') AND ([jcr:primaryType] NOT LIKE 'jnt:file' OR [jcr:primaryType] NOT LIKE 'jnt:resource')" + subStringType + dateCreatedBefore + dateCreatedAfter + dateModifiedBefore + dateModifiedAfter, Query.JCR_SQL2);
+            Query q = qm.createQuery("SELECT * FROM [nt:base] AS result WHERE ISDESCENDANTNODE(result, '" + sitePath + "') AND CONTAINS(result.*,'" + searchAndReplace.getTermToReplace() + "') AND ([jcr:primaryType] NOT LIKE 'jnt:file') AND ([jcr:primaryType] NOT LIKE 'jnt:resource')" + subStringType + dateCreatedBefore + dateCreatedAfter + dateModifiedBefore + dateModifiedAfter, Query.JCR_SQL2);
             q.setLimit(1000);
             NodeIterator ni = q.execute().getNodes();
             while (ni.hasNext()) {
@@ -159,6 +156,27 @@ public class SearchAndReplaceFlowHandler implements Serializable {
             }
         }
     }
+
+/*    public List<String> getNodePropertiesList(SearchAndReplace searchAndReplace, RenderContext renderContext, String nodeType) {
+        List<String> fields = new ArrayList<String>();
+
+        for(SearchResult searchResult : searchAndReplace.getSearchResultList()){
+            try {
+                JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
+                JCRNodeWrapper node = session.getNodeByIdentifier(searchResult.getNodeUuid());
+                if(node.getPrimaryNodeType().equals(nodeType)){
+                    for (String property : searchResult.getReplaceableProperties().keySet()) {
+                        if (!fields.contains(property)) {
+                            fields.add(property);
+                        }
+                    }
+                }
+            }catch (RepositoryException e){
+                logger.error(e.getMessage(), e);
+            }
+        }
+        return fields;
+    }*/
 
     public void setReplaceService(GlobalReplaceService replaceService) {
         this.replaceService = replaceService;

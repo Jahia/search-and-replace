@@ -92,7 +92,7 @@
                                                     ${properties.key}
                                                 </td>
                                                 <td>
-                                                    ${properties.value}
+                                                    ${node.properties[properties.key].string}
                                                 </td>
                                             </tr>
                                         </c:forEach>
