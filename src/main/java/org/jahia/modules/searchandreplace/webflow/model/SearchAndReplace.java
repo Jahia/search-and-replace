@@ -2,12 +2,15 @@ package org.jahia.modules.searchandreplace.webflow.model;
 
 import org.apache.commons.lang.StringUtils;
 import org.jahia.modules.searchandreplace.SearchResult;
+import org.jahia.services.content.JCRContentUtils;
 import org.jahia.utils.i18n.Messages;
 import org.slf4j.Logger;
 import org.springframework.binding.message.MessageBuilder;
 import org.springframework.binding.message.MessageContext;
 import org.springframework.binding.validation.ValidationContext;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.webflow.validation.DefaultValidationContext;
+import org.apache.jackrabbit.util.Text;
 
 import java.io.Serializable;
 import java.util.*;
@@ -217,6 +220,26 @@ public class SearchAndReplace implements Serializable {
 
     public String getTermToReplace() {
         return termToReplace;
+    }
+    
+    public String getEscapedTermToReplace(){
+        String escapedTermToReplace;
+
+        //Lucene query interpreted characters
+        String[] escapedCharacters = {"\\","+", "-", "&&" ,"||" ,"!", "(", ")", "{", "}", "[", "]", "^", "\"", "~", "*", "?", ":"};
+
+        escapedTermToReplace =  JCRContentUtils.stringToJCRSearchExp(termToReplace);
+
+        for (String characterToEscape : escapedCharacters)
+        {
+            String replacementCharacter = "\\"+characterToEscape;
+            if(escapedTermToReplace.contains(characterToEscape))
+            {
+                escapedTermToReplace = escapedTermToReplace.replace(characterToEscape,replacementCharacter);
+            }
+        }
+
+        return escapedTermToReplace;
     }
 
     public String getNodeType() {
