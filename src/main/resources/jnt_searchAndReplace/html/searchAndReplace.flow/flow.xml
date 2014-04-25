@@ -17,7 +17,7 @@
         <binder>
             <binding property="listNodesToBeUpdated"/>
             <binding property="selectAll"/>
-            <binding property="nodeType"/>
+            <binding property="selectedNodeType"/>
             <binding property="dateCreatedBefore"/>
             <binding property="dateCreatedAfter"/>
             <binding property="dateModifiedBefore"/>
@@ -27,10 +27,12 @@
         <on-render>
             <evaluate expression="flowHandler.getNodesContains(searchAndReplace, externalContext.requestMap.renderContext)"/>
             <evaluate expression="flowHandler.getNodesTypesList(searchAndReplace, externalContext.requestMap.renderContext)"/>
+            <evaluate expression="flowHandler.getNodePropertiesList(searchAndReplace)"/>
         </on-render>
         <transition on="searchAndReplacePrevious" to="searchAndReplaceFirstStep" validate="false"/>
         <transition on="searchAndReplaceGoToThirdStep" to="searchAndReplaceThirdStep"/>
         <transition on="searchAndReplaceAdvancedSearch" to="searchAndReplaceSecondStep"/>
+        <transition on="getNodeProperties" to="searchAndReplaceSecondStep"/>
     </view-state>
 
     <view-state id="searchAndReplaceThirdStep" model="searchAndReplace">

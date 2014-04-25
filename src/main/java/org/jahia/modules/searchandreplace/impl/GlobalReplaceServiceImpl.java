@@ -342,14 +342,14 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService
         String currentUuid = null;
         String currentPropertyName = null;
 
-        String[] uuids = (String[])nodesUuid.toArray();
+        String[] uuids = nodesUuid.toArray(new String[nodesUuid.size()]);
         for(String uuid : nodesUuid)
         {
             currentUuid = uuid;
             JCRNodeWrapper currentNode = null;
             try
             {
-                 session.getNodeByIdentifier(uuid);
+                currentNode = session.getNodeByIdentifier(uuid);
             }
             catch(RepositoryException e)
             {
@@ -359,7 +359,7 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService
             {
                 for(String failedUuid : uuids)
                 {
-                    checkedPropertiesLists.get(ReplaceStatus.FAILED).add(new SearchResult(failedUuid,new HashMap<String, String>()));
+                    checkedPropertiesLists.get(ReplaceStatus.FAILED).add(new SearchResult(uuid,new HashMap<String, String>()));
                 }
             }
             else

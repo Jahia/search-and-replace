@@ -9,9 +9,4 @@
 
     <osgi:service id="GlobalReplaceServiceOSGi" ref="GlobalReplaceService" interface="org.jahia.modules.searchandreplace.GlobalReplaceService"/>
 
-    <bean class="org.jahia.modules.searchandreplace.actions.getNodePropertiesListAction">
-        <property name="searchAndReplace" ref="searchAndReplace"/>
-    </bean>
-
-    <bean id="searchAndReplace" class="org.jahia.modules.searchandreplace.webflow.model.SearchAndReplace"/>
 </beans>

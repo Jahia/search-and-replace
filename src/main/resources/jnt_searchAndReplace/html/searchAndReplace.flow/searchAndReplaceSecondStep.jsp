@@ -137,21 +137,14 @@
                 pickTime: false,
                 language: '${renderContext.UILocale}'
             });
-
-            $('#nodeType').on('change', function(){
-                if($('#nodeType').val() != ""){
-                    var data = {};
-                    data['nodeType'] = $('#nodeType').val();
-                    $.post("<c:url value='${url.baseEdit}${renderContext.site.path}.getNodePropertiesList.do'/>", data, function(result){
-                        console.log(result);
-//                        if(result['userExist'] == 'false'){
-//                            $('#usernameError3').fadeIn('slow').delay(4000).fadeOut('slow');
-//                            $('#username').focus();
-//                        }
-                    }, 'json');
-                }
-            })
         });
+
+        function formSubmit(){
+            console.log("submiting form ....");
+//            $("#inputFormSubmit").prop('disabled', false);
+//            $('#inputFormSubmit').removeAttr('disabled');
+            $("form[name=advancedSearchForm]").submit();
+        }
     </script>
 </template:addResources>
 
@@ -160,10 +153,11 @@
     <i class="icon-search icon-white"></i>
     <fmt:message key='jnt_searchAndReplace.advancedSearch'/>
 </a>
-<c:set value="${searchAndReplace.nodeType}${searchAndReplace.dateCreatedBefore}${searchAndReplace.dateCreatedAfter}${searchAndReplace.dateModifiedBefore}${searchAndReplace.dateModifiedAfter}" var="testString"/>
+<c:set value="${searchAndReplace.selectedNodeType}${searchAndReplace.dateCreatedBefore}${searchAndReplace.dateCreatedAfter}${searchAndReplace.dateModifiedBefore}${searchAndReplace.dateModifiedAfter}" var="testString"/>
 
-<div id="advancedSearch" <c:if test="${empty testString}">class="hide"</c:if>>
-    <form:form action="${flowExecutionUrl}" method="post" cssClass="box-1 form-horizontal" modelAttribute="searchAndReplace" onsubmit="workInProgress('${i18nWaiting}')">
+<form:form name="advancedSearchForm" action="${flowExecutionUrl}" method="post" cssClass="form-horizontal" modelAttribute="searchAndReplace" onsubmit="workInProgress('${i18nWaiting}')">
+    <div id="advancedSearch" class="<c:if test="${empty testString}">hide</c:if> box-1">
+        <input id="inputFormSubmit" type="hidden" value="_eventId_getNodeProperties" name="_eventId_getNodeProperties"/>
         <fieldset>
             <div class="control-group">
                 <form:label path="termToReplace" cssClass="control-label">
@@ -174,38 +168,40 @@
                 </div>
             </div>
             <div class="control-group">
-                <form:label path="nodeType" cssClass="control-label">
+                <form:label path="selectedNodeType" cssClass="control-label">
                     <fmt:message key="jnt_searchAndReplace.selectNodeType"/>
                 </form:label>
                 <div class="controls">
-                    <form:select path="nodeType">
+                    <form:select path="selectedNodeType" onchange="formSubmit()">
                         <c:if test="${fn:length(searchAndReplace.listNodesTypes) gt 1}">
                             <form:option value=""></form:option>
-                            <c:forEach items="${searchAndReplace.listNodesTypes}" var="nodeType">
-                                <form:option value="${nodeType}">${nodeType}</form:option>
+                            <c:forEach items="${searchAndReplace.listNodesTypes}" var="property">
+                                <form:option value="${property}">${property}</form:option>
                             </c:forEach>
                         </c:if>
                         <c:if test="${fn:length(searchAndReplace.listNodesTypes) eq 1}">
-                            <c:forEach items="${searchAndReplace.listNodesTypes}" var="nodeType">
-                                <form:option value="${nodeType}">${nodeType}</form:option>
+                            <c:forEach items="${searchAndReplace.listNodesTypes}" var="property">
+                                <form:option value="${property}">${property}</form:option>
                             </c:forEach>
                             <form:option value=""></form:option>
                         </c:if>
                     </form:select>
                 </div>
             </div>
-            <div class="control-group">
-                <form:label path="listSelectedFieldsOfNodeType" cssClass="control-label">
-                    <fmt:message key="jnt_searchAndReplace.selectFields"/>
-                </form:label>
-                <div class="controls">
-                    <form:select multiple="multiple" path="listSelectedFieldsOfNodeType">
-                        <c:forEach items="${searchAndReplace.listFieldsOfNodeType}" var="fied">
-                            <form:option value="${fied}">${fied}</form:option>
-                        </c:forEach>
-                    </form:select>
+            <c:if test="${fn:length(searchAndReplace.listNodesTypes) eq 1}">
+                <div class="control-group">
+                    <form:label path="listSelectedFieldsOfNodeType" cssClass="control-label">
+                        <fmt:message key="jnt_searchAndReplace.selectFields"/>
+                    </form:label>
+                    <div class="controls">
+                        <form:select multiple="multiple" path="listSelectedFieldsOfNodeType">
+                            <c:forEach items="${searchAndReplace.listFieldsOfNodeType}" var="fied">
+                                <form:option value="${fied}">${fied}</form:option>
+                            </c:forEach>
+                        </form:select>
+                    </div>
                 </div>
-            </div>
+            </c:if>
         </fieldset>
         <fieldset>
             <legend><fmt:message key="jnt_searchAndReplace.dateCreated"/></legend>
@@ -262,10 +258,8 @@
                 </div>
             </div>
         </fieldset>
-    </form:form>
-</div>
+    </div>
 
-<form:form action="${flowExecutionUrl}" method="post" cssClass="box-1" modelAttribute="searchAndReplace" onsubmit="workInProgress('${i18nWaiting}')">
     <div class="hiddenFields hide">
     </div>
     <table cellpadding="0" cellspacing="0" border="0" class="table table-hover table-bordered" id="listNodes_table">

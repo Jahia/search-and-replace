@@ -1,6 +1,5 @@
 package org.jahia.modules.searchandreplace.webflow;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.jahia.modules.searchandreplace.GlobalReplaceService;
 import org.jahia.modules.searchandreplace.SearchResult;
 import org.jahia.modules.searchandreplace.webflow.model.SearchAndReplace;
@@ -15,6 +14,7 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,8 +48,8 @@ public class SearchAndReplaceFlowHandler implements Serializable {
         String dateModifiedBefore = "";
         String dateModifiedAfter = "";
 
-        if(!searchAndReplace.getNodeType().isEmpty()){
-            subStringType = " AND ([jcr:primaryType] LIKE '" + searchAndReplace.getNodeType() + "')";
+        if(!searchAndReplace.getSelectedNodeType().isEmpty()){
+            subStringType = " AND ([jcr:primaryType] LIKE '" + searchAndReplace.getSelectedNodeType() + "')";
         }
 
         if(!searchAndReplace.getDateCreatedBefore().isEmpty()){
@@ -78,7 +78,8 @@ public class SearchAndReplaceFlowHandler implements Serializable {
                 JCRNodeWrapper next = (JCRNodeWrapper) ni.next();
                 listNodes.add(next.getIdentifier());
             }
-            searchAndReplace.setSearchResultList(replaceService.getReplaceableProperties(listNodes, searchAndReplace.getEscapedTermToReplace(), GlobalReplaceService.SearchMode.EXACT_MATCH, session).get(GlobalReplaceService.ReplaceStatus.SUCCESS));
+            String termToReplace = searchAndReplace.getEscapedTermToReplace().substring(1,searchAndReplace.getEscapedTermToReplace().length()-1);
+            searchAndReplace.setSearchResultList(replaceService.getReplaceableProperties(listNodes, termToReplace, GlobalReplaceService.SearchMode.EXACT_MATCH, session).get(GlobalReplaceService.ReplaceStatus.SUCCESS));
         }catch(RepositoryException e){
             logger.error(e.getMessage(), e);
         }
@@ -101,6 +102,7 @@ public class SearchAndReplaceFlowHandler implements Serializable {
 
     public void replaceThisNode(SearchAndReplace searchAndReplace, RenderContext renderContext) {
         String nodeID = searchAndReplace.getCurrentNodeInThirdStep();
+        Map<GlobalReplaceService.ReplaceStatus,List<String>> replaceResult = new HashMap<GlobalReplaceService.ReplaceStatus, List<String>>();
 
         try{
             //Getting JCR Session
@@ -112,7 +114,14 @@ public class SearchAndReplaceFlowHandler implements Serializable {
             uuids.add(node.getIdentifier());
 
             //Calling Replace Service
-            Map<GlobalReplaceService.ReplaceStatus,List<String>> replaceResult = replaceService.replaceByUuid(uuids,searchAndReplace.getEscapedTermToReplace(), searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH,session);
+            String termToReplace = searchAndReplace.getEscapedTermToReplace().substring(1,searchAndReplace.getEscapedTermToReplace().length()-1);
+            if(searchAndReplace.getListSelectedFieldsOfNodeType() != null){
+                if(!searchAndReplace.getListSelectedFieldsOfNodeType().isEmpty()){
+                    replaceResult = replaceService.replaceByUuid(searchAndReplace.getListNodesToBeUpdated(), termToReplace, searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, searchAndReplace.getListSelectedFieldsOfNodeType(), session);
+                }
+            }else{
+                replaceResult = replaceService.replaceByUuid(searchAndReplace.getListNodesToBeUpdated(), termToReplace, searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, session);
+            }
 
             //Getting Failed Replaced Nodes
             searchAndReplace.setListNodesUpdateFail(replaceResult.get(GlobalReplaceService.ReplaceStatus.FAILED));
@@ -126,12 +135,21 @@ public class SearchAndReplaceFlowHandler implements Serializable {
     }
 
     public void replaceAllNodes(SearchAndReplace searchAndReplace, RenderContext renderContext) {
+        Map<GlobalReplaceService.ReplaceStatus,List<String>> replaceResult = new HashMap<GlobalReplaceService.ReplaceStatus, List<String>>();
+
         try{
             //Getting session
             JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
 
             //Calling Replace Service
-            Map<GlobalReplaceService.ReplaceStatus,List<String>> replaceResult = replaceService.replaceByUuid(searchAndReplace.getListNodesToBeUpdated(), searchAndReplace.getEscapedTermToReplace(), searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, session);
+            String termToReplace = searchAndReplace.getEscapedTermToReplace().substring(1,searchAndReplace.getEscapedTermToReplace().length()-1);
+            if(searchAndReplace.getListSelectedFieldsOfNodeType() != null){
+                if(!searchAndReplace.getListSelectedFieldsOfNodeType().isEmpty()){
+                    replaceResult = replaceService.replaceByUuid(searchAndReplace.getListNodesToBeUpdated(), termToReplace, searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, searchAndReplace.getListSelectedFieldsOfNodeType(), session);
+                }
+            }else{
+                replaceResult = replaceService.replaceByUuid(searchAndReplace.getListNodesToBeUpdated(), termToReplace, searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, session);
+            }
 
             //Getting Failed Replaced Nodes
             searchAndReplace.setListNodesUpdateFail(replaceResult.get(GlobalReplaceService.ReplaceStatus.FAILED));
@@ -159,26 +177,28 @@ public class SearchAndReplaceFlowHandler implements Serializable {
         }
     }
 
-/*    public List<String> getNodePropertiesList(SearchAndReplace searchAndReplace, RenderContext renderContext, String nodeType) {
-        List<String> fields = new ArrayList<String>();
+    public void getNodePropertiesList(SearchAndReplace searchAndReplace) {
 
-        for(SearchResult searchResult : searchAndReplace.getSearchResultList()){
-            try {
-                JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
-                JCRNodeWrapper node = session.getNodeByIdentifier(searchResult.getNodeUuid());
-                if(node.getPrimaryNodeType().equals(nodeType)){
-                    for (String property : searchResult.getReplaceableProperties().keySet()) {
-                        if (!fields.contains(property)) {
-                            fields.add(property);
-                        }
-                    }
-                }
-            }catch (RepositoryException e){
-                logger.error(e.getMessage(), e);
+        if(!searchAndReplace.getListFieldsOfNodeType().isEmpty()){
+            searchAndReplace.getListFieldsOfNodeType().clear();
+        }
+
+        if(searchAndReplace.getListSelectedFieldsOfNodeType() != null){
+            if(!searchAndReplace.getListSelectedFieldsOfNodeType().isEmpty()) {
+                searchAndReplace.getListSelectedFieldsOfNodeType().clear();
             }
         }
-        return fields;
-    }*/
+
+        if(searchAndReplace.getListNodesTypes().size() == 1){
+            for(SearchResult searchResult : searchAndReplace.getSearchResultList()){
+                for(String property : searchResult.getReplaceableProperties().keySet()){
+                    if(!searchAndReplace.getListFieldsOfNodeType().contains(property)){
+                        searchAndReplace.getListFieldsOfNodeType().add(property);
+                    }
+                }
+            }
+        }
+    }
 
     public void setReplaceService(GlobalReplaceService replaceService) {
         this.replaceService = replaceService;

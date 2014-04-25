@@ -9,8 +9,6 @@ import org.springframework.binding.message.MessageBuilder;
 import org.springframework.binding.message.MessageContext;
 import org.springframework.binding.validation.ValidationContext;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.webflow.validation.DefaultValidationContext;
-import org.apache.jackrabbit.util.Text;
 
 import java.io.Serializable;
 import java.util.*;
@@ -35,7 +33,7 @@ public class SearchAndReplace implements Serializable {
     private Pattern defaultPattern = Pattern.compile(DEFAULT_REGEXP);
 
     private String termToReplace;
-    private String nodeType = "";
+    private String selectedNodeType = "";
     private String matchType;
     private String replacementTerm;
     private String currentNodeInThirdStep;
@@ -150,8 +148,8 @@ public class SearchAndReplace implements Serializable {
         this.termToReplace = termToReplace;
     }
 
-    public void setNodeType(String nodeType) {
-        this.nodeType = nodeType;
+    public void setSelectedNodeType(String selectedNodeType) {
+        this.selectedNodeType = selectedNodeType;
     }
 
     public void setMatchType(String matchType) {
@@ -242,8 +240,8 @@ public class SearchAndReplace implements Serializable {
         return escapedTermToReplace;
     }
 
-    public String getNodeType() {
-        return nodeType;
+    public String getSelectedNodeType() {
+        return selectedNodeType;
     }
 
     public String getMatchType() {
