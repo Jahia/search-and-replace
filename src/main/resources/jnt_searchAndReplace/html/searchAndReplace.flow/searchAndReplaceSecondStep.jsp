@@ -274,6 +274,9 @@
                     <fmt:message key='jnt_searchAndReplace.nodes'/>
                 </th>
                 <th>
+                    <fmt:message key='mix_created'/>
+                </th>
+                <th>
                     <fmt:message key='jmix_contentmetadata.j_lastModificationDate'/>
                 </th>
             </tr>
@@ -289,6 +292,11 @@
                         <a href="#modal_${searchResultNode.nodeUuid}" role="button" data-toggle="modal" style="text-decoration: none;">
                             ${functions:abbreviate(node.displayableName,100,120,'...')}
                         </a>
+                    </td>
+                    <td>
+                        <em><fmt:formatDate value="${node.properties['jcr:created'].date.time}" pattern="dd, MMMM yyyy HH:mm"/></em>
+                        &nbsp;<fmt:message key="label.by"/>&nbsp;
+                        <strong>${node.properties['jcr:createdBy'].string}</strong>
                     </td>
                     <td>
                         <em><fmt:formatDate value="${node.properties['jcr:lastModified'].date.time}" pattern="dd, MMMM yyyy HH:mm"/></em>
