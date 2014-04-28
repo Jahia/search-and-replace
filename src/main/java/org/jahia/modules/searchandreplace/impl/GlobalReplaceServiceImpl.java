@@ -316,7 +316,14 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService
 
                     node.setProperty(propertyName,propertyValue);
                     session.save();
-                    replaced = ReplaceStatus.SUCCESS;
+                    if(propertyValue.contains(replacementTerm))
+                    {
+                        replaced = ReplaceStatus.SUCCESS;
+                    }
+                    else
+                    {
+                        replaced = ReplaceStatus.FAILED;
+                    }
                 }
             }
             return replaced;
