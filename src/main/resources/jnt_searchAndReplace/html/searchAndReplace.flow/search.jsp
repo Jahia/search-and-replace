@@ -42,9 +42,9 @@
 <form:form action="${flowExecutionUrl}" method="post" cssClass="box-1" modelAttribute="searchAndReplace" onsubmit="workInProgress('${i18nWaiting}')">
     <h2>Search</h2>
     <div class="input-append">
-        <form:input path="termToReplace" cssClass="span6"/>
+        <form:input path="termToReplace" cssClass="span6" autofocus="autofocus" />
         <%-- searchAndReplaceSubmit class is used by jQuery don't remove it !--%>
-        <button class="btn btn-primary searchAndReplaceSubmit" name="_eventId_searchAndReplaceGoToSecondStep" type="submit">
+        <button class="btn btn-primary searchAndReplaceSubmit" name="_eventId_searchAndReplaceGoToFilter" type="submit">
             <i class="icon-search icon-white"></i>
             <fmt:message key="jnt_searchAndReplace.searchButton"/>
         </button>

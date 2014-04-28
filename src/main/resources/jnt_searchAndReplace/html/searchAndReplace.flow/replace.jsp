@@ -27,16 +27,6 @@
 <template:addResources type="inlinejavascript">
     <script type="text/javascript">
         $(document).ready(function(){
-            $('.searchAndReplaceSubmit').on('click', function(){
-                var boolean = true;
-
-                if($('#replacementTerm').val() == ""){
-                    $('#replacementTermError').fadeIn('slow').delay(4000).fadeOut('slow');
-                    boolean = false;
-                }
-                return boolean;
-            })
-
             $('.preview').highlight('${searchAndReplace.termToReplace}', { caseSensitive: true });
 
             $('.highlight').css({ backgroundColor: '#ED6A32' });
@@ -52,7 +42,7 @@
                 <fmt:message key="jnt_searchAndReplace.termToReplace"/>
             </form:label>
             <div class="controls">
-                <form:input path="termToReplace" value="${searchAndReplace.replacementTerm}" disabled="true"/>
+                <form:input path="termToReplace" value="${searchAndReplace.termToReplace}" disabled="true"/>
             </div>
         </div>
         <div class="control-group">
@@ -61,8 +51,6 @@
             </form:label>
             <div class="controls">
                 <form:input path="replacementTerm" value="${searchAndReplace.replacementTerm}"/>
-                <span id="replacementTermError" class="hide text-error"><fmt:message key="jnt_searchAndReplace.replacementTerm.error"/></span>
-                <form:errors path="replacementTerm" cssClass="text-error"/>
             </div>
         </div>
         <c:forEach items="${searchAndReplace.listNodesToBeUpdated}" var="id" varStatus="status">
@@ -113,13 +101,11 @@
                     <fmt:message key="jnt_searchAndReplace.skipThisNode"/>
                 </button>
             </c:if>
-            <%--searchAndReplaceSubmit class is used by jQuery don't remove it !--%>
-            <button class="btn btn-primary searchAndReplaceSubmit" name="_eventId_searchAndReplaceInCurrentNode">
+            <button class="btn btn-primary" name="_eventId_searchAndReplaceInCurrentNode">
                 <fmt:message key="jnt_searchAndReplace.replaceInCurrentNode"/>
             </button>
             <c:if test="${fn:length(searchAndReplace.listNodesToBeUpdated) gt 1}">
-                <%--searchAndReplaceSubmit class is used by jQuery don't remove it !--%>
-                <button class="btn btn-success searchAndReplaceSubmit" name="_eventId_searchAndReplaceAllNode">
+                <button class="btn btn-success" name="_eventId_searchAndReplaceAllNode">
                     <fmt:message key="jnt_searchAndReplace.replaceAllNode"/>
                 </button>
             </c:if>

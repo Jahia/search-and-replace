@@ -118,32 +118,42 @@
                 format: 'yyyy-MM-dd',
                 pickTime: false,
                 language: '${renderContext.UILocale}'
+            }).on('changeDate', function(){
+                formSubmit();
             });
 
             $('#createdAfter').datetimepicker({
                 format: 'yyyy-MM-dd',
                 pickTime: false,
                 language: '${renderContext.UILocale}'
+            }).on('changeDate', function(){
+                formSubmit();
             });
 
             $('#modifiedBefore').datetimepicker({
                 format: 'yyyy-MM-dd',
                 pickTime: false,
                 language: '${renderContext.UILocale}'
+            }).on('changeDate', function(){
+                formSubmit();
             });
 
             $('#modifiedAfter').datetimepicker({
                 format: 'yyyy-MM-dd',
                 pickTime: false,
                 language: '${renderContext.UILocale}'
+            }).on('changeDate', function(){
+                formSubmit();
             });
         });
 
         function formSubmit(){
-            console.log("submiting form ....");
-//            $("#inputFormSubmit").prop('disabled', false);
-//            $('#inputFormSubmit').removeAttr('disabled');
             $("form[name=advancedSearchForm]").submit();
+        }
+
+        function clearThisField(field){
+            $('#' + field).val('');
+            $('#' + field).change();
         }
     </script>
 </template:addResources>
@@ -157,7 +167,7 @@
 
 <form:form name="advancedSearchForm" action="${flowExecutionUrl}" method="post" cssClass="form-horizontal" modelAttribute="searchAndReplace" onsubmit="workInProgress('${i18nWaiting}')">
     <div id="advancedSearch" class="<c:if test="${empty testString}">hide</c:if> box-1">
-        <input id="inputFormSubmit" type="hidden" value="_eventId_getNodeProperties" name="_eventId_getNodeProperties"/>
+        <input id="inputFormSubmit" type="hidden" value="_eventId_searchAndReplaceAdvancedSearch" name="_eventId_searchAndReplaceAdvancedSearch"/>
         <fieldset>
             <div class="control-group">
                 <form:label path="termToReplace" cssClass="control-label">
@@ -171,37 +181,33 @@
                 <form:label path="selectedNodeType" cssClass="control-label">
                     <fmt:message key="jnt_searchAndReplace.selectNodeType"/>
                 </form:label>
-                <div class="controls">
+                <div class="controls input-append" style="display: block;">
                     <form:select path="selectedNodeType" onchange="formSubmit()">
-                        <c:if test="${fn:length(searchAndReplace.listNodesTypes) gt 1}">
-                            <form:option value=""></form:option>
-                            <c:forEach items="${searchAndReplace.listNodesTypes}" var="property">
-                                <form:option value="${property}">${property}</form:option>
-                            </c:forEach>
-                        </c:if>
-                        <c:if test="${fn:length(searchAndReplace.listNodesTypes) eq 1}">
-                            <c:forEach items="${searchAndReplace.listNodesTypes}" var="property">
-                                <form:option value="${property}">${property}</form:option>
-                            </c:forEach>
-                            <form:option value=""></form:option>
-                        </c:if>
+                        <form:option value=""></form:option>
+                        <c:forEach items="${searchAndReplace.listNodesTypes}" var="property">
+                            <form:option value="${property}">${property}</form:option>
+                        </c:forEach>
                     </form:select>
+                    <c:if test="${not empty searchAndReplace.selectedNodeType}">
+                        <a href="#" title="<fmt:message key="jnt_searchAndReplace.clearSelectedNodeType"/>" class="btn btn-link" onclick="clearThisField('selectedNodeType')"><i class="icon-remove"></i></a>
+                    </c:if>
                 </div>
             </div>
-            <c:if test="${fn:length(searchAndReplace.listNodesTypes) eq 1}">
-                <div class="control-group">
-                    <form:label path="listSelectedFieldsOfNodeType" cssClass="control-label">
-                        <fmt:message key="jnt_searchAndReplace.selectFields"/>
-                    </form:label>
-                    <div class="controls">
-                        <form:select multiple="multiple" path="listSelectedFieldsOfNodeType">
-                            <c:forEach items="${searchAndReplace.listFieldsOfNodeType}" var="fied">
-                                <form:option value="${fied}">${fied}</form:option>
-                            </c:forEach>
-                        </form:select>
-                    </div>
+            <div class="control-group">
+                <form:label path="listSelectedFieldsOfNodeType" cssClass="control-label">
+                    <fmt:message key="jnt_searchAndReplace.selectFields"/>
+                </form:label>
+                <div class="controls input-append" style="display: block;">
+                    <form:select multiple="multiple" path="listSelectedFieldsOfNodeType">
+                        <c:forEach items="${searchAndReplace.listFieldsOfNodeType}" var="fied">
+                            <form:option value="${fied}">${fied}</form:option>
+                        </c:forEach>
+                    </form:select>
+                    <c:if test="${not empty searchAndReplace.listSelectedFieldsOfNodeType}">
+                        <a href="#" title="<fmt:message key="jnt_searchAndReplace.clearSelectedNodeType"/>" class="btn btn-link" onclick="clearThisField('listSelectedFieldsOfNodeType')"><i class="icon-remove"></i></a>
+                    </c:if>
                 </div>
-            </c:if>
+            </div>
         </fieldset>
         <fieldset>
             <legend><fmt:message key="jnt_searchAndReplace.dateCreated"/></legend>
@@ -211,7 +217,12 @@
                 </form:label>
                 <div class="controls input-append date" id="createdBefore" style="display: block;">
                     <form:input class="otherField" path="dateCreatedBefore"/>
-                    <span class="add-on"><i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span>
+                    <span class="add-on">
+                        <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+                    </span>
+                    <c:if test="${not empty searchAndReplace.dateCreatedBefore}">
+                        <a href="#" title="<fmt:message key="jnt_searchAndReplace.clearDateCreatedBefore"/>" class="btn btn-link" onclick="clearThisField('dateCreatedBefore');return false;"><i class="icon-remove"></i></a>
+                    </c:if>
                 </div>
                 <form:errors path="dateCreatedBefore" cssClass="text-error"/>
             </div>
@@ -221,7 +232,12 @@
                 </form:label>
                 <div class="controls input-append date" id="createdAfter" style="display: block;">
                     <form:input class="otherField" path="dateCreatedAfter"/>
-                    <span class="add-on"><i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span>
+                    <span class="add-on">
+                        <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+                    </span>
+                    <c:if test="${not empty searchAndReplace.dateCreatedAfter}">
+                        <a href="#" title="<fmt:message key="jnt_searchAndReplace.clearDateCreatedAfter"/>" class="btn btn-link" onclick="clearThisField('dateCreatedAfter')"><i class="icon-remove"></i></a>
+                    </c:if>
                 </div>
                 <form:errors path="dateCreatedAfter" cssClass="text-error"/>
             </div>
@@ -234,7 +250,12 @@
                 </form:label>
                 <div class="controls input-append date" id="modifiedBefore" style="display: block;">
                     <form:input class="otherField" path="dateModifiedBefore"/>
-                    <span class="add-on"><i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span>
+                    <span class="add-on">
+                        <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+                    </span>
+                    <c:if test="${not empty searchAndReplace.dateModifiedBefore}">
+                        <a href="#" title="<fmt:message key="jnt_searchAndReplace.clearDateModifiedBefore"/>" class="btn btn-link" onclick="clearThisField('dateModifiedBefore')"><i class="icon-remove"></i></a>
+                    </c:if>
                 </div>
                 <form:errors path="dateModifiedBefore" cssClass="text-error"/>
             </div>
@@ -244,18 +265,14 @@
                 </form:label>
                 <div class="controls input-append date" id="modifiedAfter" style="display: block;">
                     <form:input class="otherField" path="dateModifiedAfter"/>
-                    <span class="add-on"><i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span>
+                    <span class="add-on">
+                        <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+                    </span>
+                    <c:if test="${not empty searchAndReplace.dateModifiedAfter}">
+                        <a href="#" title="<fmt:message key="jnt_searchAndReplace.clearDateModifiedAfter"/>" class="btn btn-link" onclick="clearThisField('dateModifiedAfter')"><i class="icon-remove"></i></a>
+                    </c:if>
                 </div>
                 <form:errors path="dateModifiedAfter" cssClass="text-error"/>
-            </div>
-        </fieldset>
-        <fieldset>
-            <div class="control-group">
-                <div class="controls">
-                    <button class="btn btn-primary" name="_eventId_searchAndReplaceAdvancedSearch">
-                        <fmt:message key="label.submit"/>
-                    </button>
-                </div>
             </div>
         </fieldset>
     </div>
@@ -314,12 +331,14 @@
         <button class="btn btn-danger" name="_eventId_searchAndReplaceCancel">
             <fmt:message key="label.cancel"/>
         </button>
-        <%--searchAndReplaceSubmit class is used by jQuery don't remove it !--%>
-        <button class="btn btn-primary searchAndReplaceSubmit" type="submit" name="_eventId_searchAndReplaceGoToThirdStep">
-            <fmt:message key="label.next"/>
-        </button>
-        <span id="listNodesToBeUpdatedError" class="hide text-error"><fmt:message key="jnt_searchAndReplace.listNodesToBeUpdated.error"/></span>
-        <form:errors path="listNodesToBeUpdated" cssClass="text-error"/>
+        <c:if test="${not empty searchAndReplace.searchResultList}">
+            <%--searchAndReplaceSubmit class is used by jQuery don't remove it !--%>
+            <button class="btn btn-primary searchAndReplaceSubmit" type="submit" name="_eventId_searchAndReplaceGoToReplace">
+                <fmt:message key="label.next"/>
+            </button>
+            <span id="listNodesToBeUpdatedError" class="hide text-error"><fmt:message key="jnt_searchAndReplace.listNodesToBeUpdated.error"/></span>
+            <form:errors path="listNodesToBeUpdated" cssClass="text-error"/>
+        </c:if>
     </div>
 </form:form>
 

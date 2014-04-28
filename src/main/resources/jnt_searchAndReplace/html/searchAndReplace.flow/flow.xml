@@ -6,14 +6,14 @@
     <var name="flowHandler" class="org.jahia.modules.searchandreplace.webflow.SearchAndReplaceFlowHandler"/>
     <var name="searchAndReplace" class="org.jahia.modules.searchandreplace.webflow.model.SearchAndReplace"/>
 
-    <view-state id="searchAndReplaceFirstStep" model="searchAndReplace">
+    <view-state id="search" model="searchAndReplace">
         <binder>
             <binding property="termToReplace"/>
         </binder>
-        <transition on="searchAndReplaceGoToSecondStep" to="searchAndReplaceSecondStep"/>
+        <transition on="searchAndReplaceGoToFilter" to="filter"/>
     </view-state>
 
-    <view-state id="searchAndReplaceSecondStep" model="searchAndReplace">
+    <view-state id="filter" model="searchAndReplace">
         <binder>
             <binding property="listNodesToBeUpdated"/>
             <binding property="selectAll"/>
@@ -27,15 +27,14 @@
         <on-render>
             <evaluate expression="flowHandler.getNodesContains(searchAndReplace, externalContext.requestMap.renderContext)"/>
             <evaluate expression="flowHandler.getNodesTypesList(searchAndReplace, externalContext.requestMap.renderContext)"/>
-            <evaluate expression="flowHandler.getNodePropertiesList(searchAndReplace)"/>
+            <evaluate expression="flowHandler.getNodePropertiesList(searchAndReplace, externalContext.requestMap.renderContext)"/>
         </on-render>
         <transition on="searchAndReplacePrevious" to="searchAndReplaceFirstStep" validate="false"/>
-        <transition on="searchAndReplaceGoToThirdStep" to="searchAndReplaceThirdStep"/>
-        <transition on="searchAndReplaceAdvancedSearch" to="searchAndReplaceSecondStep"/>
-        <transition on="getNodeProperties" to="searchAndReplaceSecondStep"/>
+        <transition on="searchAndReplaceGoToReplace" to="replace"/>
+        <transition on="searchAndReplaceAdvancedSearch" to="filter"/>
     </view-state>
 
-    <view-state id="searchAndReplaceThirdStep" model="searchAndReplace">
+    <view-state id="replace" model="searchAndReplace">
         <binder>
             <binding property="replacementTerm"/>
             <binding property="currentNodeInThirdStep"/>
@@ -62,14 +61,14 @@
 
     <action-state id="haveNodeToUpdate">
         <evaluate expression="flowHandler.haveNodeToUpdate(searchAndReplace)"/>
-        <transition on="yes" to="searchAndReplaceThirdStep"/>
+        <transition on="yes" to="replace"/>
         <transition on="no" to="searchAndReplaceEnd"/>
     </action-state>
 
     <view-state id="searchAndReplaceEnd" model="searchAndReplace"/>
 
     <global-transitions>
-        <transition on="searchAndReplaceCancel" to="searchAndReplaceFirstStep" bind="false" validate="false">
+        <transition on="searchAndReplaceCancel" to="search" bind="false" validate="false">
             <evaluate expression="flowHandler.initSearchAndReplace()" result="flowScope.searchAndReplace"/>
         </transition>
     </global-transitions>

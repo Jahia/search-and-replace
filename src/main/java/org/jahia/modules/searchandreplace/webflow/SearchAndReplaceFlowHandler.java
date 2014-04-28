@@ -108,26 +108,28 @@ public class SearchAndReplaceFlowHandler implements Serializable {
             //Getting JCR Session
             JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
 
-            //Building List of NodesId to be replaced
-            JCRNodeWrapper node = session.getNodeByUUID(nodeID);
             List<String> uuids = new ArrayList<String>();
-            uuids.add(node.getIdentifier());
+            uuids.add(nodeID);
 
             //Calling Replace Service
             String termToReplace = searchAndReplace.getEscapedTermToReplace().substring(1,searchAndReplace.getEscapedTermToReplace().length()-1);
             if(searchAndReplace.getListSelectedFieldsOfNodeType() != null){
                 if(!searchAndReplace.getListSelectedFieldsOfNodeType().isEmpty()){
-                    replaceResult = replaceService.replaceByUuid(searchAndReplace.getListNodesToBeUpdated(), termToReplace, searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, searchAndReplace.getListSelectedFieldsOfNodeType(), session);
+                    replaceResult = replaceService.replaceByUuid(uuids, termToReplace, searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, searchAndReplace.getListSelectedFieldsOfNodeType(), session);
                 }
             }else{
-                replaceResult = replaceService.replaceByUuid(searchAndReplace.getListNodesToBeUpdated(), termToReplace, searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, session);
+                replaceResult = replaceService.replaceByUuid(uuids, termToReplace, searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, session);
             }
 
             //Getting Failed Replaced Nodes
-            searchAndReplace.setListNodesUpdateFail(replaceResult.get(GlobalReplaceService.ReplaceStatus.FAILED));
+            if(!replaceResult.get(GlobalReplaceService.ReplaceStatus.FAILED).isEmpty()){
+                searchAndReplace.getListNodesUpdateFail().add(replaceResult.get(GlobalReplaceService.ReplaceStatus.FAILED).get(0));
+            }
 
             //Getting Successfully Replaced Nodes
-            searchAndReplace.setListNodesUpdateSuccess(replaceResult.get(GlobalReplaceService.ReplaceStatus.SUCCESS));
+            if(!replaceResult.get(GlobalReplaceService.ReplaceStatus.SUCCESS).isEmpty()){
+                searchAndReplace.getListNodesUpdateSuccess().add(replaceResult.get(GlobalReplaceService.ReplaceStatus.SUCCESS).get(0));
+            }
         }catch (RepositoryException e){
             logger.error("replaceThisNodes() - Failed replacing the node ", e);
         }
@@ -163,21 +165,22 @@ public class SearchAndReplaceFlowHandler implements Serializable {
     }
 
     public void getNodesTypesList(SearchAndReplace searchAndReplace, RenderContext renderContext) {
-        searchAndReplace.getListNodesTypes().clear();
-        for(SearchResult searchResult : searchAndReplace.getSearchResultList()){
-            try{
-                JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
-                JCRNodeWrapper node = session.getNodeByIdentifier(searchResult.getNodeUuid());
-                if(!searchAndReplace.getListNodesTypes().contains(node.getPrimaryNodeTypeName())) {
-                    searchAndReplace.getListNodesTypes().add(node.getPrimaryNodeTypeName());
+        if(searchAndReplace.getListNodesTypes().isEmpty()){
+            for(SearchResult searchResult : searchAndReplace.getSearchResultList()){
+                try{
+                    JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
+                    JCRNodeWrapper node = session.getNodeByIdentifier(searchResult.getNodeUuid());
+                    if(!searchAndReplace.getListNodesTypes().contains(node.getPrimaryNodeTypeName())) {
+                        searchAndReplace.getListNodesTypes().add(node.getPrimaryNodeTypeName());
+                    }
+                }catch (RepositoryException e){
+                    logger.error(e.getMessage(), e);
                 }
-            }catch (RepositoryException e){
-                logger.error(e.getMessage(), e);
             }
         }
     }
 
-    public void getNodePropertiesList(SearchAndReplace searchAndReplace) {
+    public void getNodePropertiesList(SearchAndReplace searchAndReplace, RenderContext renderContext) {
 
         if(!searchAndReplace.getListFieldsOfNodeType().isEmpty()){
             searchAndReplace.getListFieldsOfNodeType().clear();
@@ -189,12 +192,20 @@ public class SearchAndReplaceFlowHandler implements Serializable {
             }
         }
 
-        if(searchAndReplace.getListNodesTypes().size() == 1){
+        if(!searchAndReplace.getSelectedNodeType().isEmpty()){
             for(SearchResult searchResult : searchAndReplace.getSearchResultList()){
-                for(String property : searchResult.getReplaceableProperties().keySet()){
-                    if(!searchAndReplace.getListFieldsOfNodeType().contains(property)){
-                        searchAndReplace.getListFieldsOfNodeType().add(property);
+                try{
+                    JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
+                    JCRNodeWrapper node = session.getNodeByIdentifier(searchResult.getNodeUuid());
+                    if(node.getPrimaryNodeType().toString().equals(searchAndReplace.getSelectedNodeType())) {
+                        for(String property : searchResult.getReplaceableProperties().keySet()){
+                            if(!searchAndReplace.getListFieldsOfNodeType().contains(property)){
+                                searchAndReplace.getListFieldsOfNodeType().add(property);
+                            }
+                        }
                     }
+                }catch (RepositoryException e){
+                    logger.error(e.getMessage(), e);
                 }
             }
         }

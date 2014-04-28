@@ -127,15 +127,7 @@ public class SearchAndReplace implements Serializable {
     }
 
     public boolean validateSearchAndReplaceThirdStep(ValidationContext context) {
-        Locale locale = LocaleContextHolder.getLocale();
-        MessageContext messages = context.getMessageContext();
-
         boolean valid = true;
-
-        if (StringUtils.isBlank(replacementTerm)) {
-            messages.addMessage(new MessageBuilder().error().source("replacementTerm").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.replacementTerm.error", locale)).build());
-            valid = false;
-        }
 
         if (!currentNodeInThirdStep.equals(listNodesToBeUpdated.get(0))) {
             valid = false;
