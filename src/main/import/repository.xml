@@ -17,7 +17,7 @@
                     <searchAndReplace j:applyOn="jnt:virtualsite"
                                       j:defaultTemplate="false"
                                       j:hiddenTemplate="true"
-                                      j:icon="/modules/searchandreplace/templates/files/users_into.png"
+                                      j:icon="/modules/jahia-global-replace/templates/files/jnt_query.png"
                                       j:requiredPermissions=""
                                       j:titleKey="jnt_searchAndReplace"
                                       jcr:mixinTypes="jmix:rbTitle"
