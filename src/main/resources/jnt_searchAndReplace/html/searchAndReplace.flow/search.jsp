@@ -18,7 +18,7 @@
 <%--@elvariable id="workspace" type="java.lang.String"--%>
 <%--@elvariable id="searchAndReplace" type="org.jahia.modules.searchandreplace.webflow.model.SearchAndReplace"--%>
 
-<template:addResources type="javascript" resources="jquery.min.js,jquery.blockUI.js,workInProgress.js"/>
+<template:addResources type="javascript" resources="jquery.min.js,jquery-ui.min.js,jquery.blockUI.js,admin-bootstrap.js,workInProgress.js"/>
 <fmt:message key="label.workInProgressTitle" var="i18nWaiting"/><c:set var="i18nWaiting" value="${functions:escapeJavaScript(i18nWaiting)}"/>
 
 <template:addResources type="inlinejavascript">
@@ -44,7 +44,7 @@
     <div class="input-append">
         <form:input path="termToReplace" cssClass="span6" autofocus="autofocus" />
         <%-- searchAndReplaceSubmit class is used by jQuery don't remove it !--%>
-        <button class="btn btn-primary searchAndReplaceSubmit" name="_eventId_searchAndReplaceGoToFilter" type="submit">
+        <button class="btn btn-primary searchAndReplaceSubmit" name="_eventId_goToFilter" type="submit">
             <i class="icon-search icon-white"></i>
             <fmt:message key="jnt_searchAndReplace.searchButton"/>
         </button>
@@ -52,3 +52,7 @@
     <span id="termToReplaceError" class="hide text-error"><fmt:message key="jnt_searchAndReplace.termToReplace.error"/></span>
     <form:errors path="termToReplace" cssClass="text-error"/>
 </form:form>
+
+<c:if test="${fn:length(searchAndReplace.listNodesUpdateSuccess) gt 0 or fn:length(searchAndReplace.listNodesSkipped) gt 0 or fn:length(searchAndReplace.listNodesUpdateFail) gt 0}">
+    <%@include file="summary.jspf" %>
+</c:if>

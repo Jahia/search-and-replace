@@ -148,6 +148,10 @@
         });
 
         function formSubmit(){
+            var input = $("<input>")
+                    .attr("type", "hidden")
+                    .attr("name", "_eventId_advancedSearchForm").val("_eventId_advancedSearchForm");
+            $('#searchAndReplace').append($(input));
             $("form[name=advancedSearchForm]").submit();
         }
 
@@ -155,6 +159,7 @@
             $('#' + field).val('');
             $('#' + field).change();
         }
+
     </script>
 </template:addResources>
 
@@ -165,9 +170,10 @@
 </a>
 <c:set value="${searchAndReplace.selectedNodeType}${searchAndReplace.dateCreatedBefore}${searchAndReplace.dateCreatedAfter}${searchAndReplace.dateModifiedBefore}${searchAndReplace.dateModifiedAfter}" var="testString"/>
 
+<h1>${searchAndReplace.listSelectedFieldsOfNodeType}</h1>
+
 <form:form name="advancedSearchForm" action="${flowExecutionUrl}" method="post" cssClass="form-horizontal" modelAttribute="searchAndReplace" onsubmit="workInProgress('${i18nWaiting}')">
     <div id="advancedSearch" class="<c:if test="${empty testString}">hide</c:if> box-1">
-        <input id="inputFormSubmit" type="hidden" value="_eventId_searchAndReplaceAdvancedSearch" name="_eventId_searchAndReplaceAdvancedSearch"/>
         <fieldset>
             <div class="control-group">
                 <form:label path="termToReplace" cssClass="control-label">
@@ -182,7 +188,7 @@
                     <fmt:message key="jnt_searchAndReplace.selectNodeType"/>
                 </form:label>
                 <div class="controls input-append" style="display: block;">
-                    <form:select path="selectedNodeType" onchange="formSubmit()">
+                    <form:select path="selectedNodeType" onchange="formSubmit()" items="${searchAndReplace.listNodesTypes}">
                         <form:option value=""></form:option>
                         <c:forEach items="${searchAndReplace.listNodesTypes}" var="property">
                             <form:option value="${property}">${property}</form:option>
@@ -198,10 +204,7 @@
                     <fmt:message key="jnt_searchAndReplace.selectFields"/>
                 </form:label>
                 <div class="controls input-append" style="display: block;">
-                    <form:select multiple="multiple" path="listSelectedFieldsOfNodeType">
-                        <c:forEach items="${searchAndReplace.listFieldsOfNodeType}" var="fied">
-                            <form:option value="${fied}">${fied}</form:option>
-                        </c:forEach>
+                    <form:select multiple="multiple" path="listSelectedFieldsOfNodeType" onchange="formSubmit()" items="${searchAndReplace.listFieldsOfNodeType}">
                     </form:select>
                     <c:if test="${not empty searchAndReplace.listSelectedFieldsOfNodeType}">
                         <a href="#" title="<fmt:message key="jnt_searchAndReplace.clearSelectedNodeType"/>" class="btn btn-link" onclick="clearThisField('listSelectedFieldsOfNodeType')"><i class="icon-remove"></i></a>
@@ -282,24 +285,24 @@
     <table cellpadding="0" cellspacing="0" border="0" class="table table-hover table-bordered" id="listNodes_table">
         <thead>
             <tr>
-                <th>
+                <th class="span2">
                     <form:checkbox path="selectAll" value="true" id="selectAll"/>
-                    <br />
+                    &nbsp;
                     <fmt:message key='jnt_searchAndReplace.selectAll'/>
                 </th>
-                <th>
+                <th class="span4">
                     <fmt:message key='jnt_searchAndReplace.nodes'/>
                 </th>
-                <th>
+                <th class="span3">
                     <fmt:message key='mix_created'/>
                 </th>
-                <th>
+                <th class="span3">
                     <fmt:message key='jmix_contentmetadata.j_lastModificationDate'/>
                 </th>
             </tr>
         </thead>
         <tbody>
-            <c:forEach items="${searchAndReplace.searchResultList}" var="searchResultNode">
+            <c:forEach items="${searchAndReplace.listSearchResult}" var="searchResultNode">
                 <jcr:node var="node" uuid="${searchResultNode.nodeUuid}"/>
                 <tr>
                     <td>
@@ -325,15 +328,15 @@
         </tbody>
     </table>
     <div class="control-group">
-        <button class="btn" name="_eventId_searchAndReplacePrevious">
+        <button class="btn" name="_eventId_previous">
             <fmt:message key="label.previous"/>
         </button>
-        <button class="btn btn-danger" name="_eventId_searchAndReplaceCancel">
+        <button class="btn btn-danger" name="_eventId_cancel">
             <fmt:message key="label.cancel"/>
         </button>
-        <c:if test="${not empty searchAndReplace.searchResultList}">
+        <c:if test="${not empty searchAndReplace.listSearchResult}">
             <%--searchAndReplaceSubmit class is used by jQuery don't remove it !--%>
-            <button class="btn btn-primary searchAndReplaceSubmit" type="submit" name="_eventId_searchAndReplaceGoToReplace">
+            <button class="btn btn-primary searchAndReplaceSubmit" type="submit" name="_eventId_goToReplace">
                 <fmt:message key="label.next"/>
             </button>
             <span id="listNodesToBeUpdatedError" class="hide text-error"><fmt:message key="jnt_searchAndReplace.listNodesToBeUpdated.error"/></span>
@@ -342,7 +345,7 @@
     </div>
 </form:form>
 
-<c:forEach items="${searchAndReplace.searchResultList}" var="searchResultNode">
+<c:forEach items="${searchAndReplace.listSearchResult}" var="searchResultNode">
     <jcr:node var="node" uuid="${searchResultNode.nodeUuid}"/>
     <div class="modal hide fade" id="modal_${searchResultNode.nodeUuid}" tabindex="-1" role="dialog" aria-labelledby="modalTitle_${searchResultNode.nodeUuid}" aria-hidden="true">
         <div class="modal-header">

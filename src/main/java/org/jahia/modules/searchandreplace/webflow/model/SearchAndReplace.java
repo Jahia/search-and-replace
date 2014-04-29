@@ -34,14 +34,16 @@ public class SearchAndReplace implements Serializable {
 
     private String termToReplace;
     private String selectedNodeType = "";
+    private String previousSelectedNodeType = "";
     private String matchType;
     private String replacementTerm;
-    private String currentNodeInThirdStep;
+    private String currentDisplayedNode;
     private String dateCreatedBefore = "";
     private String dateCreatedAfter = "";
     private String dateModifiedBefore = "";
     private String dateModifiedAfter = "";
     private boolean selectAll;
+    private boolean isDifferent;
     private List<String> listNodesTypes = new ArrayList<String>();
     private List<String> listFieldsOfNodeType = new ArrayList<String>();
     private List<String> listSelectedFieldsOfNodeType = new ArrayList<String>();
@@ -49,12 +51,12 @@ public class SearchAndReplace implements Serializable {
     private List<String> listNodesUpdateSuccess = new ArrayList<String>();
     private List<String> listNodesUpdateFail = new ArrayList<String>();
     private List<String> listNodesSkipped = new ArrayList<String>();
-    private List<SearchResult> searchResultList;
+    private List<SearchResult> listSearchResult;
 
     public SearchAndReplace() {
     }
 
-    public boolean validateSearchAndReplaceFirstStep(ValidationContext context) {
+    public boolean validateSearch(ValidationContext context) {
         Locale locale = LocaleContextHolder.getLocale();
         MessageContext messages = context.getMessageContext();
 
@@ -68,13 +70,13 @@ public class SearchAndReplace implements Serializable {
         return valid;
     }
 
-    public boolean validateSearchAndReplaceSecondStep(ValidationContext context) {
+    public boolean validateFilter(ValidationContext context) {
         Locale locale = LocaleContextHolder.getLocale();
         MessageContext messages = context.getMessageContext();
 
         boolean valid = true;
 
-        if(context.getUserEvent().equals("searchAndReplaceGoToThirdStep")){
+        if(context.getUserEvent().equals("goToReplace")){
             if (listNodesToBeUpdated == null){
                 messages.addMessage(new MessageBuilder().error().source("listNodesToBeUpdated").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.listNodesToBeUpdated.error", locale)).build());
                 valid = false;
@@ -82,17 +84,26 @@ public class SearchAndReplace implements Serializable {
 
             if (selectAll == true) {
                 listNodesToBeUpdated.clear();
-                for(SearchResult node : searchResultList){
+                for(SearchResult node : listSearchResult){
                     listNodesToBeUpdated.add(node.getNodeUuid());
                 }
             }
         }
 
-        if(context.getUserEvent().equals("searchAndReplaceAdvancedSearch")){
+        if(context.getUserEvent().equals("advancedSearchForm")){
             Matcher dateCreatedBeforeMatcher = defaultPattern.matcher(dateCreatedBefore);
             Matcher dateCreatedAfterMatcher = defaultPattern.matcher(dateCreatedAfter);
             Matcher dateModifiedBeforeMatcher = defaultPattern.matcher(dateModifiedBefore);
             Matcher dateModifiedAfterMatcher = defaultPattern.matcher(dateModifiedAfter);
+
+            setDifferent(false);
+
+            if(!StringUtils.isBlank(selectedNodeType)){
+                if(!previousSelectedNodeType.equals(selectedNodeType)){
+                    setPreviousSelectedNodeType(selectedNodeType);
+                    isDifferent = true;
+                }
+            }
 
             if(!StringUtils.isBlank(dateCreatedBefore)) {
                 if (!dateCreatedBeforeMatcher.matches()) {
@@ -126,10 +137,10 @@ public class SearchAndReplace implements Serializable {
         return valid;
     }
 
-    public boolean validateSearchAndReplaceThirdStep(ValidationContext context) {
+    public boolean validateReplace(ValidationContext context) {
         boolean valid = true;
 
-        if (!currentNodeInThirdStep.equals(listNodesToBeUpdated.get(0))) {
+        if (!currentDisplayedNode.equals(listNodesToBeUpdated.get(0))) {
             valid = false;
         }
 
@@ -152,8 +163,8 @@ public class SearchAndReplace implements Serializable {
         this.replacementTerm = replacementTerm;
     }
 
-    public void setCurrentNodeInThirdStep(String currentNodeInThirdStep) {
-        this.currentNodeInThirdStep = currentNodeInThirdStep;
+    public void setCurrentDisplayedNode(String currentDisplayedNode) {
+        this.currentDisplayedNode = currentDisplayedNode;
     }
 
     public void setDateCreatedBefore(String dateCreatedBefore) {
@@ -204,8 +215,8 @@ public class SearchAndReplace implements Serializable {
         this.listNodesSkipped = listNodesSkipped;
     }
 
-    public void setSearchResultList(List<SearchResult> searchResultList) {
-        this.searchResultList = searchResultList;
+    public void setListSearchResult(List<SearchResult> listSearchResult) {
+        this.listSearchResult = listSearchResult;
     }
 
     public String getTermToReplace() {
@@ -244,8 +255,8 @@ public class SearchAndReplace implements Serializable {
         return replacementTerm;
     }
 
-    public String getCurrentNodeInThirdStep() {
-        return currentNodeInThirdStep;
+    public String getCurrentDisplayedNode() {
+        return currentDisplayedNode;
     }
 
     public String getDateCreatedBefore() {
@@ -296,13 +307,29 @@ public class SearchAndReplace implements Serializable {
         return listNodesSkipped;
     }
 
-    public List<SearchResult> getSearchResultList() {
-        return searchResultList;
+    public List<SearchResult> getListSearchResult() {
+        return listSearchResult;
     }
 
     public void addUUIDToListNodesSkipped(String uuid){
         if(!listNodesSkipped.contains(uuid)){
             listNodesSkipped.add(uuid);
         }
+    }
+
+    public String getPreviousSelectedNodeType() {
+        return previousSelectedNodeType;
+    }
+
+    public void setPreviousSelectedNodeType(String previousSelectedNodeType) {
+        this.previousSelectedNodeType = previousSelectedNodeType;
+    }
+
+    public boolean isDifferent() {
+        return isDifferent;
+    }
+
+    public void setDifferent(boolean isDifferent) {
+        this.isDifferent = isDifferent;
     }
 }

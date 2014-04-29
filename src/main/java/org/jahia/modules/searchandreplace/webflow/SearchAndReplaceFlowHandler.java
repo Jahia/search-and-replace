@@ -29,8 +29,6 @@ public class SearchAndReplaceFlowHandler implements Serializable {
 
     private static final long serialVersionUID = -16287862741718967L;
 
-    private static final String BUNDLE = "resources.jahia-global-replace";
-
     @Autowired
     private transient GlobalReplaceService replaceService;
 
@@ -42,36 +40,41 @@ public class SearchAndReplaceFlowHandler implements Serializable {
     public void getNodesContains(SearchAndReplace searchAndReplace, RenderContext renderContext){
         List<String> listNodes = new ArrayList<String>();
         String sitePath = renderContext.getSite().getPath();
-        String subStringType = "";
-        String dateCreatedBefore = "";
-        String dateCreatedAfter = "";
-        String dateModifiedBefore = "";
-        String dateModifiedAfter = "";
+
+        StringBuilder query = new StringBuilder().append("SELECT * FROM [nt:base] AS result WHERE ISDESCENDANTNODE(result, '").append(sitePath).append("') AND CONTAINS(result.");
+
+        if(searchAndReplace.getListSelectedFieldsOfNodeType() != null && !searchAndReplace.getListSelectedFieldsOfNodeType().isEmpty() && searchAndReplace.getListSelectedFieldsOfNodeType().size() == 1){
+            query.append("[").append(searchAndReplace.getListSelectedFieldsOfNodeType().get(0)).append("]");
+        }else{
+            query.append("*");
+        }
+
+        query.append(",").append(searchAndReplace.getEscapedTermToReplace()).append(") AND ([jcr:primaryType] NOT LIKE 'jnt:file') AND ([jcr:primaryType] NOT LIKE 'jnt:resource')");
 
         if(!searchAndReplace.getSelectedNodeType().isEmpty()){
-            subStringType = " AND ([jcr:primaryType] LIKE '" + searchAndReplace.getSelectedNodeType() + "')";
+            query.append(" AND ([jcr:primaryType] LIKE '").append(searchAndReplace.getSelectedNodeType()).append("')");
         }
 
         if(!searchAndReplace.getDateCreatedBefore().isEmpty()){
-            dateCreatedBefore = " AND ([jcr:created] < CAST ('+" + searchAndReplace.getDateCreatedBefore() + "T23:59:59.999Z' as date))";
+            query.append(" AND ([jcr:created] < CAST ('+").append(searchAndReplace.getDateCreatedBefore()).append("T23:59:59.999Z' as date))");
         }
 
         if(!searchAndReplace.getDateCreatedAfter().isEmpty()){
-            dateCreatedAfter = " AND ([jcr:created] > CAST ('+" + searchAndReplace.getDateCreatedAfter() + "T00:00:00.000Z' as date))";
+            query.append(" AND ([jcr:created] > CAST ('+").append(searchAndReplace.getDateCreatedAfter()).append("T00:00:00.000Z' as date))");
         }
 
         if(!searchAndReplace.getDateModifiedBefore().isEmpty()){
-            dateModifiedBefore = " AND ([jcr:lastModified] < CAST ('+" + searchAndReplace.getDateModifiedBefore() + "T23:59:59.999Z' as date))";
+            query.append(" AND ([jcr:lastModified] < CAST ('+").append(searchAndReplace.getDateModifiedBefore()).append("T23:59:59.999Z' as date))");
         }
 
         if(!searchAndReplace.getDateModifiedAfter().isEmpty()){
-            dateModifiedAfter = " AND ([jcr:lastModified] > CAST ('+" + searchAndReplace.getDateModifiedAfter() + "T00:00:00.000Z' as date))";
+            query.append(" AND ([jcr:lastModified] > CAST ('+").append(searchAndReplace.getDateModifiedAfter()).append("T00:00:00.000Z' as date))");
         }
 
         try{
             JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
             QueryManager qm = session.getWorkspace().getQueryManager();
-            Query q = qm.createQuery("SELECT * FROM [nt:base] AS result WHERE ISDESCENDANTNODE(result, '" + sitePath + "') AND CONTAINS(result.*," + searchAndReplace.getEscapedTermToReplace() + ") AND ([jcr:primaryType] NOT LIKE 'jnt:file') AND ([jcr:primaryType] NOT LIKE 'jnt:resource')" + subStringType + dateCreatedBefore + dateCreatedAfter + dateModifiedBefore + dateModifiedAfter, Query.JCR_SQL2);
+            Query q = qm.createQuery(query.toString(), Query.JCR_SQL2);
             q.setLimit(1000);
             NodeIterator ni = q.execute().getNodes();
             while (ni.hasNext()) {
@@ -79,7 +82,14 @@ public class SearchAndReplaceFlowHandler implements Serializable {
                 listNodes.add(next.getIdentifier());
             }
             String termToReplace = searchAndReplace.getEscapedTermToReplace().substring(1,searchAndReplace.getEscapedTermToReplace().length()-1);
-            searchAndReplace.setSearchResultList(replaceService.getReplaceableProperties(listNodes, termToReplace, GlobalReplaceService.SearchMode.EXACT_MATCH, session).get(GlobalReplaceService.ReplaceStatus.SUCCESS));
+            searchAndReplace.setListSearchResult(replaceService.getReplaceableProperties(listNodes, termToReplace, GlobalReplaceService.SearchMode.EXACT_MATCH, session).get(GlobalReplaceService.ReplaceStatus.SUCCESS));
+            if(searchAndReplace.getListSelectedFieldsOfNodeType() != null && !searchAndReplace.getListSelectedFieldsOfNodeType().isEmpty() && searchAndReplace.getListSelectedFieldsOfNodeType().size() > 1) {
+                for (SearchResult searchResult : searchAndReplace.getListSearchResult()) {
+                    if (!searchResult.getReplaceableProperties().containsKey(searchAndReplace.getListSelectedFieldsOfNodeType())) {
+                        searchAndReplace.getListSearchResult().indexOf(searchResult);
+                    }
+                }
+            }
         }catch(RepositoryException e){
             logger.error(e.getMessage(), e);
         }
@@ -94,14 +104,14 @@ public class SearchAndReplaceFlowHandler implements Serializable {
     }
 
     public void skipThisNode(SearchAndReplace searchAndReplace) {
-        String nodeID = searchAndReplace.getCurrentNodeInThirdStep();
+        String nodeID = searchAndReplace.getCurrentDisplayedNode();
 
         searchAndReplace.getListNodesToBeUpdated().remove(searchAndReplace.getListNodesToBeUpdated().indexOf(nodeID));
         searchAndReplace.addUUIDToListNodesSkipped(nodeID);
     }
 
     public void replaceThisNode(SearchAndReplace searchAndReplace, RenderContext renderContext) {
-        String nodeID = searchAndReplace.getCurrentNodeInThirdStep();
+        String nodeID = searchAndReplace.getCurrentDisplayedNode();
         Map<GlobalReplaceService.ReplaceStatus,List<String>> replaceResult = new HashMap<GlobalReplaceService.ReplaceStatus, List<String>>();
 
         try{
@@ -166,7 +176,7 @@ public class SearchAndReplaceFlowHandler implements Serializable {
 
     public void getNodesTypesList(SearchAndReplace searchAndReplace, RenderContext renderContext) {
         if(searchAndReplace.getListNodesTypes().isEmpty()){
-            for(SearchResult searchResult : searchAndReplace.getSearchResultList()){
+            for(SearchResult searchResult : searchAndReplace.getListSearchResult()){
                 try{
                     JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
                     JCRNodeWrapper node = session.getNodeByIdentifier(searchResult.getNodeUuid());
@@ -182,18 +192,16 @@ public class SearchAndReplaceFlowHandler implements Serializable {
 
     public void getNodePropertiesList(SearchAndReplace searchAndReplace, RenderContext renderContext) {
 
-        if(!searchAndReplace.getListFieldsOfNodeType().isEmpty()){
+        if(!searchAndReplace.getListFieldsOfNodeType().isEmpty() && searchAndReplace.isDifferent() || searchAndReplace.getSelectedNodeType().isEmpty()){
             searchAndReplace.getListFieldsOfNodeType().clear();
         }
 
-        if(searchAndReplace.getListSelectedFieldsOfNodeType() != null){
-            if(!searchAndReplace.getListSelectedFieldsOfNodeType().isEmpty()) {
-                searchAndReplace.getListSelectedFieldsOfNodeType().clear();
-            }
+        if(searchAndReplace.getListSelectedFieldsOfNodeType() != null && !searchAndReplace.getListSelectedFieldsOfNodeType().isEmpty() && searchAndReplace.isDifferent()){
+            searchAndReplace.getListSelectedFieldsOfNodeType().clear();
         }
 
-        if(!searchAndReplace.getSelectedNodeType().isEmpty()){
-            for(SearchResult searchResult : searchAndReplace.getSearchResultList()){
+        if(searchAndReplace.isDifferent()){
+            for(SearchResult searchResult : searchAndReplace.getListSearchResult()){
                 try{
                     JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
                     JCRNodeWrapper node = session.getNodeByIdentifier(searchResult.getNodeUuid());

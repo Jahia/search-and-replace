@@ -55,12 +55,12 @@
         </div>
         <c:forEach items="${searchAndReplace.listNodesToBeUpdated}" var="id" varStatus="status">
             <c:if test="${status.first}">
-                <form:hidden path="currentNodeInThirdStep" value="${id}"/>
+                <form:hidden path="currentDisplayedNode" value="${id}"/>
                 <jcr:node var="node" uuid="${id}"/>
                 <div class="box-1">
                     <h1><fmt:message key="jnt_searchAndReplace.previewOfModification"/>&nbsp;${functions:abbreviate(node.displayableName,100,120,'...')}</h1>
                     <div class="preview">
-                        <c:forEach items="${searchAndReplace.searchResultList}" var="searchResultNode">
+                        <c:forEach items="${searchAndReplace.listSearchResult}" var="searchResultNode">
                             <c:if test="${searchResultNode.nodeUuid eq id}">
                                 <table class="table">
                                     <thead>
@@ -93,19 +93,19 @@
             </c:if>
         </c:forEach>
         <div class="control-group">
-            <button class="btn btn-danger" name="_eventId_searchAndReplaceCancel">
+            <button class="btn btn-danger" name="_eventId_cancel">
                 <fmt:message key="label.cancel"/>
             </button>
             <c:if test="${fn:length(searchAndReplace.listNodesToBeUpdated) gt 1}">
-                <button class="btn" name="_eventId_searchAndReplaceSkipThisNode">
+                <button class="btn" name="_eventId_skipThisNode">
                     <fmt:message key="jnt_searchAndReplace.skipThisNode"/>
                 </button>
             </c:if>
-            <button class="btn btn-primary" name="_eventId_searchAndReplaceInCurrentNode">
+            <button class="btn btn-primary" name="_eventId_replaceInCurrentNode">
                 <fmt:message key="jnt_searchAndReplace.replaceInCurrentNode"/>
             </button>
             <c:if test="${fn:length(searchAndReplace.listNodesToBeUpdated) gt 1}">
-                <button class="btn btn-success" name="_eventId_searchAndReplaceAllNode">
+                <button class="btn btn-success" name="_eventId_replaceAllNode">
                     <fmt:message key="jnt_searchAndReplace.replaceAllNode"/>
                 </button>
             </c:if>
