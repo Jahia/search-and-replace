@@ -7,93 +7,129 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by rizak on 15/04/14.
+ * This Service expose some methods to replace strings or substrings in JCR node properties
+ * Created by Rahmed on 15/04/14.
  */
-public interface GlobalReplaceService
-{
-    public enum SearchMode {EXACT_MATCH, IGNORE_CASE, REGEXP};
-    public enum ReplaceStatus {SUCCESS, FAILED};
+public interface GlobalReplaceService {
+    /**
+     * Jahia Node Properties Replace Function (By Nodes Uuid list)
+     * <p/>
+     * This methode replace the termToReplace by the replacementTerm in all the editable properties of the nodes defined by the nodesUuids list
+     * If there are no constraints or lock on nodes or properties
+     *
+     * @param nodesUuids      The nodes list corresponding to the nodes uuids on which apply the term replacement
+     * @param termToReplace   mandatory parameter
+     * @param replacementTerm mandatory parameter
+     * @param searchMode      mandatory parameter defining the term search algorithm (possible values found in the searchModes Enum)
+     * @param session         the session that will be used to access the nodes
+     * @return Map<ReplaceStatus, List<String>> this Map will contain two entries : one with the key SUCCESS that will contain the list of UUIDs of replaced nodes
+     * The other with the key FAILED will contain nodes on which no replacement could be done.
+     */
+    public Map<ReplaceStatus, List<String>> replaceByUuid(List<String> nodesUuids, String termToReplace, String replacementTerm, SearchMode searchMode, JCRSessionWrapper session);
+
+    ;
 
     /**
      * Jahia Node Properties Replace Function (By Nodes Uuid list)
-     * @author Rizak
+     * <p/>
+     * This methode replace the termToReplace by the replacementTerm in all the properties found in the propertiesToReplace list and on the nodes defined by the nodesUuids list
+     * If there are no constraints or lock on nodes or properties
      *
-     * @param nodesUuids The nodes list corresponding to the nodes uuids on which apply the term replacement
-     * @param termToReplace madatory parameter
-     * @param replacementTerm mandatory parameter
-     * @param searchMode mandatory parameter defining the term search algorithm (possible values found in the searchModes Enum)
-     * @param session the session that will be used to access the nodes
+     * @param nodesUuids          The nodes list corresponding to the nodes uuids on which apply the term replacement
+     * @param termToReplace       mandatory parameter
+     * @param replacementTerm     mandatory parameter
+     * @param searchMode          mandatory parameter defining the term search algorithm (possible values found in the searchModes Enum)
+     * @param propertiesToReplace The list of properties name on which execute the replacement
+     * @param session             the session that will be used to access the nodes
+     * @return Map<ReplaceStatus, List<String>> this Map will contain two entries : one with the key SUCCESS that will contain the list of UUIDs of replaced nodes
+     * The other with the key FAILED will contain nodes on which no replacement could be done.
      */
-    public Map<ReplaceStatus,List<String>> replaceByUuid(List<String> nodesUuids, String termToReplace, String replacementTerm, SearchMode searchMode, JCRSessionWrapper session);
+    public Map<ReplaceStatus, List<String>> replaceByUuid(List<String> nodesUuids, String termToReplace, String replacementTerm, SearchMode searchMode, List<String> propertiesToReplace, JCRSessionWrapper session);
 
-    /**
-     * Jahia Node Properties Replace Function (By Nodes Uuid list)
-     * @author Rizak
-     *
-     * @param nodesUuids The nodes list corresponding to the nodes uuids on which apply the term replacement
-     * @param termToReplace madatory parameter
-     * @param replacementTerm mandatory parameter
-     * @param searchMode mandatory parameter defining the term search algorithm (possible values found in the searchModes Enum)
-     * @param session the session that will be used to access the nodes
-     */
-    public Map<ReplaceStatus,List<String>> replaceByUuid(List<String> nodesUuids, String termToReplace, String replacementTerm, SearchMode searchMode,List<String> propertiesToReplace, JCRSessionWrapper session);
+    ;
 
     /**
      * Jahia Node Properties Replace Function (By Nodes list)
-     * @author Rizak
+     * <p/>
+     * This methode replace the termToReplace by the replacementTerm in all the editable properties of the nodes defined by the nodes list
+     * If there are no constraints or lock on nodes or properties
      *
-     * @param nodes The nodes list corresponding to the nodes on which apply the term replacement
-     * @param termToReplace madatory parameter
+     * @param nodes           The nodes list corresponding to the nodes on which apply the term replacement
+     * @param termToReplace   mandatory parameter
      * @param replacementTerm mandatory parameter
-     * @param searchMode mandatory parameter defining the term search algorithm (possible values found in the searchModes Enum)
-     * @param session the session that will be used to access the nodes
+     * @param searchMode      mandatory parameter defining the term search algorithm (possible values found in the searchModes Enum)
+     * @param session         the session that will be used to access the nodes
+     * @return Map<ReplaceStatus, List<String>> this Map will contain two entries : one with the key SUCCESS that will contain the list of UUIDs of replaced nodes
+     * The other with the key FAILED will contain nodes on which no replacement could be done.
      */
-    public Map<ReplaceStatus,List<String>> replaceByNodes(List<JCRNodeWrapper> nodes, String termToReplace, String replacementTerm, SearchMode searchMode, JCRSessionWrapper session);
+    public Map<ReplaceStatus, List<String>> replaceByNodes(List<JCRNodeWrapper> nodes, String termToReplace, String replacementTerm, SearchMode searchMode, JCRSessionWrapper session);
 
     /**
      * Jahia Node Properties Replace Function (By Nodes list)
-     * @author Rizak
+     * <p/>
+     * This methode replace the termToReplace by the replacementTerm in all the properties found in the propertiesToReplace list and on the nodes defined by the nodes list
+     * If there are no constraints or lock on nodes or properties
      *
-     * @param nodes The nodes list corresponding to the nodes on which apply the term replacement
-     * @param termToReplace madatory parameter
-     * @param replacementTerm mandatory parameter
-     * @param searchMode mandatory parameter defining the term search algorithm (possible values found in the searchModes Enum)
-     * @param session the session that will be used to access the nodes
+     * @param nodes               The nodes list corresponding to the nodes on which apply the term replacement
+     * @param termToReplace       mandatory parameter
+     * @param replacementTerm     mandatory parameter
+     * @param searchMode          mandatory parameter defining the term search algorithm (possible values found in the searchModes Enum)
+     * @param propertiesToReplace The list of properties name on which execute the replacement
+     * @param session             the session that will be used to access the nodes
+     * @return Map<ReplaceStatus, List<String>> this Map will contain two entries : one with the key SUCCESS that will contain the list of UUIDs of replaced nodes
+     * The other with the key FAILED will contain nodes on which no replacement could be done.
      */
-    public Map<ReplaceStatus,List<String>> replaceByNodes(List<JCRNodeWrapper> nodes, String termToReplace, String replacementTerm, SearchMode searchMode,List<String> propertiesToReplace, JCRSessionWrapper session);
+    public Map<ReplaceStatus, List<String>> replaceByNodes(List<JCRNodeWrapper> nodes, String termToReplace, String replacementTerm, SearchMode searchMode, List<String> propertiesToReplace, JCRSessionWrapper session);
+
+    /**
+     * Jahia Node Properties Replace Function (By SearchResult list)
+     * <p/>
+     * This methode replace the termToReplace by the replacementTerm in all the editable properties of the nodes defined by the searchResults list
+     * If there are no constraints or lock on nodes or properties
+     *
+     * @param searchResults   The nodes list corresponding to the nodes on which apply the term replacement
+     * @param termToReplace   mandatory parameter
+     * @param replacementTerm mandatory parameter
+     * @param searchMode      mandatory parameter defining the term search algorithm (possible values found in the searchModes Enum)
+     * @param session         the session that will be used to access the nodes
+     * @return Map<ReplaceStatus, List<String>> this Map will contain two entries : one with the key SUCCESS that will contain the list of UUIDs of replaced nodes
+     * The other with the key FAILED will contain nodes on which no replacement could be done.
+     */
+    public Map<ReplaceStatus, List<String>> replaceBySearchResult(List<SearchResult> searchResults, String termToReplace, String replacementTerm, SearchMode searchMode, JCRSessionWrapper session);
+
+    /**
+     * Jahia Node Properties Replace Function (By SearchResult list)
+     * <p/>
+     * This methode replace the termToReplace by the replacementTerm in all the properties found in the propertiesToReplace list and on the nodes defined by the searchResults list
+     * If there are no constraints or lock on nodes or properties
+     *
+     * @param searchResults       The nodes list corresponding to the nodes on which apply the term replacement
+     * @param termToReplace       mandatory parameter
+     * @param replacementTerm     mandatory parameter
+     * @param searchMode          mandatory parameter defining the term search algorithm (possible values found in the searchModes Enum)
+     * @param propertiesToReplace The list of properties name on which execute the replacement
+     * @param session             the session that will be used to access the nodes
+     * @return Map<ReplaceStatus, List<String>> this Map will contain two entries : one with the key SUCCESS that will contain the list of UUIDs of replaced nodes
+     * The other with the key FAILED will contain nodes on which no replacement could be done.
+     */
+    public Map<ReplaceStatus, List<String>> replaceBySearchResult(List<SearchResult> searchResults, String termToReplace, String replacementTerm, SearchMode searchMode, List<String> propertiesToReplace, JCRSessionWrapper session);
 
     /**
      * Jahia Node Properties Replace Function (By Nodes list)
-     * @author Rizak
+     * <p/>
+     * This methode return the list of editable properties in the nodes defined by the nodesUuis list
+     * An editable property is : A String property with no constraint on it (choicelist, value constraint or protected properties are not editable)
      *
-     * @param searchResults The nodes list corresponding to the nodes on which apply the term replacement
-     * @param termToReplace madatory parameter
-     * @param replacementTerm mandatory parameter
-     * @param searchMode mandatory parameter defining the term search algorithm (possible values found in the searchModes Enum)
-     * @param session the session that will be used to access the nodes
+     * @param nodesUuid     The nodes Uuid list corresponding to the nodes on which apply the term replacement
+     * @param termToReplace mandatory parameter
+     * @param searchMode    mandatory parameter defining the term search algorithm (possible values found in the searchModes Enum)
+     * @param session       the session that will be used to access the nodes
+     * @return Map<ReplaceStatus, List<String>> this Map will contain two entries : one with the key SUCCESS that will contain the list of replaceable SearchResults
+     * The other with the key FAILED will contain SearchResults on which no replacement can be done.
      */
-    public Map<ReplaceStatus,List<String>> replaceBySearchResult(List<SearchResult> searchResults, String termToReplace, String replacementTerm, SearchMode searchMode, JCRSessionWrapper session);
+    public Map<ReplaceStatus, List<SearchResult>> getReplaceableProperties(List<String> nodesUuid, String termToReplace, SearchMode searchMode, JCRSessionWrapper session);
 
-    /**
-     * Jahia Node Properties Replace Function (By Nodes list)
-     * @author Rizak
-     *
-     * @param searchResults The nodes list corresponding to the nodes on which apply the term replacement
-     * @param termToReplace madatory parameter
-     * @param replacementTerm mandatory parameter
-     * @param searchMode mandatory parameter defining the term search algorithm (possible values found in the searchModes Enum)
-     * @param session the session that will be used to access the nodes
-     */
-    public Map<ReplaceStatus,List<String>> replaceBySearchResult(List<SearchResult> searchResults, String termToReplace, String replacementTerm, SearchMode searchMode, List<String> propertiesToReplace,JCRSessionWrapper session);
+    public enum SearchMode {EXACT_MATCH, IGNORE_CASE, REGEXP}
 
-    /**
-     * Jahia Node Properties Replace Function (By Nodes list)
-     * @author Rizak
-     *
-     * @param nodesUuid The nodes Uuid list corresponding to the nodes on which apply the term replacement
-     * @param termToReplace madatory parameter
-     * @param searchMode mandatory parameter defining the term search algorithm (possible values found in the searchModes Enum)
-     * @param session the session that will be used to access the nodes
-     */
-    public Map<ReplaceStatus,List<SearchResult>> getReplaceableProperties(List<String> nodesUuid, String termToReplace, SearchMode searchMode, JCRSessionWrapper session);
+    public enum ReplaceStatus {SUCCESS, FAILED}
 }

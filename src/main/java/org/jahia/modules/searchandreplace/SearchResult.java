@@ -4,15 +4,17 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
+ * This class defines the SearchResult Object
+ * It is composed by a JCR node uuid and a Map<String,String> replaceableProperties
+ * that contains the list of the node properties to replace
+ * The key is the property name and the value is the property value
  * Created by rizak on 17/04/14.
  */
-public class SearchResult implements Serializable
-{
+public class SearchResult implements Serializable {
     private String nodeUuid;
-    private Map<String,String> replaceableProperties;
+    private Map<String, String> replaceableProperties;
 
-    public SearchResult(String nodeUuid, Map<String,String> replaceableProperties)
-    {
+    public SearchResult(String nodeUuid, Map<String, String> replaceableProperties) {
         this.replaceableProperties = replaceableProperties;
         this.nodeUuid = nodeUuid;
     }
@@ -33,14 +35,12 @@ public class SearchResult implements Serializable
         this.replaceableProperties = replaceableProperties;
     }
 
-    public void addReplaceableProperty(String propertyName, String propertyValue)
-    {
-        this.getReplaceableProperties().put(propertyName,propertyValue);
+    public void addReplaceableProperty(String propertyName, String propertyValue) {
+        this.getReplaceableProperties().put(propertyName, propertyValue);
     }
 
     @Override
-    protected SearchResult clone()
-    {
-        return new SearchResult(this.getNodeUuid(),this.getReplaceableProperties());
+    protected SearchResult clone() {
+        return new SearchResult(this.getNodeUuid(), this.getReplaceableProperties());
     }
 }
