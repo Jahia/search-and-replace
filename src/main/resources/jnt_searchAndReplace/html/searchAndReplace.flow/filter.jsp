@@ -106,7 +106,7 @@
                 $('input', oTable.fnGetNodes()).attr('checked',this.checked);
             });
 
-            $('.preview').highlight('${searchAndReplace.termToReplace}', { caseSensitive: true });
+            $('.preview').highlight('${functions:escapeJavaScript(searchAndReplace.termToReplace)}', { caseSensitive: true });
 
             $('.highlight').css({ backgroundColor: '#ED6A32' });
 
@@ -170,7 +170,7 @@
 </a>
 <c:set value="${searchAndReplace.selectedNodeType}${searchAndReplace.dateCreatedBefore}${searchAndReplace.dateCreatedAfter}${searchAndReplace.dateModifiedBefore}${searchAndReplace.dateModifiedAfter}" var="testString"/>
 
-<h1>${searchAndReplace.listSelectedFieldsOfNodeType}</h1>
+
 
 <form:form name="advancedSearchForm" action="${flowExecutionUrl}" method="post" cssClass="form-horizontal" modelAttribute="searchAndReplace" onsubmit="workInProgress('${i18nWaiting}')">
     <div id="advancedSearch" class="<c:if test="${empty testString}">hide</c:if> box-1">
@@ -188,7 +188,7 @@
                     <fmt:message key="jnt_searchAndReplace.selectNodeType"/>
                 </form:label>
                 <div class="controls input-append" style="display: block;">
-                    <form:select path="selectedNodeType" onchange="formSubmit()" items="${searchAndReplace.listNodesTypes}">
+                    <form:select path="selectedNodeType" onchange="formSubmit()">
                         <form:option value=""></form:option>
                         <c:forEach items="${searchAndReplace.listNodesTypes}" var="property">
                             <form:option value="${property}">${property}</form:option>
@@ -328,9 +328,6 @@
         </tbody>
     </table>
     <div class="control-group">
-        <button class="btn" name="_eventId_previous">
-            <fmt:message key="label.previous"/>
-        </button>
         <button class="btn btn-danger" name="_eventId_cancel">
             <fmt:message key="label.cancel"/>
         </button>

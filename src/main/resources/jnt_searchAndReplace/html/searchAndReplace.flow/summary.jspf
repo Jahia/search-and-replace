@@ -25,7 +25,7 @@
                 "aaSorting": [] //this option disable sort by default, the user steal can use column names to sort the table
             });
 
-            $('.preview').highlight('${searchAndReplace.replacementTerm}', { caseSensitive: true });
+            $('.preview').highlight('${functions:escapeJavaScript(searchAndReplace.replacementTerm)}', { caseSensitive: true });
 
             $('.highlight').css({ backgroundColor: '#3399ff' });
         });

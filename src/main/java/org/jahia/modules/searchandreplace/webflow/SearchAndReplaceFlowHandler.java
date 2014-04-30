@@ -37,13 +37,38 @@ public class SearchAndReplaceFlowHandler implements Serializable {
         return searchAndReplace;
     }
 
+    public SearchAndReplace resetSearchAndReplace(SearchAndReplace searchAndReplace) {
+        if(searchAndReplace.getListNodesToBeUpdated().isEmpty() && searchAndReplace.getListSearchResult() != null){
+            searchAndReplace = new SearchAndReplace(searchAndReplace);
+        }
+        return searchAndReplace;
+    }
+
+    public void resetListSummary(SearchAndReplace searchAndReplace) {
+        if(searchAndReplace.getReplacementTerm() != null && !searchAndReplace.getReplacementTerm().isEmpty()){
+            searchAndReplace.setReplacementTerm("");
+        }
+        if(!searchAndReplace.getListNodesUpdateSuccess().isEmpty()){
+            searchAndReplace.getListNodesUpdateSuccess().clear();
+        }
+        if(!searchAndReplace.getListNodesUpdateFail().isEmpty()){
+            searchAndReplace.getListNodesUpdateFail().clear();
+        }
+        if(!searchAndReplace.getListNodesSkipped().isEmpty()){
+            searchAndReplace.getListNodesSkipped().clear();
+        }
+        if(searchAndReplace.getListSearchResult() != null && !searchAndReplace.getListSearchResult().isEmpty()){
+            searchAndReplace.getListSearchResult().clear();
+        }
+    }
+
     public void getNodesContains(SearchAndReplace searchAndReplace, RenderContext renderContext){
         List<String> listNodes = new ArrayList<String>();
         String sitePath = renderContext.getSite().getPath();
 
         StringBuilder query = new StringBuilder().append("SELECT * FROM [nt:base] AS result WHERE ISDESCENDANTNODE(result, '").append(sitePath).append("') AND CONTAINS(result.");
 
-        if(searchAndReplace.getListSelectedFieldsOfNodeType() != null && !searchAndReplace.getListSelectedFieldsOfNodeType().isEmpty() && searchAndReplace.getListSelectedFieldsOfNodeType().size() == 1){
+        if(searchAndReplace.getListSelectedFieldsOfNodeType() != null && searchAndReplace.getListSelectedFieldsOfNodeType().size() == 1){
             query.append("[").append(searchAndReplace.getListSelectedFieldsOfNodeType().get(0)).append("]");
         }else{
             query.append("*");
@@ -108,6 +133,13 @@ public class SearchAndReplaceFlowHandler implements Serializable {
 
         searchAndReplace.getListNodesToBeUpdated().remove(searchAndReplace.getListNodesToBeUpdated().indexOf(nodeID));
         searchAndReplace.addUUIDToListNodesSkipped(nodeID);
+    }
+
+    public void skipAllNodes(SearchAndReplace searchAndReplace) {
+        for (String node : searchAndReplace.getListNodesToBeUpdated()){
+            searchAndReplace.addUUIDToListNodesSkipped(node);
+        }
+        searchAndReplace.getListNodesToBeUpdated().clear();
     }
 
     public void replaceThisNode(SearchAndReplace searchAndReplace, RenderContext renderContext) {

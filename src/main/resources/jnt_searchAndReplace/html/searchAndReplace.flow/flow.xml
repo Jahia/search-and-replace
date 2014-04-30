@@ -10,7 +10,13 @@
         <binder>
             <binding property="termToReplace"/>
         </binder>
+        <on-entry>
+            <evaluate expression="flowHandler.resetSearchAndReplace(searchAndReplace)" result="searchAndReplace"/>
+        </on-entry>
         <transition on="goToFilter" to="filter"/>
+        <on-exit>
+            <evaluate expression="flowHandler.resetListSummary(searchAndReplace)"/>
+        </on-exit>
     </view-state>
 
     <view-state id="filter" model="searchAndReplace">
@@ -32,6 +38,10 @@
         <transition on="previous" to="search" validate="false"/>
         <transition on="goToReplace" to="replace"/>
         <transition on="advancedSearchForm" to="filter"/>
+        <transition on="noResult" to="search"/>
+        <transition on="cancel" to="search" bind="false" validate="false">
+            <evaluate expression="flowHandler.initSearchAndReplace()" result="flowScope.searchAndReplace"/>
+        </transition>
     </view-state>
 
     <view-state id="replace" model="searchAndReplace">
@@ -39,13 +49,19 @@
             <binding property="replacementTerm"/>
             <binding property="currentDisplayedNode"/>
         </binder>
-        <transition on="skipThisNode" to="skipThisNode" validate="false"/>
+        <transition on="skipThisNode" to="skipThisNode"/>
+        <transition on="skipAllNode" to="skipAllNode"/>
         <transition on="replaceInCurrentNode" to="updateThisNode"/>
         <transition on="replaceAllNode" to="updateAllNodes"/>
     </view-state>
 
     <action-state id="skipThisNode">
         <evaluate expression="flowHandler.skipThisNode(searchAndReplace)"/>
+        <transition to="haveNodeToUpdate"/>
+    </action-state>
+
+    <action-state id="skipAllNode">
+        <evaluate expression="flowHandler.skipAllNodes(searchAndReplace)"/>
         <transition to="haveNodeToUpdate"/>
     </action-state>
 
@@ -64,10 +80,4 @@
         <transition on="yes" to="replace"/>
         <transition on="no" to="search"/>
     </action-state>
-
-    <global-transitions>
-        <transition on="cancel" to="search" bind="false" validate="false">
-            <evaluate expression="flowHandler.initSearchAndReplace()" result="flowScope.searchAndReplace"/>
-        </transition>
-    </global-transitions>
 </flow>

@@ -54,6 +54,15 @@ public class SearchAndReplace implements Serializable {
     private List<SearchResult> listSearchResult;
 
     public SearchAndReplace() {
+
+    }
+
+    public SearchAndReplace(SearchAndReplace searchAndReplace) {
+        setReplacementTerm(searchAndReplace.getReplacementTerm());
+        setListNodesUpdateSuccess(searchAndReplace.getListNodesUpdateSuccess());
+        setListNodesUpdateFail(searchAndReplace.getListNodesUpdateFail());
+        setListNodesSkipped(searchAndReplace.getListNodesSkipped());
+        setListSearchResult(searchAndReplace.getListSearchResult());
     }
 
     public boolean validateSearch(ValidationContext context) {

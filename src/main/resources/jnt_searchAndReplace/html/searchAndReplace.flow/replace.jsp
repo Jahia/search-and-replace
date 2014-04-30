@@ -27,7 +27,7 @@
 <template:addResources type="inlinejavascript">
     <script type="text/javascript">
         $(document).ready(function(){
-            $('.preview').highlight('${searchAndReplace.termToReplace}', { caseSensitive: true });
+            $('.preview').highlight('${functions:escapeJavaScript(searchAndReplace.termToReplace)}', { caseSensitive: true });
 
             $('.highlight').css({ backgroundColor: '#ED6A32' });
         });
@@ -93,14 +93,12 @@
             </c:if>
         </c:forEach>
         <div class="control-group">
-            <button class="btn btn-danger" name="_eventId_cancel">
-                <fmt:message key="label.cancel"/>
+            <button class="btn" name="_eventId_skipThisNode">
+                <fmt:message key="jnt_searchAndReplace.skipThisNode"/>
             </button>
-            <c:if test="${fn:length(searchAndReplace.listNodesToBeUpdated) gt 1}">
-                <button class="btn" name="_eventId_skipThisNode">
-                    <fmt:message key="jnt_searchAndReplace.skipThisNode"/>
-                </button>
-            </c:if>
+            <button class="btn" name="_eventId_skipAllNode">
+                <fmt:message key="jnt_searchAndReplace.skipAllNode"/>
+            </button>
             <button class="btn btn-primary" name="_eventId_replaceInCurrentNode">
                 <fmt:message key="jnt_searchAndReplace.replaceInCurrentNode"/>
             </button>
