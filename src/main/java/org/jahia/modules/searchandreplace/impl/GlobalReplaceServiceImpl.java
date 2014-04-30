@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 
 /**
  * This class implements the service GlobalReplaceService
- * Created by rizak on 15/04/14.
+ * Created by Rahmed on 15/04/14.
  */
 public class GlobalReplaceServiceImpl implements GlobalReplaceService {
     private static Logger logger = LoggerFactory.getLogger(GlobalReplaceServiceImpl.class);

@@ -8,7 +8,7 @@ import java.util.Map;
  * It is composed by a JCR node uuid and a Map<String,String> replaceableProperties
  * that contains the list of the node properties to replace
  * The key is the property name and the value is the property value
- * Created by rizak on 17/04/14.
+ * Created by Rahmed on 17/04/14.
  */
 public class SearchResult implements Serializable {
     private String nodeUuid;

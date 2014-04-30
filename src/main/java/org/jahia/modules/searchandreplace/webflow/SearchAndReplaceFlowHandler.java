@@ -65,7 +65,12 @@ public class SearchAndReplaceFlowHandler implements Serializable {
     public void getNodesContains(SearchAndReplace searchAndReplace, RenderContext renderContext){
         List<String> listNodes = new ArrayList<String>();
         String sitePath = renderContext.getSite().getPath();
-
+        //If nodeType is changed and some properties has already been selected
+        if(searchAndReplace.isDifferent() && !searchAndReplace.getListFieldsOfNodeType().isEmpty())
+        {
+            //Clear the selected properties list before executing the query
+            searchAndReplace.getListSelectedFieldsOfNodeType().clear();
+        }
         StringBuilder query = new StringBuilder().append("SELECT * FROM [nt:base] AS result WHERE ISDESCENDANTNODE(result, '").append(sitePath).append("') AND CONTAINS(result.");
 
         if(searchAndReplace.getListSelectedFieldsOfNodeType() != null && searchAndReplace.getListSelectedFieldsOfNodeType().size() == 1){
