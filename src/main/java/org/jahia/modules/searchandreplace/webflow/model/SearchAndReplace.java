@@ -1,5 +1,6 @@
 package org.jahia.modules.searchandreplace.webflow.model;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jahia.modules.searchandreplace.SearchResult;
 import org.jahia.services.content.JCRContentUtils;
@@ -44,7 +45,7 @@ public class SearchAndReplace implements Serializable {
     private String dateModifiedBefore = "";
     private String dateModifiedAfter = "";
     private boolean selectAll;
-    private boolean isDifferent;
+    private boolean isDifferentNodeType;
     private List<String> listNodesTypes = new ArrayList<String>();
     private List<String> listFieldsOfNodeType = new ArrayList<String>();
     private List<String> listSelectedFieldsOfNodeType = new ArrayList<String>();
@@ -91,7 +92,7 @@ public class SearchAndReplace implements Serializable {
         boolean valid = true;
 
         if(context.getUserEvent().equals("goToReplace")){
-            if (listNodesToBeUpdated == null){
+            if (CollectionUtils.isEmpty(listNodesToBeUpdated)){
                 messages.addMessage(new MessageBuilder().error().source("listNodesToBeUpdated").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.listNodesToBeUpdated.error", locale)).build());
                 valid = false;
             }
@@ -112,12 +113,12 @@ public class SearchAndReplace implements Serializable {
 
             setFromEventID("advancedSearchForm");
 
-            setDifferent(false);
+            setDifferentNodeType(false);
 
             if(!StringUtils.isBlank(selectedNodeType)){
                 if(!previousSelectedNodeType.equals(selectedNodeType)){
                     setPreviousSelectedNodeType(selectedNodeType);
-                    isDifferent = true;
+                    isDifferentNodeType = true;
                 }
             }
 
@@ -211,8 +212,8 @@ public class SearchAndReplace implements Serializable {
         this.selectAll = selectAll;
     }
 
-    public void setDifferent(boolean isDifferent) {
-        this.isDifferent = isDifferent;
+    public void setDifferentNodeType(boolean isDifferent) {
+        this.isDifferentNodeType = isDifferent;
     }
 
     public void setListNodesTypes(List<String> listNodesTypes) {
@@ -315,8 +316,8 @@ public class SearchAndReplace implements Serializable {
         return selectAll;
     }
 
-    public boolean isDifferent() {
-        return isDifferent;
+    public boolean isDifferentNodeType() {
+        return isDifferentNodeType;
     }
 
     public List<String> getListNodesTypes() {
