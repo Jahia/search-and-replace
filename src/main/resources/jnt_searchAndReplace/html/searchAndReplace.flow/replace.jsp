@@ -35,7 +35,7 @@
 </template:addResources>
 
 <div>
-    <h1>Search And Replace</h1>
+    <h1><fmt:message key="jnt_searchAndReplace"/></h1>
     <form:form action="${flowExecutionUrl}" method="post" cssClass="well form-horizontal" modelAttribute="searchAndReplace" onsubmit="workInProgress('${i18nWaiting}')">
         <div class="control-group">
             <form:label path="termToReplace" cssClass="control-label">

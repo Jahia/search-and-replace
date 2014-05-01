@@ -38,9 +38,7 @@
     </script>
 </template:addResources>
 
-<h1>${searchAndReplace.fromEventID}</h1>
-
-<h1>Search And Replace</h1>
+<h1><fmt:message key="jnt_searchAndReplace"/></h1>
 <form:form action="${flowExecutionUrl}" method="post" cssClass="box-1" modelAttribute="searchAndReplace" onsubmit="workInProgress('${i18nWaiting}')">
     <h2>Search</h2>
     <div class="input-append">
@@ -53,7 +51,7 @@
     </div>
     <span id="termToReplaceError" class="hide text-error"><fmt:message key="jnt_searchAndReplace.termToReplace.error"/></span>
     <form:errors path="termToReplace" cssClass="text-error"/>
-    <c:if test="${fn:contains(searchAndReplace.fromEventID, 'search')}">
+    <c:if test="${fn:contains(searchAndReplace.fromEventID, 'noResult')}">
         <div class="alert alert-info">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
             <fmt:message key="jnt_searchAndReplace.noResult"/>
@@ -61,6 +59,6 @@
     </c:if>
 </form:form>
 
-<c:if test="${fn:length(searchAndReplace.listNodesUpdateSuccess) gt 0 or fn:length(searchAndReplace.listNodesSkipped) gt 0 or fn:length(searchAndReplace.listNodesUpdateFail) gt 0}">
+<c:if test="${fn:contains(searchAndReplace.fromEventID, 'summary')}">
     <%@include file="summary.jspf" %>
 </c:if>

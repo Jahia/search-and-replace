@@ -19,13 +19,13 @@
 <%--@elvariable id="workspace" type="java.lang.String"--%>
 <%--@elvariable id="searchAndReplace" type="org.jahia.modules.searchandreplace.webflow.model.SearchAndReplace"--%>
 
-<template:addResources type="css" resources="bootstrap-datetimepicker.min.css"/>
+<template:addResources type="css" resources="datepicker.css"/>
 
 <template:addResources type="javascript" resources="jquery.min.js,jquery-ui.min.js,jquery.blockUI.js,admin-bootstrap.js,workInProgress.js"/>
 <template:addResources type="javascript" resources="datatables/jquery.dataTables.js,i18n/jquery.dataTables-${currentResource.locale}.js,datatables/dataTables.bootstrap-ext.js"/>
 <template:addResources type="javascript" resources="jquery.highlight.js"/>
-<template:addResources type="javascript" resources="bootstrap-datetimepicker.min.js"/>
-<template:addResources type="javascript" resources="bootstrap-datetimepicker.${renderContext.UILocale}.js"/>
+<template:addResources type="javascript" resources="bootstrap-datepicker.js"/>
+<template:addResources type="javascript" resources="bootstrap-datepicker.${renderContext.UILocale}.js"/>
 
 <fmt:message key="label.workInProgressTitle" var="i18nWaiting"/><c:set var="i18nWaiting" value="${functions:escapeJavaScript(i18nWaiting)}"/>
 
@@ -114,34 +114,46 @@
                 $('#advancedSearch').slideToggle("slow");
             });
 
-            $('#createdBefore').datetimepicker({
-                format: 'yyyy-MM-dd',
-                pickTime: false,
-                language: '${renderContext.UILocale}'
+            $('#createdBefore').datepicker({
+                format: 'yyyy-mm-dd',
+                todayBtn: true,
+                language: '${renderContext.UILocale}',
+                calendarWeeks: true,
+                autoclose: true,
+                todayHighlight: true
             }).on('changeDate', function(){
                 formSubmit();
             });
 
-            $('#createdAfter').datetimepicker({
-                format: 'yyyy-MM-dd',
-                pickTime: false,
-                language: '${renderContext.UILocale}'
+            $('#createdAfter').datepicker({
+                format: 'yyyy-mm-dd',
+                todayBtn: true,
+                language: '${renderContext.UILocale}',
+                calendarWeeks: true,
+                autoclose: true,
+                todayHighlight: true
             }).on('changeDate', function(){
                 formSubmit();
             });
 
-            $('#modifiedBefore').datetimepicker({
-                format: 'yyyy-MM-dd',
-                pickTime: false,
-                language: '${renderContext.UILocale}'
+            $('#modifiedBefore').datepicker({
+                format: 'yyyy-mm-dd',
+                todayBtn: true,
+                language: '${renderContext.UILocale}',
+                calendarWeeks: true,
+                autoclose: true,
+                todayHighlight: true
             }).on('changeDate', function(){
                 formSubmit();
             });
 
-            $('#modifiedAfter').datetimepicker({
-                format: 'yyyy-MM-dd',
-                pickTime: false,
-                language: '${renderContext.UILocale}'
+            $('#modifiedAfter').datepicker({
+                format: 'yyyy-mm-dd',
+                todayBtn: true,
+                language: '${renderContext.UILocale}',
+                calendarWeeks: true,
+                autoclose: true,
+                todayHighlight: true
             }).on('changeDate', function(){
                 formSubmit();
             });
@@ -157,13 +169,13 @@
 
         function clearThisField(field){
             $('#' + field).val('');
-            $('#' + field).change();
+            formSubmit();
         }
 
     </script>
 </template:addResources>
 
-<h1>Search And Replace</h1>
+<h1><fmt:message key="jnt_searchAndReplace"/></h1>
 
 <a id="BtToggleSearch" class="btn btn-small btn-info" href="#">
     <i class="icon-search icon-white"></i>
@@ -171,6 +183,18 @@
 </a>
 
 <form:form name="advancedSearchForm" action="${flowExecutionUrl}" method="post" cssClass="form-horizontal" modelAttribute="searchAndReplace" onsubmit="workInProgress('${i18nWaiting}')">
+    <c:if test="${empty searchAndReplace.listSearchResult and fn:contains(searchAndReplace.fromEventID, 'search')}">
+        <form:hidden path="fromEventID" value="noResult"/>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                var input = $("<input>")
+                        .attr("type", "hidden")
+                        .attr("name", "_eventId_noResult").val("_eventId_noResult");
+                $('#searchAndReplace').append($(input));
+                $("form[name=advancedSearchForm]").submit();
+            });
+        </script>
+    </c:if>
     <div id="advancedSearch" class="<c:if test="${fn:contains(searchAndReplace.fromEventID, 'search')}">hide</c:if> box-1">
         <fieldset>
             <div class="control-group">
@@ -217,9 +241,9 @@
                     <fmt:message key="jnt_searchAndReplace.before"/>
                 </form:label>
                 <div class="controls input-append date" id="createdBefore" style="display: block;">
-                    <form:input class="otherField" path="dateCreatedBefore"/>
+                    <form:input class="span4" path="dateCreatedBefore" readonly="true"/>
                     <span class="add-on">
-                        <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+                        <i class="icon-calendar"></i>
                     </span>
                     <c:if test="${not empty searchAndReplace.dateCreatedBefore}">
                         <a href="#" title="<fmt:message key="jnt_searchAndReplace.clearDateCreatedBefore"/>" class="btn btn-link" onclick="clearThisField('dateCreatedBefore');return false;"><i class="icon-remove"></i></a>
@@ -232,9 +256,9 @@
                     <fmt:message key="jnt_searchAndReplace.after"/>
                 </form:label>
                 <div class="controls input-append date" id="createdAfter" style="display: block;">
-                    <form:input class="otherField" path="dateCreatedAfter"/>
+                    <form:input class="span4" path="dateCreatedAfter" readonly="true"/>
                     <span class="add-on">
-                        <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+                        <i class="icon-calendar"></i>
                     </span>
                     <c:if test="${not empty searchAndReplace.dateCreatedAfter}">
                         <a href="#" title="<fmt:message key="jnt_searchAndReplace.clearDateCreatedAfter"/>" class="btn btn-link" onclick="clearThisField('dateCreatedAfter')"><i class="icon-remove"></i></a>
@@ -250,9 +274,9 @@
                     <fmt:message key="jnt_searchAndReplace.before"/>
                 </form:label>
                 <div class="controls input-append date" id="modifiedBefore" style="display: block;">
-                    <form:input class="otherField" path="dateModifiedBefore"/>
+                    <form:input class="span4" path="dateModifiedBefore" readonly="true"/>
                     <span class="add-on">
-                        <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+                        <i class="icon-calendar"></i>
                     </span>
                     <c:if test="${not empty searchAndReplace.dateModifiedBefore}">
                         <a href="#" title="<fmt:message key="jnt_searchAndReplace.clearDateModifiedBefore"/>" class="btn btn-link" onclick="clearThisField('dateModifiedBefore')"><i class="icon-remove"></i></a>
@@ -265,9 +289,9 @@
                     <fmt:message key="jnt_searchAndReplace.after"/>
                 </form:label>
                 <div class="controls input-append date" id="modifiedAfter" style="display: block;">
-                    <form:input class="otherField" path="dateModifiedAfter"/>
+                    <form:input class="span4" path="dateModifiedAfter" readonly="true"/>
                     <span class="add-on">
-                        <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+                        <i class="icon-calendar"></i>
                     </span>
                     <c:if test="${not empty searchAndReplace.dateModifiedAfter}">
                         <a href="#" title="<fmt:message key="jnt_searchAndReplace.clearDateModifiedAfter"/>" class="btn btn-link" onclick="clearThisField('dateModifiedAfter')"><i class="icon-remove"></i></a>
@@ -336,17 +360,6 @@
         <span id="listNodesToBeUpdatedError" class="hide text-error"><fmt:message key="jnt_searchAndReplace.listNodesToBeUpdated.error"/></span>
         <form:errors path="listNodesToBeUpdated" cssClass="text-error"/>
     </div>
-    <c:if test="${empty searchAndReplace.listSearchResult and fn:contains(searchAndReplace.fromEventID, 'search')}">
-        <script type="text/javascript">
-            $(document).ready(function(){
-                var input = $("<input>")
-                        .attr("type", "hidden")
-                        .attr("name", "_eventId_noResult").val("_eventId_noResult");
-                $('#searchAndReplace').append($(input));
-                $("form[name=advancedSearchForm]").submit();
-            });
-        </script>
-    </c:if>
 </form:form>
 
 <c:forEach items="${searchAndReplace.listSearchResult}" var="searchResultNode">

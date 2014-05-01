@@ -78,7 +78,7 @@ public class SearchAndReplace implements Serializable {
         boolean valid = true;
 
         if (StringUtils.isBlank(termToReplace)) {
-            messages.addMessage(new MessageBuilder().error().source("termToReplace").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.searchNodes.error", locale)).build());
+            messages.addMessage(new MessageBuilder().error().source("termToReplace").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.termToReplace.error", locale)).build());
             valid = false;
         }
 

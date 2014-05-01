@@ -132,6 +132,7 @@ public class SearchAndReplaceFlowHandler implements Serializable {
         if(searchAndReplace.getListNodesToBeUpdated().size() > 0){
             return true;
         }else{
+            searchAndReplace.setFromEventID("summary");
             return false;
         }
     }

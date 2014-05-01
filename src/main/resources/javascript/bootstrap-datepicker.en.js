@@ -1,14 +1,15 @@
 /**
- * Brazilian translation for bootstrap-datetimepicker
- * Cauan Cabral <cauan@radig.com.br>
+ * English file for bootstrap-datepicker
+ * Damien GAILLARD <damien.gaillard28@gmail.com>
  */
 ;(function($){
-    $.fn.datetimepicker.dates['en'] = {
+	$.fn.datepicker.dates['en'] = {
         days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
         daysShort: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
         daysMin: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
         months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
         monthsShort: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-        today: "Today"
-    };
+        today: "Today",
+        clear: "Clear"
+	};
 }(jQuery));
