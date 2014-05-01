@@ -65,12 +65,13 @@ public class SearchAndReplaceFlowHandler implements Serializable {
     public void getNodesContains(SearchAndReplace searchAndReplace, RenderContext renderContext){
         List<String> listNodes = new ArrayList<String>();
         String sitePath = renderContext.getSite().getPath();
+
         //If nodeType is changed and some properties has already been selected
-        if(searchAndReplace.isDifferent() && !searchAndReplace.getListFieldsOfNodeType().isEmpty())
-        {
+        if(searchAndReplace.getListSelectedFieldsOfNodeType() != null && !searchAndReplace.getListSelectedFieldsOfNodeType().isEmpty() && searchAndReplace.isDifferent()){
             //Clear the selected properties list before executing the query
             searchAndReplace.getListSelectedFieldsOfNodeType().clear();
         }
+        
         StringBuilder query = new StringBuilder().append("SELECT * FROM [nt:base] AS result WHERE ISDESCENDANTNODE(result, '").append(sitePath).append("') AND CONTAINS(result.");
 
         if(searchAndReplace.getListSelectedFieldsOfNodeType() != null && searchAndReplace.getListSelectedFieldsOfNodeType().size() == 1){
@@ -160,10 +161,8 @@ public class SearchAndReplaceFlowHandler implements Serializable {
 
             //Calling Replace Service
             String termToReplace = searchAndReplace.getEscapedTermToReplace().substring(1,searchAndReplace.getEscapedTermToReplace().length()-1);
-            if(searchAndReplace.getListSelectedFieldsOfNodeType() != null){
-                if(!searchAndReplace.getListSelectedFieldsOfNodeType().isEmpty()){
-                    replaceResult = replaceService.replaceByUuid(uuids, termToReplace, searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, searchAndReplace.getListSelectedFieldsOfNodeType(), session);
-                }
+            if(searchAndReplace.getListSelectedFieldsOfNodeType() != null && !searchAndReplace.getListSelectedFieldsOfNodeType().isEmpty()){
+                replaceResult = replaceService.replaceByUuid(uuids, termToReplace, searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, searchAndReplace.getListSelectedFieldsOfNodeType(), session);
             }else{
                 replaceResult = replaceService.replaceByUuid(uuids, termToReplace, searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, session);
             }
@@ -192,10 +191,8 @@ public class SearchAndReplaceFlowHandler implements Serializable {
 
             //Calling Replace Service
             String termToReplace = searchAndReplace.getEscapedTermToReplace().substring(1,searchAndReplace.getEscapedTermToReplace().length()-1);
-            if(searchAndReplace.getListSelectedFieldsOfNodeType() != null){
-                if(!searchAndReplace.getListSelectedFieldsOfNodeType().isEmpty()){
-                    replaceResult = replaceService.replaceByUuid(searchAndReplace.getListNodesToBeUpdated(), termToReplace, searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, searchAndReplace.getListSelectedFieldsOfNodeType(), session);
-                }
+            if(searchAndReplace.getListSelectedFieldsOfNodeType() != null && !searchAndReplace.getListSelectedFieldsOfNodeType().isEmpty()){
+                replaceResult = replaceService.replaceByUuid(searchAndReplace.getListNodesToBeUpdated(), termToReplace, searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, searchAndReplace.getListSelectedFieldsOfNodeType(), session);
             }else{
                 replaceResult = replaceService.replaceByUuid(searchAndReplace.getListNodesToBeUpdated(), termToReplace, searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, session);
             }

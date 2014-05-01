@@ -33,6 +33,7 @@ public class SearchAndReplace implements Serializable {
     private Pattern defaultPattern = Pattern.compile(DEFAULT_REGEXP);
 
     private String termToReplace;
+    private String fromEventID = "";
     private String selectedNodeType = "";
     private String previousSelectedNodeType = "";
     private String matchType;
@@ -58,7 +59,9 @@ public class SearchAndReplace implements Serializable {
     }
 
     public SearchAndReplace(SearchAndReplace searchAndReplace) {
+        setTermToReplace(searchAndReplace.getTermToReplace());
         setReplacementTerm(searchAndReplace.getReplacementTerm());
+        setFromEventID(searchAndReplace.getFromEventID());
         setListNodesUpdateSuccess(searchAndReplace.getListNodesUpdateSuccess());
         setListNodesUpdateFail(searchAndReplace.getListNodesUpdateFail());
         setListNodesSkipped(searchAndReplace.getListNodesSkipped());
@@ -68,6 +71,8 @@ public class SearchAndReplace implements Serializable {
     public boolean validateSearch(ValidationContext context) {
         Locale locale = LocaleContextHolder.getLocale();
         MessageContext messages = context.getMessageContext();
+
+        setFromEventID("search");
 
         boolean valid = true;
 
@@ -104,6 +109,8 @@ public class SearchAndReplace implements Serializable {
             Matcher dateCreatedAfterMatcher = defaultPattern.matcher(dateCreatedAfter);
             Matcher dateModifiedBeforeMatcher = defaultPattern.matcher(dateModifiedBefore);
             Matcher dateModifiedAfterMatcher = defaultPattern.matcher(dateModifiedAfter);
+
+            setFromEventID("advancedSearchForm");
 
             setDifferent(false);
 
@@ -160,6 +167,10 @@ public class SearchAndReplace implements Serializable {
         this.termToReplace = termToReplace;
     }
 
+    public void setFromEventID(String fromEventID) {
+        this.fromEventID = fromEventID;
+    }
+
     public void setSelectedNodeType(String selectedNodeType) {
         this.selectedNodeType = selectedNodeType;
     }
@@ -192,8 +203,16 @@ public class SearchAndReplace implements Serializable {
         this.dateModifiedAfter = dateModifiedAfter;
     }
 
+    public void setPreviousSelectedNodeType(String previousSelectedNodeType) {
+        this.previousSelectedNodeType = previousSelectedNodeType;
+    }
+
     public void setSelectAll(boolean selectAll) {
         this.selectAll = selectAll;
+    }
+
+    public void setDifferent(boolean isDifferent) {
+        this.isDifferent = isDifferent;
     }
 
     public void setListNodesTypes(List<String> listNodesTypes) {
@@ -231,7 +250,7 @@ public class SearchAndReplace implements Serializable {
     public String getTermToReplace() {
         return termToReplace;
     }
-    
+
     public String getEscapedTermToReplace(){
         String escapedTermToReplace;
 
@@ -250,6 +269,10 @@ public class SearchAndReplace implements Serializable {
         }
 
         return escapedTermToReplace;
+    }
+
+    public String getFromEventID() {
+        return fromEventID;
     }
 
     public String getSelectedNodeType() {
@@ -284,8 +307,16 @@ public class SearchAndReplace implements Serializable {
         return dateModifiedAfter;
     }
 
+    public String getPreviousSelectedNodeType() {
+        return previousSelectedNodeType;
+    }
+
     public boolean isSelectAll() {
         return selectAll;
+    }
+
+    public boolean isDifferent() {
+        return isDifferent;
     }
 
     public List<String> getListNodesTypes() {
@@ -324,21 +355,5 @@ public class SearchAndReplace implements Serializable {
         if(!listNodesSkipped.contains(uuid)){
             listNodesSkipped.add(uuid);
         }
-    }
-
-    public String getPreviousSelectedNodeType() {
-        return previousSelectedNodeType;
-    }
-
-    public void setPreviousSelectedNodeType(String previousSelectedNodeType) {
-        this.previousSelectedNodeType = previousSelectedNodeType;
-    }
-
-    public boolean isDifferent() {
-        return isDifferent;
-    }
-
-    public void setDifferent(boolean isDifferent) {
-        this.isDifferent = isDifferent;
     }
 }

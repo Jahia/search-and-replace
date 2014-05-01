@@ -164,16 +164,14 @@
 </template:addResources>
 
 <h1>Search And Replace</h1>
+
 <a id="BtToggleSearch" class="btn btn-small btn-info" href="#">
     <i class="icon-search icon-white"></i>
     <fmt:message key='jnt_searchAndReplace.advancedSearch'/>
 </a>
-<c:set value="${searchAndReplace.selectedNodeType}${searchAndReplace.dateCreatedBefore}${searchAndReplace.dateCreatedAfter}${searchAndReplace.dateModifiedBefore}${searchAndReplace.dateModifiedAfter}" var="testString"/>
-
-
 
 <form:form name="advancedSearchForm" action="${flowExecutionUrl}" method="post" cssClass="form-horizontal" modelAttribute="searchAndReplace" onsubmit="workInProgress('${i18nWaiting}')">
-    <div id="advancedSearch" class="<c:if test="${empty testString}">hide</c:if> box-1">
+    <div id="advancedSearch" class="<c:if test="${fn:contains(searchAndReplace.fromEventID, 'search')}">hide</c:if> box-1">
         <fieldset>
             <div class="control-group">
                 <form:label path="termToReplace" cssClass="control-label">
@@ -331,15 +329,24 @@
         <button class="btn btn-danger" name="_eventId_cancel">
             <fmt:message key="label.cancel"/>
         </button>
-        <c:if test="${not empty searchAndReplace.listSearchResult}">
-            <%--searchAndReplaceSubmit class is used by jQuery don't remove it !--%>
-            <button class="btn btn-primary searchAndReplaceSubmit" type="submit" name="_eventId_goToReplace">
-                <fmt:message key="label.next"/>
-            </button>
-            <span id="listNodesToBeUpdatedError" class="hide text-error"><fmt:message key="jnt_searchAndReplace.listNodesToBeUpdated.error"/></span>
-            <form:errors path="listNodesToBeUpdated" cssClass="text-error"/>
-        </c:if>
+        <%--searchAndReplaceSubmit class is used by jQuery don't remove it !--%>
+        <button class="btn btn-primary searchAndReplaceSubmit" type="submit" name="_eventId_goToReplace">
+            <fmt:message key="label.next"/>
+        </button>
+        <span id="listNodesToBeUpdatedError" class="hide text-error"><fmt:message key="jnt_searchAndReplace.listNodesToBeUpdated.error"/></span>
+        <form:errors path="listNodesToBeUpdated" cssClass="text-error"/>
     </div>
+    <c:if test="${empty searchAndReplace.listSearchResult and fn:contains(searchAndReplace.fromEventID, 'search')}">
+        <script type="text/javascript">
+            $(document).ready(function(){
+                var input = $("<input>")
+                        .attr("type", "hidden")
+                        .attr("name", "_eventId_noResult").val("_eventId_noResult");
+                $('#searchAndReplace').append($(input));
+                $("form[name=advancedSearchForm]").submit();
+            });
+        </script>
+    </c:if>
 </form:form>
 
 <c:forEach items="${searchAndReplace.listSearchResult}" var="searchResultNode">

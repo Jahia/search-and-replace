@@ -22,6 +22,7 @@
     <view-state id="filter" model="searchAndReplace">
         <binder>
             <binding property="listNodesToBeUpdated"/>
+            <binding property="fromEventID"/>
             <binding property="selectAll"/>
             <binding property="selectedNodeType"/>
             <binding property="dateCreatedBefore"/>
@@ -35,7 +36,6 @@
             <evaluate expression="flowHandler.getNodesTypesList(searchAndReplace, externalContext.requestMap.renderContext)"/>
             <evaluate expression="flowHandler.getNodePropertiesList(searchAndReplace, externalContext.requestMap.renderContext)"/>
         </on-render>
-        <transition on="previous" to="search" validate="false"/>
         <transition on="goToReplace" to="replace"/>
         <transition on="advancedSearchForm" to="filter"/>
         <transition on="noResult" to="search"/>
