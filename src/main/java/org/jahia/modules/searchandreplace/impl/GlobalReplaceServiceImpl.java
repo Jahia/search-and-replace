@@ -8,12 +8,14 @@ import org.jahia.modules.searchandreplace.SearchResult;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRPropertyWrapper;
 import org.jahia.services.content.JCRSessionWrapper;
+import org.jahia.services.content.JCRValueWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
+import javax.jcr.Value;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -70,7 +72,10 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
 
         //Getting the liste of replaceable nodes and properties
         Map<ReplaceStatus, List<SearchResult>> replaceableMap = checkPropertiesList(nodesUuid, propertiesToReplace, session);
-
+        //putting in the replaceResultMap[FAILED] all the nodes consider not replaceable
+        for (SearchResult result : replaceableMap.get(ReplaceStatus.FAILED)) {
+            replaceResultMap.get(ReplaceStatus.FAILED).add(result.getNodeUuid());
+        }
         //Replacing the properties in all nodes
         for (SearchResult result : replaceableMap.get(ReplaceStatus.SUCCESS)) {
             //Calling the replace and putting the node uuid in the good case of replaceResultMap thanks to replaceNode return
@@ -195,7 +200,7 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
 
         int nodeIndex = -1;
         List<Property> propertiesList;
-        Map<String, String> propertiesMap = new HashMap<String, String>();
+        Map<String, List<String>> propertiesMap = new HashMap<String, List<String>>();
         Pattern p = null;
         Matcher m = null;
         if (searchMode.equals(SearchMode.REGEXP)) {
@@ -219,34 +224,56 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
                     if (logger.isDebugEnabled()) {
                         logger.debug("replaceNode() - Scanning : " + nextProperty.getName());
                     }
+                    ArrayList<String> propertyValues = new ArrayList<String>();
+                    //getting value as String
                     if (!nextProperty.getDefinition().isProtected() && nextProperty.getType() == PropertyType.STRING && (ArrayUtils.isEmpty(nextProperty.getDefinition().getValueConstraints()))) {
-                        //Search for the the term to replacing using the SearchMode
+                        if (nextProperty.isMultiple()) {
+                            for (Value value : nextProperty.getValues()) {
+                                propertyValues.add(value.getString());
+                            }
+                        } else {
+                            propertyValues.add(nextProperty.getString());
+                        }
+                        boolean containsTerm = false;
+                        //Search for the the term to replace using the SearchMode
                         switch (searchMode) {
                             case EXACT_MATCH:
-                                if (nextProperty.getString().contains(termToReplace)) {
-                                    if (logger.isDebugEnabled()) {
-                                        logger.debug("replaceNode() - case EXACT_MATCH - Found Match");
+                                for (String stringValue : propertyValues) {
+                                    if (stringValue.contains(termToReplace)) {
+                                        if (logger.isDebugEnabled()) {
+                                            logger.debug("replaceNode() - case EXACT_MATCH - Found Match");
+                                        }
+                                        propertiesMap.put(nextProperty.getName(), propertyValues);
                                     }
-                                    propertiesMap.put(nextProperty.getName(), nextProperty.getString());
                                 }
                                 break;
                             case REGEXP:
                                 //Setting Regex Matcher
-                                m = p.matcher(nextProperty.getString());
-                                if (m.find()) {
-                                    if (logger.isDebugEnabled()) {
-                                        logger.debug("replaceNode() - case REGEXP - Property Name : " + nextProperty.getName());
-                                        logger.debug("replaceNode() - case REGEXP - Found Match (" + termToReplace + " in " + nextProperty.getString() + ")");
+                                for (String stringValue : propertyValues) {
+                                    m = p.matcher(stringValue);
+                                    if (m.find()) {
+                                        if (logger.isDebugEnabled()) {
+                                            logger.debug("replaceNode() - case REGEXP - Property Name : " + nextProperty.getName());
+                                            logger.debug("replaceNode() - case REGEXP - Found Match (" + termToReplace + " in " + nextProperty.getString() + ")");
+                                        }
+                                        containsTerm = true;
                                     }
-                                    propertiesMap.put(nextProperty.getName(), nextProperty.getString());
+                                }
+                                if (containsTerm) {
+                                    propertiesMap.put(nextProperty.getName(), propertyValues);
                                 }
                                 break;
                             case IGNORE_CASE:
-                                if (StringUtils.containsIgnoreCase(nextProperty.getString(), termToReplace)) {
+                                for (String stringValue : propertyValues) {
+                                    if (StringUtils.containsIgnoreCase(stringValue, termToReplace)) {
+                                        containsTerm = true;
+                                    }
+                                }
+                                if (containsTerm) {
                                     if (logger.isDebugEnabled()) {
                                         logger.debug("replaceNode() - case IGNORE_CASE - Found Match");
                                     }
-                                    propertiesMap.put(nextProperty.getName(), nextProperty.getString());
+                                    propertiesMap.put(nextProperty.getName(), propertyValues);
                                 }
                                 break;
                         }
@@ -254,8 +281,8 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
                 }
                 if (!propertiesMap.isEmpty()) {
                     //Editable properties that contained the term to replace have been found result is replaceable
-                    SearchResult result = new SearchResult(nodeUuid, new HashMap<String, String>());
-                    result.setReplaceableProperties(new HashMap<String, String>(propertiesMap));
+                    SearchResult result = new SearchResult(nodeUuid, new HashMap<String, List<String>>());
+                    result.setReplaceableProperties(new HashMap<String, List<String>>(propertiesMap));
                     resultMap.get(ReplaceStatus.SUCCESS).add(result);
                 } else {
                     resultMap.get(ReplaceStatus.FAILED).add(new SearchResult(nodeUuid, propertiesMap));
@@ -264,6 +291,7 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
             }
         } catch (RepositoryException e) {
             logger.error("Unable to test replaceable state for node : " + nodesUuid.get(nodeIndex), e);
+            resultMap.get(ReplaceStatus.FAILED).add(new SearchResult(nodesUuid.get(nodeIndex), new HashMap<String, List<String>>()));
         }
         return resultMap;
     }
@@ -295,15 +323,37 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
             }
             if (!node.isLocked()) {
                 //Replace all properties in searchResult by the replacement Term
-                for (Map.Entry<String, String> entry : result.getReplaceableProperties().entrySet()) {
+                for (Map.Entry<String, List<String>> entry : result.getReplaceableProperties().entrySet()) {
                     propertyName = entry.getKey();
                     if (logger.isDebugEnabled()) {
                         logger.debug("replaceNode() - Replacing : " + propertyName);
                     }
-                    String propertyValue = node.getProperty(propertyName).getString().replaceAll(termToReplace, replacementTerm);
-                    node.setProperty(propertyName, propertyValue);
+
+                    boolean propertyValueReplaced = false;
+                    if (!node.getProperty(propertyName).isMultiple()) {
+                        //Not multiple values properties replacing one string
+                        String propertyValue = node.getProperty(propertyName).getString().replaceAll(termToReplace, replacementTerm);
+                        node.setProperty(propertyName, propertyValue);
+                        //Checking that something has been replace in the property
+                        propertyValueReplaced = propertyValue.contains(replacementTerm);
+                    } else {//Multiple values property
+                        //preparing the replacedValues table
+                        String[] replacedValues = new String[node.getProperty(propertyName).getValues().length];
+                        //Getting all the values as a table
+                        JCRValueWrapper[] valuesTable = node.getProperty(propertyName).getValues();
+                        for (int valueIndex = 0; valueIndex < replacedValues.length; valueIndex++) {//Browsing values one by one to replace the strings
+                            JCRValueWrapper currentvalue = valuesTable[valueIndex];
+                            replacedValues[valueIndex] = currentvalue.getString().replaceAll(termToReplace, replacementTerm);
+                            //Checking that something has been replace in the property values
+                            if (!propertyValueReplaced) {
+                                propertyValueReplaced = replacedValues[valueIndex].contains(replacementTerm);
+                            }
+                        }
+                        //Resetting the property with the replaced values
+                        node.setProperty(propertyName, replacedValues);
+                    }
                     session.save();
-                    if (propertyValue.contains(replacementTerm)) {
+                    if (propertyValueReplaced) {
                         //The property did contain the term to replace and now contains the replacement term
                         replaced = ReplaceStatus.SUCCESS;
                     } else {
@@ -317,12 +367,14 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
             return replaced;
         } catch (RepositoryException e) {
             logger.error("Issue while replacing property " + propertyName + " in node " + result.getNodeUuid(), e);
+
             return ReplaceStatus.FAILED;
         }
     }
 
     /**
-     * This method check the propertiesToReplace list and return a Map with the SearchResults containing replaceable nodes and properties
+     * This method check the propertiesToReplace list and return a Map with the SearchResults containing editable nodes and properties
+     * a property is consider editable if its constraints list is empty, its type is String and the property is not protected
      *
      * @param nodesUuid           list of nodes uuid on which check properties
      * @param propertiesToReplace list of node properties to check
@@ -341,13 +393,21 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
                 //trying to get the JCR node
                 JCRNodeWrapper currentNode = session.getNodeByIdentifier(uuid);
                 //Node is accessible node properties have to be checked
-                SearchResult result = new SearchResult(uuid, new HashMap<String, String>());
+                SearchResult result = new SearchResult(uuid, new HashMap<String, List<String>>());
                 for (String propertyName : propertiesToReplace) {
                     try {
                         JCRPropertyWrapper property = currentNode.getProperty(propertyName);
                         if (!property.getDefinition().isProtected() && property.getType() == PropertyType.STRING && (ArrayUtils.isEmpty(property.getDefinition().getValueConstraints()))) {
+                            List<String> stringValues = new ArrayList<String>();
+                            if (property.isMultiple()) {
+                                for (Value value : property.getValues()) {
+                                    stringValues.add(value.getString());
+                                }
+                            } else {
+                                stringValues.add(property.getString());
+                            }
                             //The property is editable
-                            result.addReplaceableProperty(propertyName, property.getString());
+                            result.addReplaceableProperty(propertyName, stringValues);
                         } else {
                             logger.warn("Property " + propertyName + " is not editable in the node " + uuid + " this property will be skipped for replacement");
                         }
@@ -363,7 +423,7 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
             } catch (RepositoryException e) {
                 logger.error("Issue accessing property the node " + uuid, e);
                 //If the node is not accessible a result entry is created in the FAILED results list
-                checkedPropertiesLists.get(ReplaceStatus.FAILED).add(new SearchResult(uuid, new HashMap<String, String>()));
+                checkedPropertiesLists.get(ReplaceStatus.FAILED).add(new SearchResult(uuid, new HashMap<String, List<String>>()));
             }
         }
         return checkedPropertiesLists;
