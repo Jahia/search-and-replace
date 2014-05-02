@@ -75,14 +75,30 @@
                                     </thead>
                                     <tbody>
                                         <c:forEach items="${searchResultNode.replaceableProperties}" var="properties">
-                                            <tr>
-                                                <td class="span2">
-                                                    ${properties.key}
-                                                </td>
-                                                <td>
-                                                    ${node.properties[properties.key].string}
-                                                </td>
-                                            </tr>
+                                            <c:choose>
+                                                <c:when test="${empty searchAndReplace.listSelectedFieldsOfNodeType}">
+                                                    <tr>
+                                                        <td class="span2">
+                                                                ${properties.key}
+                                                        </td>
+                                                        <td>
+                                                                ${node.properties[properties.key].string}
+                                                        </td>
+                                                    </tr>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <c:forEach items="${searchAndReplace.listSelectedFieldsOfNodeType}" var="field">
+                                                            <tr>
+                                                                <td class="span2">
+                                                                        ${field}
+                                                                </td>
+                                                                <td>
+                                                                        ${node.properties[field].string}
+                                                                </td>
+                                                            </tr>
+                                                    </c:forEach>
+                                                </c:otherwise>
+                                            </c:choose>
                                         </c:forEach>
                                     </tbody>
                                 </table>
@@ -96,9 +112,11 @@
             <button class="btn" name="_eventId_skipThisNode">
                 <fmt:message key="jnt_searchAndReplace.skipThisNode"/>
             </button>
-            <button class="btn" name="_eventId_skipAllNode">
-                <fmt:message key="jnt_searchAndReplace.skipAllNode"/>
-            </button>
+            <c:if test="${fn:length(searchAndReplace.listNodesToBeUpdated) gt 1}">
+                <button class="btn" name="_eventId_skipAllNode">
+                    <fmt:message key="jnt_searchAndReplace.skipAllNode"/>
+                </button>
+            </c:if>
             <button class="btn btn-primary" name="_eventId_replaceInCurrentNode">
                 <fmt:message key="jnt_searchAndReplace.replaceInCurrentNode"/>
             </button>
