@@ -19,6 +19,8 @@ import java.util.regex.Pattern;
 import static org.slf4j.LoggerFactory.getLogger;
 
 /**
+ * This class defines the Webflow model object
+ * that contains form data for search and replace views
  * Created by dgaillard on 24/03/14.
  */
 public class SearchAndReplace implements Serializable {
@@ -59,6 +61,14 @@ public class SearchAndReplace implements Serializable {
 
     }
 
+    /**
+     * This constructor initialize the instance basing on an existing
+     * object values keeping only :
+     * termToReplace, replacementTerm, fromEventId, listNodesUpdateSuccess,
+     * listNodesUpdateFail, listNodesSkipped and listSearchResult
+     *
+     * @param searchAndReplace : the existing object from which take values
+     */
     public SearchAndReplace(SearchAndReplace searchAndReplace) {
         setTermToReplace(searchAndReplace.getTermToReplace());
         setReplacementTerm(searchAndReplace.getReplacementTerm());
@@ -69,6 +79,12 @@ public class SearchAndReplace implements Serializable {
         setListSearchResult(searchAndReplace.getListSearchResult());
     }
 
+    /**
+     * This function validate the model object submitted by Search forms
+     * The only entry to be validated is termToReplace
+     * @param context : the context in which put validation messages
+     * @return boolean : validation result boolean
+     */
     public boolean validateSearch(ValidationContext context) {
         Locale locale = LocaleContextHolder.getLocale();
         MessageContext messages = context.getMessageContext();
@@ -85,11 +101,25 @@ public class SearchAndReplace implements Serializable {
         return valid;
     }
 
+    /**
+     * This function validate the model object submitted by Filter forms
+     * and set :
+     *
+     * - The listNodesToBeUpdated in case of selectAll
+     * - isDifferentNodeType each time the selected node type is different of the previous node type
+     *
+     * The following entries are checked for validation :
+     * listNodesToBeUpdated,creationDateBefore, creationDateAfter, modificationDateBefore, modificationDateAfter
+     *
+     * @param context : the context in which put validation messages
+     * @return boolean : validation result boolean
+     */
     public boolean validateFilter(ValidationContext context) {
         Locale locale = LocaleContextHolder.getLocale();
         MessageContext messages = context.getMessageContext();
 
         boolean valid = true;
+
 
         if(context.getUserEvent().equals("goToReplace")){
             if (CollectionUtils.isEmpty(listNodesToBeUpdated)){
@@ -97,6 +127,8 @@ public class SearchAndReplace implements Serializable {
                 valid = false;
             }
 
+            //filling listNodesToBeUpdated with all nodes without checking
+            //if selectAll boolean is true
             if (selectAll == true) {
                 listNodesToBeUpdated.clear();
                 for(SearchResult node : listSearchResult){
@@ -106,6 +138,7 @@ public class SearchAndReplace implements Serializable {
         }
 
         if(context.getUserEvent().equals("advancedSearchForm")){
+            //Regex pattern to validate dates
             Matcher dateCreatedBeforeMatcher = defaultPattern.matcher(dateCreatedBefore);
             Matcher dateCreatedAfterMatcher = defaultPattern.matcher(dateCreatedAfter);
             Matcher dateModifiedBeforeMatcher = defaultPattern.matcher(dateModifiedBefore);
@@ -114,7 +147,7 @@ public class SearchAndReplace implements Serializable {
             setFromEventID("advancedSearchForm");
 
             setDifferentNodeType(false);
-
+            //setting isDifferentNodeType
             if(!StringUtils.isBlank(selectedNodeType)){
                 if(!previousSelectedNodeType.equals(selectedNodeType)){
                     setPreviousSelectedNodeType(selectedNodeType);
@@ -122,6 +155,7 @@ public class SearchAndReplace implements Serializable {
                 }
             }
 
+            //creation date (Before) validation
             if(!StringUtils.isBlank(dateCreatedBefore)) {
                 if (!dateCreatedBeforeMatcher.matches()) {
                     messages.addMessage(new MessageBuilder().error().source("dateCreatedBefore").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.dateCreatedBefore.error", locale)).build());
@@ -129,6 +163,7 @@ public class SearchAndReplace implements Serializable {
                 }
             }
 
+            //creation date (After) validation
             if(!StringUtils.isBlank(dateCreatedAfter)) {
                 if (!dateCreatedAfterMatcher.matches()) {
                     messages.addMessage(new MessageBuilder().error().source("dateCreatedAfter").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.dateCreatedAfter.error", locale)).build());
@@ -136,6 +171,7 @@ public class SearchAndReplace implements Serializable {
                 }
             }
 
+            //Modification date (Before) validation
             if(!StringUtils.isBlank(dateModifiedBefore)) {
                 if (!dateModifiedBeforeMatcher.matches()) {
                     messages.addMessage(new MessageBuilder().error().source("dateModifiedBefore").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.dateModifiedBefore.error", locale)).build());
@@ -143,6 +179,7 @@ public class SearchAndReplace implements Serializable {
                 }
             }
 
+            //Modification date (After) validation
             if(!StringUtils.isBlank(dateModifiedAfter)) {
                 if (!dateModifiedAfterMatcher.matches()) {
                     messages.addMessage(new MessageBuilder().error().source("dateModifiedAfter").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.dateModifiedAfter.error", locale)).build());
@@ -154,6 +191,11 @@ public class SearchAndReplace implements Serializable {
         return valid;
     }
 
+    /**
+     * This function validate the model object submitted by Replace forms
+     * @param context : the context in which put validation messages
+     * @return boolean : validation result boolean
+     */
     public boolean validateReplace(ValidationContext context) {
         boolean valid = true;
 
@@ -252,6 +294,12 @@ public class SearchAndReplace implements Serializable {
         return termToReplace;
     }
 
+    /**
+     * This function escape the termToReplace input for JCR query execution
+     * All the characters interpreted by lucene are escaped with : \\
+     * These characters are : \\,+, -, && ,|| ,!, (, ), {, }, [, ], ^, ", ~, *, ?, :
+     * @return String escaped termToReplace input
+     */
     public String getEscapedTermToReplace(){
         String escapedTermToReplace;
 
@@ -259,9 +307,10 @@ public class SearchAndReplace implements Serializable {
         String[] escapedCharacters = {"\\","+", "-", "&&" ,"||" ,"!", "(", ")", "{", "}", "[", "]", "^", "\"", "~", "*", "?", ":"};
 
         escapedTermToReplace =  JCRContentUtils.stringToJCRSearchExp(termToReplace);
-
+        //Browsing all lucene interpreted characters
         for (String characterToEscape : escapedCharacters)
         {
+            //Escaping the character in the input with \\ if needed
             String replacementCharacter = "\\"+characterToEscape;
             if(escapedTermToReplace.contains(characterToEscape))
             {
