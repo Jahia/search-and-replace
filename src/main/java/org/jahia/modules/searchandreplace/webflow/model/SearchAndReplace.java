@@ -302,23 +302,9 @@ public class SearchAndReplace implements Serializable {
      */
     public String getEscapedTermToReplace(){
         String escapedTermToReplace;
-
         //Lucene query interpreted characters
-        String[] escapedCharacters = {"\\","+", "-", "&&" ,"||" ,"!", "(", ")", "{", "}", "[", "]", "^", "\"", "~", "*", "?", ":"};
-
-        escapedTermToReplace =  JCRContentUtils.stringToJCRSearchExp(termToReplace);
-        //Browsing all lucene interpreted characters
-        for (String characterToEscape : escapedCharacters)
-        {
-            //Escaping the character in the input with \\ if needed
-            String replacementCharacter = "\\"+characterToEscape;
-            if(escapedTermToReplace.contains(characterToEscape))
-            {
-                escapedTermToReplace = escapedTermToReplace.replace(characterToEscape,replacementCharacter);
-            }
-        }
-
-        return escapedTermToReplace;
+        escapedTermToReplace = "\"" + termToReplace.trim() + "\"";
+        return JCRContentUtils.stringToJCRSearchExp(escapedTermToReplace);
     }
 
     public String getFromEventID() {

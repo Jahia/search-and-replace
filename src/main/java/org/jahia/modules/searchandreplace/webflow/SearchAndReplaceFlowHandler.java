@@ -10,6 +10,7 @@ import org.jahia.services.content.JCRSessionWrapper;
 import org.jahia.services.render.RenderContext;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StopWatch;
 
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
@@ -66,7 +67,7 @@ public class SearchAndReplaceFlowHandler implements Serializable {
      * this function clear the replacement Term and the Success, Failed, Skipped and SearchResults lists
      * In the model before a new search
      *
-     * @param searchAndReplace The weflow model object cleared before the new search
+     * @param searchAndReplace The webflow model object cleared before the new search
      */
     public void resetListSummary(SearchAndReplace searchAndReplace) {
         if (StringUtils.isNotEmpty(searchAndReplace.getReplacementTerm())) {
@@ -163,14 +164,10 @@ public class SearchAndReplaceFlowHandler implements Serializable {
                 JCRNodeWrapper next = (JCRNodeWrapper) ni.next();
                 listNodes.add(next.getIdentifier());
             }
-
-            //Escaping the term to replace
-            String termToReplace = searchAndReplace.getEscapedTermToReplace().substring(1, searchAndReplace.getEscapedTermToReplace().length() - 1);
-
             if (logger.isDebugEnabled()) {
                 logger.debug("getNodesContains() - Getting nodes replaceable properties ");
             }
-            searchAndReplace.setListSearchResult(replaceService.getReplaceableProperties(listNodes, termToReplace, GlobalReplaceService.SearchMode.EXACT_MATCH, session).get(GlobalReplaceService.ReplaceStatus.SUCCESS));
+            searchAndReplace.setListSearchResult(replaceService.getReplaceableProperties(listNodes, searchAndReplace.getTermToReplace(), GlobalReplaceService.SearchMode.EXACT_MATCH, session).get(GlobalReplaceService.ReplaceStatus.SUCCESS));
 
             if (CollectionUtils.isNotEmpty(searchAndReplace.getListSelectedFieldsOfNodeType()) && searchAndReplace.getListSelectedFieldsOfNodeType().size() > 1) {
                 for (SearchResult searchResult : searchAndReplace.getListSearchResult()) {
@@ -265,17 +262,14 @@ public class SearchAndReplaceFlowHandler implements Serializable {
             List<String> uuids = new ArrayList<String>();
             uuids.add(nodeID);
 
-            //Escaping the term to replace
-            String termToReplace = searchAndReplace.getEscapedTermToReplace().substring(1, searchAndReplace.getEscapedTermToReplace().length() - 1);
-
             //Calling Replace Service
             if (logger.isDebugEnabled()) {
-                logger.debug("replaceThisNode() - Calling replace of " + termToReplace + " on node " + nodeID);
+                logger.debug("replaceThisNode() - Calling replace of " + searchAndReplace.getTermToReplace() + " on node " + nodeID);
             }
             if (CollectionUtils.isNotEmpty(searchAndReplace.getListSelectedFieldsOfNodeType())) {
-                replaceResult = replaceService.replaceByUuid(uuids, termToReplace, searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, searchAndReplace.getListSelectedFieldsOfNodeType(), session);
+                replaceResult = replaceService.replaceByUuid(uuids, searchAndReplace.getTermToReplace(), searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, searchAndReplace.getListSelectedFieldsOfNodeType(), session);
             } else {
-                replaceResult = replaceService.replaceByUuid(uuids, termToReplace, searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, session);
+                replaceResult = replaceService.replaceByUuid(uuids, searchAndReplace.getTermToReplace(), searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, session);
             }
 
             //Getting Failed Replaced Nodes
@@ -306,6 +300,8 @@ public class SearchAndReplaceFlowHandler implements Serializable {
      * @param renderContext    the render context that contains the session used to access JCR
      */
     public void replaceAllNodes(SearchAndReplace searchAndReplace, RenderContext renderContext) {
+        StopWatch stopWatch = new StopWatch("getNodesContains");
+        stopWatch.start("getNodesContains");
         if (logger.isDebugEnabled()) {
             logger.debug("replaceAllNodes() - Start");
         }
@@ -315,18 +311,15 @@ public class SearchAndReplaceFlowHandler implements Serializable {
             //Getting session
             JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
 
-            //Escaping the term to replace
-            String termToReplace = searchAndReplace.getEscapedTermToReplace().substring(1, searchAndReplace.getEscapedTermToReplace().length() - 1);
-
             //Calling Replace Service
             //Calling Replace Service
             if (logger.isDebugEnabled()) {
                 logger.debug("replaceThisNode() - Calling replace of " + searchAndReplace.getListNodesToBeUpdated().size() + " nodes ");
             }
             if (CollectionUtils.isNotEmpty(searchAndReplace.getListSelectedFieldsOfNodeType())) {
-                replaceResult = replaceService.replaceByUuid(searchAndReplace.getListNodesToBeUpdated(), termToReplace, searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, searchAndReplace.getListSelectedFieldsOfNodeType(), session);
+                replaceResult = replaceService.replaceByUuid(searchAndReplace.getListNodesToBeUpdated(), searchAndReplace.getTermToReplace(), searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, searchAndReplace.getListSelectedFieldsOfNodeType(), session);
             } else {
-                replaceResult = replaceService.replaceByUuid(searchAndReplace.getListNodesToBeUpdated(), termToReplace, searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, session);
+                replaceResult = replaceService.replaceByUuid(searchAndReplace.getListNodesToBeUpdated(), searchAndReplace.getTermToReplace(), searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, session);
             }
 
             //Getting Failed Replaced Nodes
@@ -344,6 +337,8 @@ public class SearchAndReplaceFlowHandler implements Serializable {
         if (logger.isDebugEnabled()) {
             logger.debug("replaceAllNodes() - End");
         }
+        stopWatch.stop();
+        logger.info(stopWatch.prettyPrint());
     }
 
     /**
