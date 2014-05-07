@@ -5,7 +5,6 @@ import org.apache.commons.lang.StringUtils;
 import org.jahia.modules.searchandreplace.GlobalReplaceService;
 import org.jahia.modules.searchandreplace.SearchResult;
 import org.jahia.modules.searchandreplace.webflow.model.SearchAndReplace;
-import org.jahia.registries.ServicesRegistry;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRSessionWrapper;
 import org.jahia.services.render.RenderContext;
