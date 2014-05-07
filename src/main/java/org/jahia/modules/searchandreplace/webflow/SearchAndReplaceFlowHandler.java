@@ -5,6 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jahia.modules.searchandreplace.GlobalReplaceService;
 import org.jahia.modules.searchandreplace.SearchResult;
 import org.jahia.modules.searchandreplace.webflow.model.SearchAndReplace;
+import org.jahia.registries.ServicesRegistry;
 import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRSessionWrapper;
 import org.jahia.services.render.RenderContext;
@@ -273,14 +274,15 @@ public class SearchAndReplaceFlowHandler implements Serializable {
             }
 
             //Getting Failed Replaced Nodes
-            if (!replaceResult.get(GlobalReplaceService.ReplaceStatus.FAILED).isEmpty()) {
+            if (CollectionUtils.isNotEmpty(replaceResult.get(GlobalReplaceService.ReplaceStatus.FAILED))) {
                 searchAndReplace.getListNodesUpdateFail().add(replaceResult.get(GlobalReplaceService.ReplaceStatus.FAILED).get(0));
             }
 
             //Getting Successfully Replaced Nodes
-            if (!replaceResult.get(GlobalReplaceService.ReplaceStatus.SUCCESS).isEmpty()) {
+            if (CollectionUtils.isNotEmpty(replaceResult.get(GlobalReplaceService.ReplaceStatus.SUCCESS))) {
                 searchAndReplace.getListNodesUpdateSuccess().add(replaceResult.get(GlobalReplaceService.ReplaceStatus.SUCCESS).get(0));
             }
+
         } catch (RepositoryException e) {
             logger.error("replaceThisNodes() - Failed replacing the node ", e);
         }
@@ -323,10 +325,14 @@ public class SearchAndReplaceFlowHandler implements Serializable {
             }
 
             //Getting Failed Replaced Nodes
-            searchAndReplace.setListNodesUpdateFail(replaceResult.get(GlobalReplaceService.ReplaceStatus.FAILED));
+            if (CollectionUtils.isNotEmpty(replaceResult.get(GlobalReplaceService.ReplaceStatus.FAILED))) {
+                searchAndReplace.getListNodesUpdateFail().addAll(replaceResult.get(GlobalReplaceService.ReplaceStatus.FAILED));
+            }
 
-            //Getting Successfully Replaced Nodes
-            searchAndReplace.setListNodesUpdateSuccess(replaceResult.get(GlobalReplaceService.ReplaceStatus.SUCCESS));
+            if (CollectionUtils.isNotEmpty(replaceResult.get(GlobalReplaceService.ReplaceStatus.SUCCESS))) {
+                searchAndReplace.getListNodesUpdateSuccess().addAll(replaceResult.get(GlobalReplaceService.ReplaceStatus.SUCCESS));
+            }
+
         } catch (RepositoryException e) {
             logger.error("replaceAllNodes() - Failed replacing given nodes ", e);
         }

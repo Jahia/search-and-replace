@@ -15,6 +15,7 @@
                                     jcr:mixinTypes="jmix:useUILocale"
                                     jcr:primaryType="jnt:template">
                     <searchAndReplace j:applyOn="jnt:virtualsite"
+                                      j:requiredPermissionNames="editGlobalReplace"
                                       j:defaultTemplate="false"
                                       j:hiddenTemplate="true"
                                       j:icon="/modules/jahia-global-replace/templates/files/jnt_query.png"
