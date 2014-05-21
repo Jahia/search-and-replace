@@ -24,7 +24,7 @@
                                       jcr:mixinTypes="jmix:rbTitle"
                                       jcr:primaryType="jnt:contentTemplate">
                         <pagecontent jcr:primaryType="jnt:contentList">
-                            <editLessVariables jcr:primaryType="jnt:searchAndReplace"/>
+                            <searchAndReplace jcr:primaryType="jnt:searchAndReplace"/>
                         </pagecontent>
                     </searchAndReplace>
                 </site-settings-base>

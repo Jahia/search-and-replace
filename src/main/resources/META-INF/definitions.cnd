@@ -2,5 +2,3 @@
 <jmix = 'http://www.jahia.org/jahia/mix/1.0'>
 
 [jnt:searchAndReplace] > jnt:content, jmix:queryContent
- - nodesTypes (string, choicelist[nodetypes=jnt:content,resourceBundle]) mandatory
- - startNode (weakreference) mandatory
