@@ -1,6 +1,7 @@
 package org.jahia.modules.searchandreplace.impl;
 
 import com.google.common.collect.Lists;
+import net.htmlparser.jericho.*;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jahia.modules.searchandreplace.GlobalReplaceService;
@@ -16,10 +17,7 @@ import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -239,7 +237,7 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
                         switch (searchMode) {
                             case EXACT_MATCH:
                                 for (String stringValue : propertyValues) {
-                                    if (stringValue.contains(termToReplace)) {
+                                    if (new TextExtractor(new Source(stringValue)).toString().contains(termToReplace)) {
                                         if (logger.isDebugEnabled()) {
                                             logger.debug("replaceNode() - case EXACT_MATCH - Found Match");
                                         }
@@ -265,7 +263,7 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
                                 break;
                             case IGNORE_CASE:
                                 for (String stringValue : propertyValues) {
-                                    if (StringUtils.containsIgnoreCase(stringValue, termToReplace)) {
+                                    if (StringUtils.containsIgnoreCase(new TextExtractor(new Source(stringValue)).toString(), termToReplace)) {
                                         containsTerm = true;
                                     }
                                 }
@@ -332,7 +330,12 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
                     boolean propertyValueReplaced = false;
                     if (!node.getProperty(propertyName).isMultiple()) {
                         //Not multiple values properties replacing one string
-                        String propertyValue = node.getProperty(propertyName).getString().replaceAll(termToReplace, replacementTerm);
+                        String propertyValue = "";
+                        if (new Source(node.getProperty(propertyName).getString()).getAllStartTags().size() > 0) {
+                            propertyValue = replaceWithRecursion(new Source(node.getProperty(propertyName).getString()), termToReplace, replacementTerm, searchMode);
+                        }else {
+                            propertyValue = node.getProperty(propertyName).getString().replaceAll(termToReplace, replacementTerm);
+                        }
                         node.setProperty(propertyName, propertyValue);
                         //Checking that something has been replace in the property
                         propertyValueReplaced = propertyValue.contains(replacementTerm);
@@ -342,8 +345,12 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
                         //Getting all the values as a table
                         JCRValueWrapper[] valuesTable = node.getProperty(propertyName).getValues();
                         for (int valueIndex = 0; valueIndex < replacedValues.length; valueIndex++) {//Browsing values one by one to replace the strings
-                            JCRValueWrapper currentvalue = valuesTable[valueIndex];
-                            replacedValues[valueIndex] = currentvalue.getString().replaceAll(termToReplace, replacementTerm);
+                            JCRValueWrapper currentValue = valuesTable[valueIndex];
+                            if (new Source(currentValue.getString()).getAllStartTags().size() > 0){
+                                replacedValues[valueIndex] = replaceWithRecursion(new Source(currentValue.getString()), termToReplace, replacementTerm, searchMode);
+                            } else {
+                                replacedValues[valueIndex] = currentValue.getString().replaceAll(termToReplace, replacementTerm);
+                            }
                             //Checking that something has been replace in the property values
                             if (!propertyValueReplaced) {
                                 propertyValueReplaced = replacedValues[valueIndex].contains(replacementTerm);
@@ -370,6 +377,70 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
 
             return ReplaceStatus.FAILED;
         }
+    }
+
+    /**
+     * This method perform the replace in the source code
+     *
+     * @param source          the html source who will be modified
+     * @param termToReplace   the term to replace in the node properties
+     * @param replacementTerm the string that will replace the term to replace
+     * @param searchMode      the result used SearchMode (that will define the replace mode too)
+     * @return String :       the modified html
+     */
+    private static String replaceWithRecursion(Source source, String termToReplace, String replacementTerm, SearchMode searchMode) {
+        OutputDocument document = new OutputDocument(source);
+        String orig = document.toString();
+        List<Element> childElements = source.getChildElements();
+        int begin = 0;
+        for (Element childElement : childElements) {
+            document.replace(begin, childElement.getBegin(), orig.substring(begin, childElement.getBegin()).replaceAll(termToReplace, replacementTerm));
+            String s = replaceWithRecursion(new Source(childElement.getContent().toString()), termToReplace, replacementTerm, searchMode);
+            Source source1 = new Source(s);
+            if(source1.getAllElements().isEmpty()) {
+                if(searchMode.equals(SearchMode.IGNORE_CASE)){
+                    if (StringUtils.containsIgnoreCase(s, termToReplace) && !StringUtils.containsIgnoreCase(s, replacementTerm)) {
+                        s = s.replaceAll(termToReplace, replacementTerm);
+                    }
+                } else {
+                    if (s.contains(termToReplace) && !s.contains(replacementTerm)) {
+                        s = s.replaceAll(termToReplace, replacementTerm);
+                    }
+                }
+            }
+            else {
+                List<Element> childElements1 = source1.getChildElements();
+                OutputDocument document1 = new OutputDocument(source1);
+                String original = document1.toString();
+                int start = 0;
+                for (Element element : childElements1) {
+                    if(searchMode.equals(SearchMode.IGNORE_CASE)){
+                        if (StringUtils.containsIgnoreCase(s, termToReplace) && !StringUtils.containsIgnoreCase(s, replacementTerm)) {
+                            document1.replace(start, element.getBegin(), original.substring(start, element.getBegin()).replaceAll(termToReplace, replacementTerm));
+                        }
+                    } else {
+                        if (original.substring(start, element.getBegin()).contains(termToReplace) && !original.substring(start, element.getBegin()).contains(replacementTerm)) {
+                            document1.replace(start, element.getBegin(), original.substring(start, element.getBegin()).replaceAll(termToReplace, replacementTerm));
+                        }
+                    }
+                    start=element.getEnd();
+                }
+                if(searchMode.equals(SearchMode.IGNORE_CASE)){
+                    if(StringUtils.containsIgnoreCase(original.substring(start), termToReplace) && !StringUtils.containsIgnoreCase(original.substring(start), replacementTerm)) {
+                        document1.replace(start, original.length(), original.substring(start).replaceAll(termToReplace, replacementTerm));
+                    }
+                } else {
+                    if(original.substring(start).contains(termToReplace) && !original.substring(start).contains(replacementTerm)) {
+                        document1.replace(start, original.length(), original.substring(start).replaceAll(termToReplace, replacementTerm));
+                    }
+                }
+                s = document1.toString();
+            }
+            begin=childElement.getEnd();
+            document.replace(childElement.getContent(), s);
+        }
+        document.replace(begin, orig.length(), orig.substring(begin).replaceAll(termToReplace, replacementTerm));
+        return document.toString();
     }
 
     /**
