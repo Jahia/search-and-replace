@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <content xmlns:j="http://www.jahia.org/jahia/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0">
     <modules jcr:primaryType="jnt:modules">
-        <jahia-global-replace j:dependencies="default siteSettings"
+        <search-and-replace j:dependencies="default siteSettings"
                               j:modulePriority="0"
                               j:moduleType="module"
-                              j:title="Jahia Global Replace"
+                              j:title="Search and Replace"
                               jcr:primaryType="jnt:module">
             <portlets jcr:primaryType="jnt:portletFolder"/>
             <files jcr:primaryType="jnt:folder"/>
@@ -15,10 +15,10 @@
                                     jcr:mixinTypes="jmix:useUILocale"
                                     jcr:primaryType="jnt:template">
                     <searchAndReplace j:applyOn="jnt:virtualsite"
-                                      j:requiredPermissionNames="editGlobalReplace"
+                                      j:requiredPermissionNames="editSearchAndReplace"
                                       j:defaultTemplate="false"
                                       j:hiddenTemplate="true"
-                                      j:icon="/modules/jahia-global-replace/templates/files/jnt_query.png"
+                                      j:icon="/modules/search-and-replace/templates/files/jnt_query.png"
                                       j:requiredPermissions=""
                                       j:titleKey="jnt_searchAndReplace"
                                       jcr:mixinTypes="jmix:rbTitle"
@@ -38,6 +38,6 @@
                 </files>
                 <contents jcr:primaryType="jnt:contentFolder"/>
             </templates>
-        </jahia-global-replace>
+        </search-and-replace>
     </modules>
 </content>

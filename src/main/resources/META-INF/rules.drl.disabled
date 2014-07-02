@@ -1,4 +1,4 @@
-package org.jahia.modules.jahiaglobalreplace.rules
+package org.jahia.modules.searchandreplace.rules
 
 // list any import classes here.
 import org.jahia.services.content.rules.*

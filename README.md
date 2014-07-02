@@ -1,8 +1,8 @@
-# Jahia Global Replace
+# Search and Replace
 
 ## Overview
-The Jahia Global Replace module provide an interface to search and replace a term on the site where the module is deployed.
- It is accessible on the site settings section in Edit Mode under the name `Search & Replace`. Using this module any user with the `editGlobalReplace` permission
+The Search and Replace module provide an interface to search and replace a term on the site where the module is deployed.
+ It is accessible on the site settings section in Edit Mode under the name `Search & Replace`. Using this module any user with the `editSearchAndReplace` permission
  will be able to search and replace in the Digital Factory site.
 
 ## Goals
@@ -15,7 +15,7 @@ The Jahia Global Replace module provide an interface to search and replace a ter
 
 ## Version
 
-Jahia Global Replace v1.0.0
+Search and Replace v1.0.0
 
 ---
 

@@ -29,7 +29,7 @@ public class SearchAndReplace implements Serializable {
 
     private static final long serialVersionUID = 4282123925357469008L;
 
-    private static final String BUNDLE = "resources.jahia-global-replace";
+    private static final String BUNDLE = "resources.search-and-replace";
 
     private static final String DEFAULT_REGEXP = "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$";
 
