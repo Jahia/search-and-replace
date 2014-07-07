@@ -73,14 +73,6 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-    <dependencies>
-      <dependency>
-        <groupId>net.htmlparser.jericho</groupId>
-        <artifactId>jericho-html</artifactId>
-        <version>3.3</version>
-        <scope>provided</scope>
-      </dependency>
-    </dependencies>
   <parent>
     <groupId>org.jahia.modules</groupId>
     <artifactId>jahia-modules</artifactId>
@@ -93,9 +85,17 @@
   <name>Search and Replace</name>
   <description>This is the custom module (Search and Replace) for running on a Jahia xCM server.</description>
   <scm>
-    <connection>scm:dummy:uri</connection>
-    <developerConnection>scm:dummy:uri</developerConnection>
+    <connection>scm:git:git@github.com:Jahia/search-and-replace.git</connection>
+    <developerConnection>scm:git:git@github.com:Jahia/search-and-replace.git</developerConnection>
   </scm>
+  <dependencies>
+    <dependency>
+      <groupId>net.htmlparser.jericho</groupId>
+      <artifactId>jericho-html</artifactId>
+      <version>3.3</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
   <repositories>
     <repository>
       <releases>
