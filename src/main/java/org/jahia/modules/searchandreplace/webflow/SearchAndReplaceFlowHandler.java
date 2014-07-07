@@ -94,8 +94,11 @@ public class SearchAndReplaceFlowHandler implements Serializable {
      * @param renderContext    : The render context from which get the site path
      */
     public void getNodesContains(SearchAndReplace searchAndReplace, RenderContext renderContext) {
+        StopWatch stopWatch = null;
         if (logger.isDebugEnabled()) {
+            stopWatch = new StopWatch("getNodesContains");
             logger.debug("getNodesContains() - Start");
+            stopWatch.start("getNodesContains");
         }
         List<String> listNodes = new ArrayList<String>();
         String sitePath = renderContext.getSite().getPath();
@@ -180,6 +183,8 @@ public class SearchAndReplaceFlowHandler implements Serializable {
             logger.error(e.getMessage(), e);
         }
         if (logger.isDebugEnabled()) {
+            stopWatch.stop();
+            logger.info(stopWatch.prettyPrint());
             logger.debug("getNodesContains() - End");
         }
     }
@@ -301,10 +306,11 @@ public class SearchAndReplaceFlowHandler implements Serializable {
      * @param renderContext    the render context that contains the session used to access JCR
      */
     public void replaceAllNodes(SearchAndReplace searchAndReplace, RenderContext renderContext) {
-        StopWatch stopWatch = new StopWatch("getNodesContains");
-        stopWatch.start("getNodesContains");
+        StopWatch stopWatch = null;
         if (logger.isDebugEnabled()) {
             logger.debug("replaceAllNodes() - Start");
+            stopWatch = new StopWatch("getNodesContains");
+            stopWatch.start("replaceAllNodes");
         }
         Map<GlobalReplaceService.ReplaceStatus, List<String>> replaceResult;
 
@@ -340,10 +346,10 @@ public class SearchAndReplaceFlowHandler implements Serializable {
         searchAndReplace.getListNodesToBeUpdated().clear();
 
         if (logger.isDebugEnabled()) {
+            stopWatch.stop();
+            logger.info(stopWatch.prettyPrint());
             logger.debug("replaceAllNodes() - End");
         }
-        stopWatch.stop();
-        logger.info(stopWatch.prettyPrint());
     }
 
     /**
