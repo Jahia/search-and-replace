@@ -70,8 +70,7 @@
         please contact the sales department at sales@jahia.com.
 
 -->
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.jahia.modules</groupId>
@@ -80,13 +79,14 @@
   </parent>
   <groupId>org.jahia.modules</groupId>
   <artifactId>search-and-replace</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
   <packaging>bundle</packaging>
   <name>Search and Replace</name>
   <description>This is the custom module (Search and Replace) for running on a Jahia xCM server.</description>
   <scm>
     <connection>scm:git:git@github.com:Jahia/search-and-replace.git</connection>
     <developerConnection>scm:git:git@github.com:Jahia/search-and-replace.git</developerConnection>
+    <tag>1_0</tag>
   </scm>
   <dependencies>
     <dependency>
