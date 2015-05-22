@@ -57,7 +57,7 @@
 
             /* Fire back the array to the caller */
             return anNodes;
-        }
+        };
 
         function getDatatableHiddenRows(dataTable)
         {
@@ -100,7 +100,7 @@
                     boolean = false;
                 }
                 return boolean;
-            })
+            });
 
             $('#selectAll').click(function() {
                 $('input', oTable.fnGetNodes()).attr('checked',this.checked);
