@@ -55,7 +55,7 @@ public class SearchAndReplace implements Serializable {
     private List<String> listNodesUpdateSuccess = new ArrayList<String>();
     private List<String> listNodesUpdateFail = new ArrayList<String>();
     private List<String> listNodesSkipped = new ArrayList<String>();
-    private List<SearchResult> listSearchResult;
+    private List<SearchResult> listSearchResult = Collections.emptyList();
 
     public SearchAndReplace() {
 
@@ -129,7 +129,7 @@ public class SearchAndReplace implements Serializable {
 
             //filling listNodesToBeUpdated with all nodes without checking
             //if selectAll boolean is true
-            if (selectAll == true) {
+            if (selectAll) {
                 listNodesToBeUpdated.clear();
                 for(SearchResult node : listSearchResult){
                     listNodesToBeUpdated.add(node.getNodeUuid());
