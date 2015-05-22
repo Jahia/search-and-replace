@@ -356,7 +356,7 @@ public class SearchAndReplaceFlowHandler implements Serializable {
      * This function is called to fill the list of node types in the search filter view
      *
      * @param searchAndReplace The webflow model object containing the search results nodes and the list of node types to fill
-     * @param renderContext    The rendern context taht contains the session used to access JCR
+     * @param renderContext    The render context containing the session used to access JCR
      */
     public void getNodesTypesList(SearchAndReplace searchAndReplace, RenderContext renderContext) {
         if (logger.isDebugEnabled()) {
