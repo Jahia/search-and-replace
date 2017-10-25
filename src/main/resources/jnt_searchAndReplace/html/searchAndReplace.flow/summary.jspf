@@ -105,7 +105,7 @@
                                         <fmt:message key='mix_created'/>
                                     </th>
                                     <th>
-                                        <fmt:message key='jmix_contentmetadata.j_lastModificationDate'/>
+                                        /<fmt:message key='jmix_contentmetadata.j_lastModificationDate'/>
                                     </th>
                                 </tr>
                             </thead>

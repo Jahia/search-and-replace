@@ -13,6 +13,7 @@
 <%--@elvariable id="flowRequestContext" type="org.springframework.webflow.execution.RequestContext"--%>
 <%--@elvariable id="out" type="java.io.PrintWriter"--%>
 <%--@elvariable id="renderContext" type="org.jahia.services.render.RenderContext"--%>
+<%--@elvariable id="node" type="org.jahia.services.content.JCRNodeWrapper"--%>
 <%--@elvariable id="script" type="org.jahia.services.render.scripting.Script"--%>
 <%--@elvariable id="scriptInfo" type="java.lang.String"--%>
 <%--@elvariable id="url" type="org.jahia.services.render.URLGenerator"--%>
@@ -322,7 +323,10 @@
                 &nbsp;
                 <fmt:message key='jnt_searchAndReplace.selectAll'/>
             </th>
-            <th class="span4">
+            <th class="span2">
+                    <fmt:message key='jnt_searchAndReplace.selectNodeType'/>
+                </th>
+                <th class="span4">
                 <fmt:message key='jnt_searchAndReplace.nodes'/>
             </th>
             <th class="span3">
@@ -342,15 +346,16 @@
         </tr>
         </thead>
         <tbody>
-        <c:forEach items="${searchAndReplace.listSearchResult}" var="searchResultNode">
-            <jcr:node var="node" uuid="${searchResultNode.nodeUuid}"/>
-            <tr>
-                <td>
-                    <form:checkbox path="listNodesToBeUpdated" value="${searchResultNode.nodeUuid}" cssClass="select"/>
-                </td>
-                <td>
-                    <a href="#modal_${searchResultNode.nodeUuid}" role="button" data-toggle="modal"
-                       style="text-decoration: none;">
+            <c:forEach items="${searchAndReplace.listSearchResult}" var="searchResultNode">
+                <jcr:node var="node" uuid="${searchResultNode.nodeUuid}"/>
+                <tr>
+                    <td>
+                        <form:checkbox path="listNodesToBeUpdated" value="${searchResultNode.nodeUuid}" cssClass="select"/>
+                    </td>
+                    <td>
+                        ${searchResultNode.nodeTypeLabel}
+                    </td>
+                    <td><a href="#modal_${searchResultNode.nodeUuid}" role="button" data-toggle="modal" style="text-decoration: none;">
                             ${functions:abbreviate(node.displayableName,100,120,'...')}
                     </a>
                 </td>
@@ -432,7 +437,7 @@
                                 ${properties.key}
                         </td>
                         <td>
-                                ${node.properties[properties.key].string}
+                                ${node.properties[properties.key].string} --- ${searchResultNode.nodeTypeLabel}
                         </td>
                     </tr>
                 </c:forEach>
