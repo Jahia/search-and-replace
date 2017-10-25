@@ -19,6 +19,7 @@ import javax.jcr.query.QueryManager;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -170,7 +171,20 @@ public class SearchAndReplaceFlowHandler implements Serializable {
             if (logger.isDebugEnabled()) {
                 logger.debug("getNodesContains() - Getting nodes replaceable properties ");
             }
-            searchAndReplace.setListSearchResult(replaceService.getReplaceableProperties(listNodes, searchAndReplace.getTermToReplace(), GlobalReplaceService.SearchMode.EXACT_MATCH, session).get(GlobalReplaceService.ReplaceStatus.SUCCESS));
+            String localeAsString = renderContext.getRequest().getParameter("webflowLocale");
+            Locale locale = session.getLocale();
+            if (localeAsString != null) {
+                locale = locale.forLanguageTag(localeAsString);
+            }
+
+            List<SearchResult> searchResults = replaceService.getReplaceableProperties(listNodes, searchAndReplace.getTermToReplace(), GlobalReplaceService.SearchMode.EXACT_MATCH, session).get(GlobalReplaceService.ReplaceStatus.SUCCESS);
+
+            for (SearchResult result : searchResults ) {
+                JCRNodeWrapper node = session.getNodeByIdentifier(result.getNodeUuid());
+                result.setNodeTypeLabel(node.getPrimaryNodeType().getLabel(locale));
+            }
+
+            searchAndReplace.setListSearchResult(searchResults);
 
             if (CollectionUtils.isNotEmpty(searchAndReplace.getListSelectedFieldsOfNodeType()) && searchAndReplace.getListSelectedFieldsOfNodeType().size() > 1) {
                 for (SearchResult searchResult : searchAndReplace.getListSearchResult()) {
@@ -408,6 +422,7 @@ public class SearchAndReplaceFlowHandler implements Serializable {
                 try {
                     JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
                     JCRNodeWrapper node = session.getNodeByIdentifier(searchResult.getNodeUuid());
+
 
                     //When found a node of the nodetype
                     if (node.getPrimaryNodeType().toString().equals(searchAndReplace.getSelectedNodeType())) {
