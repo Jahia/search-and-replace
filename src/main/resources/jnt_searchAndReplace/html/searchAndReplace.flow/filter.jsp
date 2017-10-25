@@ -101,7 +101,12 @@
             });
 
             $('#selectAll').click(function () {
-                $('input', oTable.fnGetNodes()).attr('checked', this.checked);
+                if (!$(".select").is(':checked')) {
+                    $('input', oTable.fnGetNodes()).prop('checked', true);
+                } else {
+                    $('input', oTable.fnGetNodes()).prop('checked', false);
+                }
+
             });
 
             $('.preview').highlight('${functions:escapeJavaScript(searchAndReplace.termToReplace)}', {caseSensitive: true});
