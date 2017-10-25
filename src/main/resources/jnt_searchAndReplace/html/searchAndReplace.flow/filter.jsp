@@ -467,7 +467,7 @@
 </c:forEach>
 
 
-<%-- modal for the folder preview (where the node is displayed) !--%>
+<%-- modal for the folder preview (where the node is stored) !--%>
 
 <c:forEach items="${searchAndReplace.listSearchResult}" var="searchResultNode">
     <jcr:node var="node" uuid="${searchResultNode.nodeUuid}"/>
