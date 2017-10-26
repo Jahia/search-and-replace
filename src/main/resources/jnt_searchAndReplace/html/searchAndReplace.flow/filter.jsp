@@ -114,7 +114,6 @@
             $('.select').click(function () {
                 if ($("#selectAll").is(':checked')) {
                     document.getElementById("selectAll").checked = false;
-                    alert("Oui");
                 }
 
             });
