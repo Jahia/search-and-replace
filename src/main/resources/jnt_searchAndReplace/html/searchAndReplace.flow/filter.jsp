@@ -101,10 +101,20 @@
             });
 
             $('#selectAll').click(function () {
-                if (!$(".select").is(':checked')) {
-                    $('input', oTable.fnGetNodes()).prop('checked', true);
-                } else {
+                if (!$("#selectAll").is(':checked')) {
                     $('input', oTable.fnGetNodes()).prop('checked', false);
+                } else {
+                    $('input', oTable.fnGetNodes()).prop('checked', true);
+                }
+
+            });
+
+            // Checks whether or not the select all was used, and change its status if one of the checkboxes got unchecked
+
+            $('.select').click(function () {
+                if ($("#selectAll").is(':checked')) {
+                    document.getElementById("selectAll").checked = false;
+                    alert("Oui");
                 }
 
             });
