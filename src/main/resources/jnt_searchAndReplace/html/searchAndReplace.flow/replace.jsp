@@ -3,8 +3,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="utility" uri="http://www.jahia.org/tags/utilityLib" %>
 <%@ taglib prefix="template" uri="http://www.jahia.org/tags/templateLib" %>
-<%@ taglib prefix="functions" uri="http://www.jahia.org/tags/functions"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="functions" uri="http://www.jahia.org/tags/functions" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="query" uri="http://www.jahia.org/tags/queryLib" %>
 
@@ -19,24 +19,31 @@
 <%--@elvariable id="workspace" type="java.lang.String"--%>
 <%--@elvariable id="searchAndReplace" type="org.jahia.modules.searchandreplace.webflow.model.SearchAndReplace"--%>
 
-<template:addResources type="javascript" resources="jquery.min.js,jquery-ui.min.js,jquery.blockUI.js,admin-bootstrap.js,workInProgress.js"/>
+<template:addResources type="javascript"
+                       resources="jquery.min.js,jquery-ui.min.js,jquery.blockUI.js,admin-bootstrap.js,workInProgress.js"/>
 <template:addResources type="javascript" resources="jquery.highlight.js"/>
 
-<fmt:message key="label.workInProgressTitle" var="i18nWaiting"/><c:set var="i18nWaiting" value="${functions:escapeJavaScript(i18nWaiting)}"/>
+<template:addResources type="javascript"
+                       resources="datatables/jquery.dataTables.js,i18n/jquery.dataTables-${currentResource.locale}.js,datatables/dataTables.bootstrap-ext.js"/>
+
+<fmt:message key="label.workInProgressTitle" var="i18nWaiting"/><c:set var="i18nWaiting"
+                                                                       value="${functions:escapeJavaScript(i18nWaiting)}"/>
 
 <template:addResources type="inlinejavascript">
     <script type="text/javascript">
-        $(document).ready(function(){
-            $('.preview').highlight('${functions:escapeJavaScript(searchAndReplace.termToReplace)}', { caseSensitive: true });
+        $(document).ready(function () {
+            $('.preview').highlight('${functions:escapeJavaScript(searchAndReplace.termToReplace)}', {caseSensitive: true});
 
-            $('.highlight').css({ backgroundColor: '#ED6A32' });
+            $('.highlight').css({backgroundColor: '#ED6A32'});
+
         });
     </script>
 </template:addResources>
 
 <div>
     <h1><fmt:message key="jnt_searchAndReplace"/></h1>
-    <form:form action="${flowExecutionUrl}" method="post" cssClass="well form-horizontal" modelAttribute="searchAndReplace" onsubmit="workInProgress('${i18nWaiting}')">
+    <form:form action="${flowExecutionUrl}" method="post" cssClass="well form-horizontal"
+               modelAttribute="searchAndReplace" onsubmit="workInProgress('${i18nWaiting}')">
         <div class="control-group">
             <form:label path="termToReplace" cssClass="control-label">
                 <fmt:message key="jnt_searchAndReplace.termToReplace"/>
@@ -58,48 +65,50 @@
                 <form:hidden path="currentDisplayedNode" value="${id}"/>
                 <jcr:node var="node" uuid="${id}"/>
                 <div class="box-1">
-                    <h1><fmt:message key="jnt_searchAndReplace.previewOfModification"/>&nbsp;${functions:abbreviate(node.displayableName,100,120,'...')}</h1>
+                    <h1><fmt:message
+                            key="jnt_searchAndReplace.previewOfModification"/>&nbsp;${functions:abbreviate(node.displayableName,100,120,'...')}</h1>
                     <div class="preview">
                         <c:forEach items="${searchAndReplace.listSearchResult}" var="searchResultNode">
                             <c:if test="${searchResultNode.nodeUuid eq id}">
-                                <table class="table">
+                                <table class="table" id="listProperties_table">
                                     <thead>
-                                        <tr>
-                                            <th>
-                                                <fmt:message key="label.properties"/>
-                                            </th>
-                                            <th>
-                                                <fmt:message key="label.value"/>
-                                            </th>
-                                        </tr>
+                                    <tr>
+                                        <th>
+                                            <fmt:message key="label.properties"/>
+                                        </th>
+                                        <th>
+                                            <fmt:message key="label.value"/>
+                                        </th>
+                                    </tr>
                                     </thead>
                                     <tbody>
-                                        <c:forEach items="${searchResultNode.replaceableProperties}" var="properties">
-                                            <c:choose>
-                                                <c:when test="${empty searchAndReplace.listSelectedFieldsOfNodeType}">
+                                    <c:forEach items="${searchResultNode.replaceableProperties}" var="properties">
+                                        <c:choose>
+                                            <c:when test="${empty searchAndReplace.listSelectedFieldsOfNodeType}">
+                                                <tr>
+                                                    <td class="span2">
+                                                            ${properties.key}
+                                                    </td>
+                                                    <td>
+                                                            ${node.properties[properties.key].string}
+                                                    </td>
+                                                </tr>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <c:forEach items="${searchAndReplace.listSelectedFieldsOfNodeType}"
+                                                           var="field">
                                                     <tr>
                                                         <td class="span2">
-                                                                ${properties.key}
+                                                                ${field}
                                                         </td>
                                                         <td>
-                                                                ${node.properties[properties.key].string}
+                                                                ${node.properties[field].string}
                                                         </td>
                                                     </tr>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <c:forEach items="${searchAndReplace.listSelectedFieldsOfNodeType}" var="field">
-                                                            <tr>
-                                                                <td class="span2">
-                                                                        ${field}
-                                                                </td>
-                                                                <td>
-                                                                        ${node.properties[field].string}
-                                                                </td>
-                                                            </tr>
-                                                    </c:forEach>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </c:forEach>
+                                                </c:forEach>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </c:forEach>
                                     </tbody>
                                 </table>
                             </c:if>
