@@ -280,15 +280,27 @@ public class SearchAndReplaceFlowHandler implements Serializable {
             //Preparing the list of nodes uuids for the GlobalReplaceService call
             List<String> uuids = new ArrayList<String>();
             uuids.add(nodeID);
+            logger.info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ "+searchAndReplace.isSelectAllProperties());
+            //if select all properties
+            if(searchAndReplace.isSelectAllProperties()) {
+                //Calling Replace Service
+                if (logger.isDebugEnabled()) {
+                    logger.debug("replaceThisNode() - Calling replace of " + searchAndReplace.getTermToReplace() + " on node " + nodeID);
+                }
+                if (CollectionUtils.isNotEmpty(searchAndReplace.getListSelectedFieldsOfNodeType())) {
+                    replaceResult = replaceService.replaceByUuid(uuids, searchAndReplace.getTermToReplace(), searchAndReplace.getReplacementTerm(),
+                            GlobalReplaceService.SearchMode.EXACT_MATCH, searchAndReplace.getListSelectedFieldsOfNodeType(), session);
+                } else {
+                    replaceResult = replaceService.replaceByUuid(uuids, searchAndReplace.getTermToReplace(), searchAndReplace.getReplacementTerm(),
+                            GlobalReplaceService.SearchMode.EXACT_MATCH, session);
+                }
+            }else{
+                if (logger.isDebugEnabled()) {
+                    logger.debug("replaceThisNode() - Calling replace of " + searchAndReplace.getTermToReplace() + " on node " + nodeID);
+                }
+                replaceResult = replaceService.replaceByUuid(uuids, searchAndReplace.getTermToReplace(), searchAndReplace
+                        .getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, searchAndReplace.getListPropertiesToBeReplaced(), session);
 
-            //Calling Replace Service
-            if (logger.isDebugEnabled()) {
-                logger.debug("replaceThisNode() - Calling replace of " + searchAndReplace.getTermToReplace() + " on node " + nodeID);
-            }
-            if (CollectionUtils.isNotEmpty(searchAndReplace.getListSelectedFieldsOfNodeType())) {
-                replaceResult = replaceService.replaceByUuid(uuids, searchAndReplace.getTermToReplace(), searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, searchAndReplace.getListSelectedFieldsOfNodeType(), session);
-            } else {
-                replaceResult = replaceService.replaceByUuid(uuids, searchAndReplace.getTermToReplace(), searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, session);
             }
 
             //Getting Failed Replaced Nodes

@@ -2,6 +2,7 @@ package org.jahia.modules.searchandreplace.webflow.model;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.jahia.modules.searchandreplace.GlobalReplaceService;
 import org.jahia.modules.searchandreplace.SearchResult;
 import org.jahia.services.content.JCRContentUtils;
 import org.jahia.utils.i18n.Messages;
@@ -47,6 +48,7 @@ public class SearchAndReplace implements Serializable {
     private String dateModifiedBefore = "";
     private String dateModifiedAfter = "";
     private boolean selectAll;
+    private boolean selectAllProperties;
     private boolean isDifferentNodeType;
     private List<String> listNodesTypes = new ArrayList<String>();
     private List<String> listFieldsOfNodeType = new ArrayList<String>();
@@ -56,6 +58,7 @@ public class SearchAndReplace implements Serializable {
     private List<String> listNodesUpdateFail = new ArrayList<String>();
     private List<String> listNodesSkipped = new ArrayList<String>();
     private List<SearchResult> listSearchResult = Collections.emptyList();
+    private List<String> listPropertiesToBeReplaced = new ArrayList<String>();
 
     public SearchAndReplace() {
 
@@ -202,7 +205,6 @@ public class SearchAndReplace implements Serializable {
         if (!currentDisplayedNode.equals(listNodesToBeUpdated.get(0))) {
             valid = false;
         }
-
         return valid;
     }
 
@@ -292,6 +294,22 @@ public class SearchAndReplace implements Serializable {
 
     public String getTermToReplace() {
         return termToReplace;
+    }
+
+    public boolean isSelectAllProperties() {
+        return selectAllProperties;
+    }
+
+    public void setSelectAllProperties(boolean selectAllProperties) {
+        this.selectAllProperties = selectAllProperties;
+    }
+
+    public List<String> getListPropertiesToBeReplaced() {
+        return listPropertiesToBeReplaced;
+    }
+
+    public void setListPropertiesToBeReplaced(List<String> listPropertiesToBeReplaced) {
+        this.listPropertiesToBeReplaced = listPropertiesToBeReplaced;
     }
 
     /**

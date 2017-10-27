@@ -48,6 +48,8 @@
         <binder>
             <binding property="replacementTerm"/>
             <binding property="currentDisplayedNode"/>
+            <binding property="selectAllProperties"/>
+            <binding property="listPropertiesToBeReplaced"/>
         </binder>
         <transition on="skipThisNode" to="skipThisNode"/>
         <transition on="skipAllNode" to="skipAllNode"/>

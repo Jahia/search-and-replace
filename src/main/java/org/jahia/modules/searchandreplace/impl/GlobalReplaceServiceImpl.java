@@ -393,7 +393,6 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
             return ReplaceStatus.FAILED;
         }
     }
-
     /**
      * This method perform the replace in the source code
      *
