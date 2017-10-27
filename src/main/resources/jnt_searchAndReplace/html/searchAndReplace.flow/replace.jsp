@@ -50,11 +50,6 @@
                     });
                 }
             });
-
-            $('.select').click(function () {
-                if ($("#selectAllProperties").is(':checked')) {
-                    document.getElementById("selectAllProperties").checked = false;
-                }
         });
     </script>
 </template:addResources>
