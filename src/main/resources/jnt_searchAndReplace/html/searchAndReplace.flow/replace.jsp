@@ -29,13 +29,27 @@
 <fmt:message key="label.workInProgressTitle" var="i18nWaiting"/><c:set var="i18nWaiting"
                                                                        value="${functions:escapeJavaScript(i18nWaiting)}"/>
 
+
 <template:addResources type="inlinejavascript">
     <script type="text/javascript">
         $(document).ready(function () {
+
             $('.preview').highlight('${functions:escapeJavaScript(searchAndReplace.termToReplace)}', {caseSensitive: true});
 
             $('.highlight').css({backgroundColor: '#ED6A32'});
 
+            $('#selectAllProperties').click(function() {
+                if(this.checked) {
+                    // Iterate each checkbox
+                    $(':checkbox').each(function() {
+                        this.checked = true;
+                    });
+                }else{
+                    $(':checkbox').each(function() {
+                        this.checked = false;
+                    });
+                }
+            });
         });
     </script>
 </template:addResources>
@@ -73,6 +87,11 @@
                                 <table class="table" id="listProperties_table">
                                     <thead>
                                     <tr>
+                                        <th class="span2">
+                                            <form:checkbox path="selectAllProperties" value="true" id="selectAllProperties"/>
+                                            &nbsp;
+                                            <fmt:message key='jnt_searchAndReplace.selectAll'/>
+                                        </th>
                                         <th>
                                             <fmt:message key="label.properties"/>
                                         </th>
@@ -86,6 +105,12 @@
                                         <c:choose>
                                             <c:when test="${empty searchAndReplace.listSelectedFieldsOfNodeType}">
                                                 <tr>
+                                                    <td>
+                                                        <form:checkbox
+                                                                path="listPropertiesToBeReplaced"
+                                                                       value="${properties.key}"
+                                                                       cssClass="select"/>
+                                                    </td>
                                                     <td class="span2">
                                                             ${properties.key}
                                                     </td>
