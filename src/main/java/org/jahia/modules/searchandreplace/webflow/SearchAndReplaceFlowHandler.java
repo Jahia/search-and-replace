@@ -280,7 +280,7 @@ public class SearchAndReplaceFlowHandler implements Serializable {
             //Preparing the list of nodes uuids for the GlobalReplaceService call
             List<String> uuids = new ArrayList<String>();
             uuids.add(nodeID);
-            logger.info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ "+searchAndReplace.isSelectAllProperties());
+
             //if select all properties
             if(searchAndReplace.isSelectAllProperties()) {
                 //Calling Replace Service
@@ -349,10 +349,22 @@ public class SearchAndReplaceFlowHandler implements Serializable {
             if (logger.isDebugEnabled()) {
                 logger.debug("replaceThisNode() - Calling replace of " + searchAndReplace.getListNodesToBeUpdated().size() + " nodes ");
             }
-            if (CollectionUtils.isNotEmpty(searchAndReplace.getListSelectedFieldsOfNodeType())) {
-                replaceResult = replaceService.replaceByUuid(searchAndReplace.getListNodesToBeUpdated(), searchAndReplace.getTermToReplace(), searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, searchAndReplace.getListSelectedFieldsOfNodeType(), session);
-            } else {
-                replaceResult = replaceService.replaceByUuid(searchAndReplace.getListNodesToBeUpdated(), searchAndReplace.getTermToReplace(), searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, session);
+            //if select all properties
+            if(searchAndReplace.isSelectAllProperties()) {
+                if (CollectionUtils.isNotEmpty(searchAndReplace.getListSelectedFieldsOfNodeType())) {
+                    replaceResult = replaceService
+                            .replaceByUuid(searchAndReplace.getListNodesToBeUpdated(), searchAndReplace.getTermToReplace(), searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH,
+                                    searchAndReplace.getListSelectedFieldsOfNodeType(), session);
+                } else {
+                    replaceResult = replaceService
+                            .replaceByUuid(searchAndReplace.getListNodesToBeUpdated(), searchAndReplace.getTermToReplace(), searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, session);
+                }
+            }else{
+                if (logger.isDebugEnabled()) {
+                    logger.debug("replaceThisNode() - Calling replace of " + searchAndReplace.getListNodesToBeUpdated().size() + " nodes ");
+                }
+                replaceResult = replaceService.replaceByUuid(searchAndReplace.getListNodesToBeUpdated(), searchAndReplace.getTermToReplace(), searchAndReplace
+                        .getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, searchAndReplace.getListPropertiesToBeReplaced(), session);
             }
 
             //Getting Failed Replaced Nodes
