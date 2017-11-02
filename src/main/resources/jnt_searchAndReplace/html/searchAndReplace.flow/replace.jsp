@@ -103,19 +103,19 @@
                                     <tbody>
                                         <c:choose>
                                             <c:when test="${empty searchAndReplace.listSelectedFieldsOfNodeType}">
-                                                <c:forEach items="${searchResultNode.replaceableProperties}" var="properties">
+                                                <c:forEach items="${searchResultNode.replaceableProperties}" var="property">
                                                     <tr>
                                                         <td>
                                                             <form:checkbox
                                                                     path="listPropertiesToBeReplaced"
-                                                                           value="${properties.key}"
+                                                                           value="${property.key}"
                                                                            cssClass="select"/>
                                                         </td>
                                                         <td class="span2">
-                                                                ${properties.key}
+                                                                ${property.key}
                                                         </td>
                                                         <td>
-                                                                ${node.properties[properties.key].string}
+                                                                ${node.properties[property.key].string}
                                                         </td>
                                                     </tr>
                                                 </c:forEach>
