@@ -37,8 +37,8 @@ import java.util.regex.Pattern;
 public class GlobalReplaceServiceImpl implements GlobalReplaceService {
     private static Logger logger = LoggerFactory.getLogger(GlobalReplaceServiceImpl.class);
 
-    @Override
-    public Map<ReplaceStatus, List<String>> replaceByUuid(List<String> nodesUuid, String termToReplace, String replacementTerm, SearchMode searchMode, JCRSessionWrapper session) {
+    @Override public Map<ReplaceStatus, List<String>> replaceByUuid(List<String> nodesUuid, String termToReplace, String replacementTerm,
+            SearchMode searchMode, JCRSessionWrapper session) {
         if (logger.isDebugEnabled()) {
             logger.debug("replaceByUuid - Start");
         }
@@ -67,8 +67,8 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
         return replaceResultMap;
     }
 
-    @Override
-    public Map<ReplaceStatus, List<String>> replaceByUuid(List<String> nodesUuid, String termToReplace, String replacementTerm, SearchMode searchMode, List<String> propertiesToReplace, JCRSessionWrapper session) {
+    @Override public Map<ReplaceStatus, List<String>> replaceByUuid(List<String> nodesUuid, String termToReplace, String replacementTerm,
+            SearchMode searchMode, List<String> propertiesToReplace, JCRSessionWrapper session) {
         if (logger.isDebugEnabled()) {
             logger.debug("replaceByUuid - Start");
         }
@@ -94,8 +94,8 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
         return replaceResultMap;
     }
 
-    @Override
-    public Map<ReplaceStatus, List<String>> replaceBySearchResult(List<SearchResult> searchResults, String termToReplace, String replacementTerm, SearchMode searchMode, JCRSessionWrapper session) {
+    @Override public Map<ReplaceStatus, List<String>> replaceBySearchResult(List<SearchResult> searchResults, String termToReplace,
+            String replacementTerm, SearchMode searchMode, JCRSessionWrapper session) {
         Map<ReplaceStatus, List<String>> resultList = new HashMap<ReplaceStatus, List<String>>();
 
         resultList.put(ReplaceStatus.SUCCESS, new ArrayList<String>());
@@ -112,8 +112,8 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
         return resultList;
     }
 
-    @Override
-    public Map<ReplaceStatus, List<String>> replaceBySearchResult(List<SearchResult> searchResults, String termToReplace, String replacementTerm, SearchMode searchMode, List<String> propertiesToReplace, JCRSessionWrapper session) {
+    @Override public Map<ReplaceStatus, List<String>> replaceBySearchResult(List<SearchResult> searchResults, String termToReplace,
+            String replacementTerm, SearchMode searchMode, List<String> propertiesToReplace, JCRSessionWrapper session) {
         Map<ReplaceStatus, List<String>> resultList = new HashMap<ReplaceStatus, List<String>>();
 
         resultList.put(ReplaceStatus.SUCCESS, new ArrayList<String>());
@@ -140,8 +140,8 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
         return resultList;
     }
 
-    @Override
-    public Map<ReplaceStatus, List<String>> replaceByNodes(List<JCRNodeWrapper> nodes, String termToReplace, String replacementTerm, SearchMode searchMode, JCRSessionWrapper session) {
+    @Override public Map<ReplaceStatus, List<String>> replaceByNodes(List<JCRNodeWrapper> nodes, String termToReplace,
+            String replacementTerm, SearchMode searchMode, JCRSessionWrapper session) {
         Map<ReplaceStatus, List<String>> resultMap = new HashMap<ReplaceStatus, List<String>>();
 
         resultMap.put(ReplaceStatus.SUCCESS, new ArrayList<String>());
@@ -168,8 +168,8 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
         return resultMap;
     }
 
-    @Override
-    public Map<ReplaceStatus, List<String>> replaceByNodes(List<JCRNodeWrapper> nodes, String termToReplace, String replacementTerm, SearchMode searchMode, List<String> propertiesToReplace, JCRSessionWrapper session) {
+    @Override public Map<ReplaceStatus, List<String>> replaceByNodes(List<JCRNodeWrapper> nodes, String termToReplace,
+            String replacementTerm, SearchMode searchMode, List<String> propertiesToReplace, JCRSessionWrapper session) {
         Map<ReplaceStatus, List<String>> resultMap = new HashMap<ReplaceStatus, List<String>>();
 
         resultMap.put(ReplaceStatus.SUCCESS, new ArrayList<String>());
@@ -196,8 +196,8 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
         return resultMap;
     }
 
-    @Override
-    public Map<ReplaceStatus, List<SearchResult>> getReplaceableProperties(List<String> nodesUuid, String termToReplace, SearchMode searchMode, JCRSessionWrapper session) {
+    @Override public Map<ReplaceStatus, List<SearchResult>> getReplaceableProperties(List<String> nodesUuid, String termToReplace,
+            SearchMode searchMode, JCRSessionWrapper session) {
         //Initializing the return Map
         List<SearchResult> replaceableNodes = new ArrayList<SearchResult>();
         List<SearchResult> nonReplaceableNodes = new ArrayList<SearchResult>();
@@ -233,7 +233,8 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
                     }
                     ArrayList<String> propertyValues = new ArrayList<String>();
                     //getting value as String
-                    if (!nextProperty.getDefinition().isProtected() && nextProperty.getType() == PropertyType.STRING && (ArrayUtils.isEmpty(nextProperty.getDefinition().getValueConstraints()))) {
+                    if (!nextProperty.getDefinition().isProtected() && nextProperty.getType() == PropertyType.STRING && (ArrayUtils
+                            .isEmpty(nextProperty.getDefinition().getValueConstraints()))) {
                         if (nextProperty.isMultiple()) {
                             for (Value value : nextProperty.getValues()) {
                                 propertyValues.add(value.getString());
@@ -261,7 +262,9 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
                                     if (m.find()) {
                                         if (logger.isDebugEnabled()) {
                                             logger.debug("replaceNode() - case REGEXP - Property Name : " + nextProperty.getName());
-                                            logger.debug("replaceNode() - case REGEXP - Found Match (" + termToReplace + " in " + nextProperty.getString() + ")");
+                                            logger.debug(
+                                                    "replaceNode() - case REGEXP - Found Match (" + termToReplace + " in " + nextProperty
+                                                            .getString() + ")");
                                         }
                                         containsTerm = true;
                                     }
@@ -272,7 +275,8 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
                                 break;
                             case IGNORE_CASE:
                                 for (String stringValue : propertyValues) {
-                                    if (StringUtils.containsIgnoreCase(new TextExtractor(new Source(stringValue)).toString(), termToReplace)) {
+                                    if (StringUtils
+                                            .containsIgnoreCase(new TextExtractor(new Source(stringValue)).toString(), termToReplace)) {
                                         containsTerm = true;
                                     }
                                 }
@@ -313,7 +317,8 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
      * @param session         the JCR session to execute the replacement
      * @return ReplaceStatus : SUCCESS if the replacement is done or FAILED in the other case
      */
-    private ReplaceStatus replaceNode(SearchResult result, String termToReplace, String replacementTerm, SearchMode searchMode, JCRSessionWrapper session) {
+    private ReplaceStatus replaceNode(SearchResult result, String termToReplace, String replacementTerm, SearchMode searchMode,
+            JCRSessionWrapper session) {
         String propertyName = "";
         JCRNodeWrapper node;
         ReplaceStatus replaced = ReplaceStatus.FAILED;
@@ -347,7 +352,8 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
                         String propertyValue = "";
                         String propertyValueAsString = property.getString();
                         if (new Source(propertyValueAsString).getAllStartTags().size() > 0) {
-                            propertyValue = replaceWithRecursion(new Source(propertyValueAsString), termToReplace, replacementTerm, searchMode);
+                            propertyValue = replaceWithRecursion(new Source(propertyValueAsString), termToReplace, replacementTerm,
+                                    searchMode);
                         } else {
                             propertyValue = propertyValueAsString.replaceAll(termToReplace, replacementTerm);
                         }
@@ -359,10 +365,12 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
                         String[] replacedValues = new String[property.getValues().length];
                         //Getting all the values as a table
                         JCRValueWrapper[] valuesTable = property.getValues();
-                        for (int valueIndex = 0; valueIndex < replacedValues.length; valueIndex++) {//Browsing values one by one to replace the strings
+                        for (int valueIndex = 0;
+                             valueIndex < replacedValues.length; valueIndex++) {//Browsing values one by one to replace the strings
                             JCRValueWrapper currentValue = valuesTable[valueIndex];
                             if (new Source(currentValue.getString()).getAllStartTags().size() > 0) {
-                                replacedValues[valueIndex] = replaceWithRecursion(new Source(currentValue.getString()), termToReplace, replacementTerm, searchMode);
+                                replacedValues[valueIndex] = replaceWithRecursion(new Source(currentValue.getString()), termToReplace,
+                                        replacementTerm, searchMode);
                             } else {
                                 replacedValues[valueIndex] = currentValue.getString().replaceAll(termToReplace, replacementTerm);
                             }
@@ -393,6 +401,7 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
             return ReplaceStatus.FAILED;
         }
     }
+
     /**
      * This method perform the replace in the source code
      *
@@ -408,7 +417,8 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
         List<Element> childElements = source.getChildElements();
         int begin = 0;
         for (Element childElement : childElements) {
-            document.replace(begin, childElement.getBegin(), orig.substring(begin, childElement.getBegin()).replaceAll(termToReplace, replacementTerm));
+            document.replace(begin, childElement.getBegin(),
+                    orig.substring(begin, childElement.getBegin()).replaceAll(termToReplace, replacementTerm));
             String s = replaceWithRecursion(new Source(childElement.getContent().toString()), termToReplace, replacementTerm, searchMode);
             Source source1 = new Source(s);
             if (source1.getAllElements().isEmpty()) {
@@ -429,17 +439,21 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
                 for (Element element : childElements1) {
                     if (searchMode.equals(SearchMode.IGNORE_CASE)) {
                         if (StringUtils.containsIgnoreCase(s, termToReplace) && !StringUtils.containsIgnoreCase(s, replacementTerm)) {
-                            document1.replace(start, element.getBegin(), original.substring(start, element.getBegin()).replaceAll(termToReplace, replacementTerm));
+                            document1.replace(start, element.getBegin(),
+                                    original.substring(start, element.getBegin()).replaceAll(termToReplace, replacementTerm));
                         }
                     } else {
-                        if (original.substring(start, element.getBegin()).contains(termToReplace) && !original.substring(start, element.getBegin()).contains(replacementTerm)) {
-                            document1.replace(start, element.getBegin(), original.substring(start, element.getBegin()).replaceAll(termToReplace, replacementTerm));
+                        if (original.substring(start, element.getBegin()).contains(termToReplace) && !original
+                                .substring(start, element.getBegin()).contains(replacementTerm)) {
+                            document1.replace(start, element.getBegin(),
+                                    original.substring(start, element.getBegin()).replaceAll(termToReplace, replacementTerm));
                         }
                     }
                     start = element.getEnd();
                 }
                 if (searchMode.equals(SearchMode.IGNORE_CASE)) {
-                    if (StringUtils.containsIgnoreCase(original.substring(start), termToReplace) && !StringUtils.containsIgnoreCase(original.substring(start), replacementTerm)) {
+                    if (StringUtils.containsIgnoreCase(original.substring(start), termToReplace) && !StringUtils
+                            .containsIgnoreCase(original.substring(start), replacementTerm)) {
                         document1.replace(start, original.length(), original.substring(start).replaceAll(termToReplace, replacementTerm));
                     }
                 } else {
@@ -465,7 +479,8 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
      * @param session             the JCR session with which check the nodes and properties constraints
      * @return Map<ReplaceStatus, List<SearchResult>> the map contains 2 entry SUCCESS, which contains the replaceable results and FAILED which contains the non replaceable results.
      */
-    private Map<ReplaceStatus, List<SearchResult>> checkPropertiesList(List<String> nodesUuid, List<String> propertiesToReplace, JCRSessionWrapper session) {
+    private Map<ReplaceStatus, List<SearchResult>> checkPropertiesList(List<String> nodesUuid, List<String> propertiesToReplace,
+            JCRSessionWrapper session) {
         //Initializing return Map
         Map<ReplaceStatus, List<SearchResult>> checkedPropertiesLists = new HashMap<ReplaceStatus, List<SearchResult>>();
         checkedPropertiesLists.put(ReplaceStatus.SUCCESS, new ArrayList<SearchResult>());
@@ -481,7 +496,8 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
                 for (String propertyName : propertiesToReplace) {
                     try {
                         JCRPropertyWrapper property = currentNode.getProperty(propertyName);
-                        if (!property.getDefinition().isProtected() && property.getType() == PropertyType.STRING && (ArrayUtils.isEmpty(property.getDefinition().getValueConstraints()))) {
+                        if (!property.getDefinition().isProtected() && property.getType() == PropertyType.STRING && (ArrayUtils
+                                .isEmpty(property.getDefinition().getValueConstraints()))) {
                             List<String> stringValues = new ArrayList<String>();
                             if (property.isMultiple()) {
                                 for (Value value : property.getValues()) {
@@ -493,7 +509,8 @@ public class GlobalReplaceServiceImpl implements GlobalReplaceService {
                             //The property is editable
                             result.addReplaceableProperty(propertyName, stringValues);
                         } else {
-                            logger.warn("Property " + propertyName + " is not editable in the node " + uuid + " this property will be skipped for replacement");
+                            logger.warn("Property " + propertyName + " is not editable in the node " + uuid
+                                    + " this property will be skipped for replacement");
                         }
                     } catch (RepositoryException e) {
                         logger.error("Issue accessing property " + propertyName + " in the node " + uuid);

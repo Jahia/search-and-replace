@@ -38,14 +38,14 @@
 
             $('.highlight').css({backgroundColor: '#ED6A32'});
 
-            $('#selectAllProperties').click(function() {
-                if(this.checked) {
+            $('#selectAllProperties').click(function () {
+                if (this.checked) {
                     // Iterate each checkbox
-                    $(':checkbox').each(function() {
+                    $(':checkbox').each(function () {
                         this.checked = true;
                     });
-                }else{
-                    $(':checkbox').each(function() {
+                } else {
+                    $(':checkbox').each(function () {
                         this.checked = false;
                     });
                 }
