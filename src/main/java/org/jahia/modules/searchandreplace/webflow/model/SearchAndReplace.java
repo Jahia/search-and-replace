@@ -85,6 +85,7 @@ public class SearchAndReplace implements Serializable {
     /**
      * This function validate the model object submitted by Search forms
      * The only entry to be validated is termToReplace
+     *
      * @param context : the context in which put validation messages
      * @return boolean : validation result boolean
      */
@@ -97,7 +98,8 @@ public class SearchAndReplace implements Serializable {
         boolean valid = true;
 
         if (StringUtils.isBlank(termToReplace)) {
-            messages.addMessage(new MessageBuilder().error().source("termToReplace").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.termToReplace.error", locale)).build());
+            messages.addMessage(new MessageBuilder().error().source("termToReplace")
+                    .defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.termToReplace.error", locale)).build());
             valid = false;
         }
 
@@ -123,10 +125,10 @@ public class SearchAndReplace implements Serializable {
 
         boolean valid = true;
 
-
-        if(context.getUserEvent().equals("goToReplace")){
-            if (CollectionUtils.isEmpty(listNodesToBeUpdated)){
-                messages.addMessage(new MessageBuilder().error().source("listNodesToBeUpdated").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.listNodesToBeUpdated.error", locale)).build());
+        if (context.getUserEvent().equals("goToReplace")) {
+            if (CollectionUtils.isEmpty(listNodesToBeUpdated)) {
+                messages.addMessage(new MessageBuilder().error().source("listNodesToBeUpdated")
+                        .defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.listNodesToBeUpdated.error", locale)).build());
                 valid = false;
             }
 
@@ -134,13 +136,13 @@ public class SearchAndReplace implements Serializable {
             //if selectAll boolean is true
             if (selectAll) {
                 listNodesToBeUpdated.clear();
-                for(SearchResult node : listSearchResult){
+                for (SearchResult node : listSearchResult) {
                     listNodesToBeUpdated.add(node.getNodeUuid());
                 }
             }
         }
 
-        if(context.getUserEvent().equals("advancedSearchForm")){
+        if (context.getUserEvent().equals("advancedSearchForm")) {
             //Regex pattern to validate dates
             Matcher dateCreatedBeforeMatcher = defaultPattern.matcher(dateCreatedBefore);
             Matcher dateCreatedAfterMatcher = defaultPattern.matcher(dateCreatedAfter);
@@ -151,41 +153,45 @@ public class SearchAndReplace implements Serializable {
 
             setDifferentNodeType(false);
             //setting isDifferentNodeType
-            if(!StringUtils.isBlank(selectedNodeType)){
-                if(!previousSelectedNodeType.equals(selectedNodeType)){
+            if (!StringUtils.isBlank(selectedNodeType)) {
+                if (!previousSelectedNodeType.equals(selectedNodeType)) {
                     setPreviousSelectedNodeType(selectedNodeType);
                     isDifferentNodeType = true;
                 }
             }
 
             //creation date (Before) validation
-            if(!StringUtils.isBlank(dateCreatedBefore)) {
+            if (!StringUtils.isBlank(dateCreatedBefore)) {
                 if (!dateCreatedBeforeMatcher.matches()) {
-                    messages.addMessage(new MessageBuilder().error().source("dateCreatedBefore").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.dateCreatedBefore.error", locale)).build());
+                    messages.addMessage(new MessageBuilder().error().source("dateCreatedBefore")
+                            .defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.dateCreatedBefore.error", locale)).build());
                     valid = false;
                 }
             }
 
             //creation date (After) validation
-            if(!StringUtils.isBlank(dateCreatedAfter)) {
+            if (!StringUtils.isBlank(dateCreatedAfter)) {
                 if (!dateCreatedAfterMatcher.matches()) {
-                    messages.addMessage(new MessageBuilder().error().source("dateCreatedAfter").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.dateCreatedAfter.error", locale)).build());
+                    messages.addMessage(new MessageBuilder().error().source("dateCreatedAfter")
+                            .defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.dateCreatedAfter.error", locale)).build());
                     valid = false;
                 }
             }
 
             //Modification date (Before) validation
-            if(!StringUtils.isBlank(dateModifiedBefore)) {
+            if (!StringUtils.isBlank(dateModifiedBefore)) {
                 if (!dateModifiedBeforeMatcher.matches()) {
-                    messages.addMessage(new MessageBuilder().error().source("dateModifiedBefore").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.dateModifiedBefore.error", locale)).build());
+                    messages.addMessage(new MessageBuilder().error().source("dateModifiedBefore")
+                            .defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.dateModifiedBefore.error", locale)).build());
                     valid = false;
                 }
             }
 
             //Modification date (After) validation
-            if(!StringUtils.isBlank(dateModifiedAfter)) {
+            if (!StringUtils.isBlank(dateModifiedAfter)) {
                 if (!dateModifiedAfterMatcher.matches()) {
-                    messages.addMessage(new MessageBuilder().error().source("dateModifiedAfter").defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.dateModifiedAfter.error", locale)).build());
+                    messages.addMessage(new MessageBuilder().error().source("dateModifiedAfter")
+                            .defaultText(Messages.get(BUNDLE, "jnt_searchAndReplace.dateModifiedAfter.error", locale)).build());
                     valid = false;
                 }
             }
@@ -196,6 +202,7 @@ public class SearchAndReplace implements Serializable {
 
     /**
      * This function validate the model object submitted by Replace forms
+     *
      * @param context : the context in which put validation messages
      * @return boolean : validation result boolean
      */
@@ -316,9 +323,10 @@ public class SearchAndReplace implements Serializable {
      * This function escape the termToReplace input for JCR query execution
      * All the characters interpreted by lucene are escaped with : \\
      * These characters are : \\,+, -, && ,|| ,!, (, ), {, }, [, ], ^, ", ~, *, ?, :
+     *
      * @return String escaped termToReplace input
      */
-    public String getEscapedTermToReplace(){
+    public String getEscapedTermToReplace() {
         String escapedTermToReplace;
         //Lucene query interpreted characters
         escapedTermToReplace = "\"" + termToReplace.trim() + "\"";
@@ -405,8 +413,8 @@ public class SearchAndReplace implements Serializable {
         return listSearchResult;
     }
 
-    public void addUUIDToListNodesSkipped(String uuid){
-        if(!listNodesSkipped.contains(uuid)){
+    public void addUUIDToListNodesSkipped(String uuid) {
+        if (!listNodesSkipped.contains(uuid)) {
             listNodesSkipped.add(uuid);
         }
     }

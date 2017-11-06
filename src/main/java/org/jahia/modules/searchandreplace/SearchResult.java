@@ -33,7 +33,9 @@ public class SearchResult implements Serializable {
         return nodeTypeLabel;
     }
 
-    public void setNodeTypeLabel(String nodeTypeLabel) { this.nodeTypeLabel = nodeTypeLabel; }
+    public void setNodeTypeLabel(String nodeTypeLabel) {
+        this.nodeTypeLabel = nodeTypeLabel;
+    }
 
     public Map<String, List<String>> getReplaceableProperties() {
         return replaceableProperties;
@@ -47,8 +49,7 @@ public class SearchResult implements Serializable {
         this.getReplaceableProperties().put(propertyName, propertyValues);
     }
 
-    @Override
-    protected SearchResult clone() {
+    @Override protected SearchResult clone() {
         return new SearchResult(this.getNodeUuid(), this.getReplaceableProperties());
     }
 }

@@ -338,9 +338,9 @@
                 <fmt:message key='jnt_searchAndReplace.selectAll'/>
             </th>
             <th class="span2">
-                    <fmt:message key='jnt_searchAndReplace.selectNodeType'/>
-                </th>
-                <th class="span4">
+                <fmt:message key='jnt_searchAndReplace.selectNodeType'/>
+            </th>
+            <th class="span4">
                 <fmt:message key='jnt_searchAndReplace.nodes'/>
             </th>
             <th class="span3">
@@ -360,18 +360,18 @@
         </tr>
         </thead>
         <tbody>
-            <c:forEach items="${searchAndReplace.listSearchResult}" var="searchResultNode">
-                <jcr:node var="node" uuid="${searchResultNode.nodeUuid}"/>
-                <tr>
-                    <td>
-                        <form:checkbox path="listNodesToBeUpdated" value="${searchResultNode.nodeUuid}" cssClass="select"/>
-                    </td>
-                    <td>
+        <c:forEach items="${searchAndReplace.listSearchResult}" var="searchResultNode">
+            <jcr:node var="node" uuid="${searchResultNode.nodeUuid}"/>
+            <tr>
+                <td>
+                    <form:checkbox path="listNodesToBeUpdated" value="${searchResultNode.nodeUuid}" cssClass="select"/>
+                </td>
+                <td>
                         ${searchResultNode.nodeTypeLabel}
-                    </td>
-                    <td><a href="#modal_${searchResultNode.nodeUuid}" role="button" data-toggle="modal" style="text-decoration: none;">
-                            ${functions:abbreviate(node.displayableName,100,120,'...')}
-                    </a>
+                </td>
+                <td><a href="#modal_${searchResultNode.nodeUuid}" role="button" data-toggle="modal" style="text-decoration: none;">
+                        ${functions:abbreviate(node.displayableName,100,120,'...')}
+                </a>
                 </td>
                 <td>
                     <em><fmt:formatDate value="${node.properties['jcr:created'].date.time}"

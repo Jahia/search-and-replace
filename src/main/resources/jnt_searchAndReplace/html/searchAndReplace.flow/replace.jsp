@@ -38,14 +38,14 @@
 
             $('.highlight').css({backgroundColor: '#ED6A32'});
 
-            $('#selectAllProperties').click(function() {
-                if(this.checked) {
+            $('#selectAllProperties').click(function () {
+                if (this.checked) {
                     // Iterate each checkbox
-                    $(':checkbox').each(function() {
+                    $(':checkbox').each(function () {
                         this.checked = true;
                     });
-                }else{
-                    $(':checkbox').each(function() {
+                } else {
+                    $(':checkbox').each(function () {
                         this.checked = false;
                     });
                 }
@@ -108,8 +108,8 @@
                                                     <td>
                                                         <form:checkbox
                                                                 path="listPropertiesToBeReplaced"
-                                                                       value="${properties.key}"
-                                                                       cssClass="select"/>
+                                                                value="${properties.key}"
+                                                                cssClass="select"/>
                                                     </td>
                                                     <td class="span2">
                                                             ${properties.key}
