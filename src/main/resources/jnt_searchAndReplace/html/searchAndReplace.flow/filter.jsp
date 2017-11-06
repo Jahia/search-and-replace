@@ -101,12 +101,7 @@
             });
 
             $('#selectAll').click(function () {
-                if (!$("#selectAll").is(':checked')) {
-                    $('input', oTable.fnGetNodes()).prop('checked', false);
-                } else {
-                    $('input', oTable.fnGetNodes()).prop('checked', true);
-                }
-
+                $('input', oTable.fnGetNodes()).prop('checked', $("#selectAll").is(':checked'));
             });
 
             // Checks whether or not the select all was used, and change its status if one of the checkboxes got unchecked
@@ -451,7 +446,7 @@
                                 ${properties.key}
                         </td>
                         <td>
-                                ${node.properties[properties.key].string} --- ${searchResultNode.nodeTypeLabel}
+                                ${searchResultNode.nodeTypeLabel}
                         </td>
                     </tr>
                 </c:forEach>

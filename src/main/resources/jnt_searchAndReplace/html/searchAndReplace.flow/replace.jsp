@@ -101,28 +101,35 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <c:forEach items="${searchResultNode.replaceableProperties}" var="properties">
                                         <c:choose>
                                             <c:when test="${empty searchAndReplace.listSelectedFieldsOfNodeType}">
-                                                <tr>
-                                                    <td>
-                                                        <form:checkbox
-                                                                path="listPropertiesToBeReplaced"
-                                                                value="${properties.key}"
-                                                                cssClass="select"/>
-                                                    </td>
-                                                    <td class="span2">
-                                                            ${properties.key}
-                                                    </td>
-                                                    <td>
-                                                            ${node.properties[properties.key].string}
-                                                    </td>
-                                                </tr>
+                                                <c:forEach items="${searchResultNode.replaceableProperties}" var="property">
+                                                    <tr>
+                                                        <td>
+                                                            <form:checkbox
+                                                                    path="listPropertiesToBeReplaced"
+                                                                           value="${property.key}"
+                                                                           cssClass="select"/>
+                                                        </td>
+                                                        <td class="span2">
+                                                                ${property.key}
+                                                        </td>
+                                                        <td>
+                                                                ${node.properties[property.key].string}
+                                                        </td>
+                                                    </tr>
+                                                </c:forEach>
                                             </c:when>
                                             <c:otherwise>
                                                 <c:forEach items="${searchAndReplace.listSelectedFieldsOfNodeType}"
                                                            var="field">
                                                     <tr>
+                                                        <td>
+                                                        <form:checkbox
+                                                                path="listPropertiesToBeReplaced"
+                                                                value="${field}"
+                                                                cssClass="select"/>
+                                                        </td>
                                                         <td class="span2">
                                                                 ${field}
                                                         </td>
@@ -133,7 +140,6 @@
                                                 </c:forEach>
                                             </c:otherwise>
                                         </c:choose>
-                                    </c:forEach>
                                     </tbody>
                                 </table>
                             </c:if>

@@ -105,7 +105,7 @@
                                         <fmt:message key='mix_created'/>
                                     </th>
                                     <th>
-                                        /<fmt:message key='jmix_contentmetadata.j_lastModificationDate'/>
+                                        <fmt:message key='jmix_contentmetadata.j_lastModificationDate'/>
                                     </th>
                                 </tr>
                             </thead>
@@ -220,13 +220,13 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <c:forEach items="${searchResultNode.replaceableProperties}" var="properties">
+                                    <c:forEach items="${searchResultNode.replaceableProperties}" var="property">
                                         <tr>
                                             <td>
-                                                ${properties.key}
+                                                ${property.key}
                                             </td>
                                             <td>
-                                                ${node.properties[properties.key].string}
+                                                ${node.properties[property.key].string}
                                             </td>
                                         </tr>
                                     </c:forEach>
@@ -264,13 +264,13 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <c:forEach items="${searchResultNode.replaceableProperties}" var="properties">
+                                <c:forEach items="${searchResultNode.replaceableProperties}" var="property">
                                     <tr>
                                         <td>
-                                            ${properties.key}
+                                            ${property.key}
                                         </td>
                                         <td>
-                                            ${node.properties[properties.key].string}
+                                            ${node.properties[property.key].string}
                                         </td>
                                     </tr>
                                 </c:forEach>
@@ -308,13 +308,13 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <c:forEach items="${searchResultNode.replaceableProperties}" var="properties">
+                                <c:forEach items="${searchResultNode.replaceableProperties}" var="property">
                                     <tr>
                                         <td>
-                                            ${properties.key}
+                                            ${property.key}
                                         </td>
                                         <td>
-                                            ${node.properties[properties.key].string}
+                                            ${node.properties[property.key].string}
                                         </td>
                                     </tr>
                                 </c:forEach>
