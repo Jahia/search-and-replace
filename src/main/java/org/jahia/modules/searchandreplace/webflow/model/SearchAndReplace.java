@@ -51,6 +51,7 @@ public class SearchAndReplace implements Serializable {
     private boolean selectAllProperties;
     private boolean isDifferentNodeType;
     private List<String> listNodesTypes = new ArrayList<String>();
+    private Map<String, String> mapNodeTypeNames = new HashMap<String, String>();
     private List<String> listFieldsOfNodeType = new ArrayList<String>();
     private List<String> listSelectedFieldsOfNodeType = new ArrayList<String>();
     private List<String> listNodesToBeUpdated = new ArrayList<String>();
@@ -271,6 +272,10 @@ public class SearchAndReplace implements Serializable {
         this.listNodesTypes = listNodesTypes;
     }
 
+    public void setMapNodeTypeNames(Map<String, String> mapNodeTypeNames) {
+        this.mapNodeTypeNames = mapNodeTypeNames;
+    }
+
     public void setListFieldsOfNodeType(List<String> listFieldsOfNodeType) {
         this.listFieldsOfNodeType = listFieldsOfNodeType;
     }
@@ -383,6 +388,10 @@ public class SearchAndReplace implements Serializable {
 
     public List<String> getListNodesTypes() {
         return listNodesTypes;
+    }
+
+    public Map<String, String> getMapNodeTypeNames() {
+        return mapNodeTypeNames;
     }
 
     public List<String> getListFieldsOfNodeType() {
