@@ -446,7 +446,7 @@
                                 ${properties.key}
                         </td>
                         <td>
-                                ${searchResultNode.nodeTypeLabel}
+                                ${node.properties[properties.key].string}
                         </td>
                     </tr>
                 </c:forEach>
@@ -469,7 +469,8 @@
          style="width: 70%;">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h3 id="modalTitle_${searchResultNode.nodeUuid}">${functions:abbreviate(node.displayableName,100,120,'...')}</h3>
+            <h3 id="modalTitle_${searchResultNode.nodeUuid}">Page
+                : ${jcr:getParentOfType(node, 'jnt:page').properties['j:nodename'].string}</h3>
         </div>
         <div class="modal-body preview">
             <iframe src="${jcr:getParentOfType(node ,'jnt:page').path}.html" height="700" width="700"></iframe>
@@ -489,15 +490,14 @@
          aria-labelledby="modalTitle_${searchResultNode.nodeUuid}" aria-hidden="true">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h3 id="modalTitle_${searchResultNode.nodeUuid}">${functions:abbreviate(node.displayableName,100,120,'...')}</h3>
+            <h3 id="modalTitle_${searchResultNode.nodeUuid}"><fmt:message
+                    key="jnt_searchAndReplace.columns.folder"/>&nbsp;
+                :&nbsp;${jcr:getParentOfType(node, 'jnt:contentFolder').properties['j:nodename'].string}</h3>
         </div>
         <div class="modal-body preview">
             <table class="table">
                 <thead>
                 <tr>
-                    <th class="span2">
-                        <fmt:message key="jnt_searchAndReplace.columns.folder"/>
-                    </th>
                     <th>
                         <fmt:message key="jnt_searchAndReplace.columns.contenttype"/>
                     </th>
@@ -506,21 +506,19 @@
                     </th>
                 </tr>
                 </thead>
-                <tbody>
-                <c:forEach items="${searchResultNode.replaceableProperties}" var="properties">
+                <c:forEach items="${jcr:getChildrenOfType(jcr:getParentOfType(node, 'jnt:contentFolder'), 'jnt:content')}"
+                           var="content">
+                    <tbody>
                     <tr>
                         <td>
-                                ${jcr:getParentOfType(node, 'jnt:contentFolder').properties['j:nodename'].string}
+                                ${content.properties['jcr:primaryType'].string}
                         </td>
                         <td>
-                                ${node.properties['jcr:primaryType'].string}
-                        </td>
-                        <td>
-                                ${node.properties['j:nodename'].string}
+                                ${content.properties['j:nodename'].string}
                         </td>
                     </tr>
+                    </tbody>
                 </c:forEach>
-                </tbody>
             </table>
         </div>
         <div class="modal-footer">
