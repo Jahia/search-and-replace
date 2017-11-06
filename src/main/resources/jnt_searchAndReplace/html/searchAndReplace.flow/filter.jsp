@@ -221,8 +221,8 @@
                 <div class="controls input-append" style="display: block;">
                     <form:select path="selectedNodeType" onchange="formSubmit()">
                         <form:option value=""></form:option>
-                        <c:forEach items="${searchAndReplace.listNodesTypes}" var="property">
-                            <form:option value="${property}">${property}</form:option>
+                        <c:forEach items="${searchAndReplace.mapNodeTypeNames}" var="properties">
+                            <form:option value="${properties.key}">${properties.value}</form:option>
                         </c:forEach>
                     </form:select>
                     <c:if test="${not empty searchAndReplace.selectedNodeType}">
