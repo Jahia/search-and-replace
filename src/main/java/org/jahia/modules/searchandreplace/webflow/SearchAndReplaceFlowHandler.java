@@ -416,7 +416,7 @@ public class SearchAndReplaceFlowHandler implements Serializable {
         if (logger.isDebugEnabled()) {
             logger.debug("getNodesTypesList() - Start");
         }
-        if (CollectionUtils.isEmpty(searchAndReplace.getListNodesTypes())) {
+        if (searchAndReplace.getMapNodeTypeNames().isEmpty()) {
             for (SearchResult searchResult : searchAndReplace.getListSearchResult()) {
                 //Browsing Search results list to get node types
                 try {
@@ -429,12 +429,10 @@ public class SearchAndReplaceFlowHandler implements Serializable {
                         locale = locale.forLanguageTag(localeAsString);
                     }
 
-                    String label = node.getPrimaryNodeType().getLabel(locale);
-
                     //getting the current result node type if it is not already in the list
-                    if (!searchAndReplace.getListNodesTypes().contains(node.getPrimaryNodeTypeName())) {
-                        searchAndReplace.getListNodesTypes().add(node.getPrimaryNodeTypeName());
-                        searchAndReplace.getMapNodeTypeNames().put(node.getPrimaryNodeTypeName(), label);
+                    if (!searchAndReplace.getMapNodeTypeNames().containsKey(node.getPrimaryNodeTypeName())) {
+                        searchAndReplace.getMapNodeTypeNames()
+                                .put(node.getPrimaryNodeTypeName(), node.getPrimaryNodeType().getLabel(locale));
                     }
                 } catch (RepositoryException e) {
                     logger.error(e.getMessage(), e);
