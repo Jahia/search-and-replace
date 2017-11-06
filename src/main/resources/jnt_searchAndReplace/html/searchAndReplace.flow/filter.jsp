@@ -80,8 +80,8 @@
             });
         }
 
-        function selectAllCheck(){
-            if($('#selectAll').is(':checked')){
+        function selectAllCheck() {
+            if ($('#selectAll').is(':checked')) {
                 $(':checkbox').each(function () {
                     this.checked = true;
                 });

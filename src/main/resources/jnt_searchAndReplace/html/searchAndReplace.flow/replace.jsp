@@ -50,6 +50,12 @@
                     });
                 }
             });
+
+            $('.select').click(function () {
+                if ($("#selectAllProperties").is(':checked') && this.checked == false) {
+                    document.getElementById("selectAllProperties").checked = false;
+                }
+            });
         });
     </script>
 </template:addResources>
@@ -101,45 +107,45 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                        <c:choose>
-                                            <c:when test="${empty searchAndReplace.listSelectedFieldsOfNodeType}">
-                                                <c:forEach items="${searchResultNode.replaceableProperties}" var="property">
-                                                    <tr>
-                                                        <td>
-                                                            <form:checkbox
-                                                                    path="listPropertiesToBeReplaced"
-                                                                           value="${property.key}"
-                                                                           cssClass="select"/>
-                                                        </td>
-                                                        <td class="span2">
-                                                                ${property.key}
-                                                        </td>
-                                                        <td>
-                                                                ${node.properties[property.key].string}
-                                                        </td>
-                                                    </tr>
-                                                </c:forEach>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <c:forEach items="${searchAndReplace.listSelectedFieldsOfNodeType}"
-                                                           var="field">
-                                                    <tr>
-                                                        <td>
+                                    <c:choose>
+                                        <c:when test="${empty searchAndReplace.listSelectedFieldsOfNodeType}">
+                                            <c:forEach items="${searchResultNode.replaceableProperties}" var="property">
+                                                <tr>
+                                                    <td>
+                                                        <form:checkbox
+                                                                path="listPropertiesToBeReplaced"
+                                                                value="${property.key}"
+                                                                cssClass="select"/>
+                                                    </td>
+                                                    <td class="span2">
+                                                            ${property.key}
+                                                    </td>
+                                                    <td>
+                                                            ${node.properties[property.key].string}
+                                                    </td>
+                                                </tr>
+                                            </c:forEach>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:forEach items="${searchAndReplace.listSelectedFieldsOfNodeType}"
+                                                       var="field">
+                                                <tr>
+                                                    <td>
                                                         <form:checkbox
                                                                 path="listPropertiesToBeReplaced"
                                                                 value="${field}"
                                                                 cssClass="select"/>
-                                                        </td>
-                                                        <td class="span2">
-                                                                ${field}
-                                                        </td>
-                                                        <td>
-                                                                ${node.properties[field].string}
-                                                        </td>
-                                                    </tr>
-                                                </c:forEach>
-                                            </c:otherwise>
-                                        </c:choose>
+                                                    </td>
+                                                    <td class="span2">
+                                                            ${field}
+                                                    </td>
+                                                    <td>
+                                                            ${node.properties[field].string}
+                                                    </td>
+                                                </tr>
+                                            </c:forEach>
+                                        </c:otherwise>
+                                    </c:choose>
                                     </tbody>
                                 </table>
                             </c:if>
@@ -168,4 +174,12 @@
         </div>
     </form:form>
 </div>
+
+<script type="text/javascript">
+    $('#selectAllProperties').prop('checked', true);
+
+    $(':checkbox').each(function () {
+        this.checked = true;
+    });
+</script>
 
