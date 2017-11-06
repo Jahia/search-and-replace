@@ -392,7 +392,7 @@
                                 </a>
                             </c:when>
                             <c:otherwise>
-                                <a href="#filemodal_${searchResultNode.nodeUuid}" role="button" data-toggle="modal"
+                                <a href="#contentsfoldermodal_${searchResultNode.nodeUuid}" role="button" data-toggle="modal"
                                    style="text-decoration: none;">
                                     <strong> ${jcr:getParentOfType(node, 'jnt:contentFolder').path}</strong>
                                 </a>
@@ -485,7 +485,7 @@
 
 <c:forEach items="${searchAndReplace.listSearchResult}" var="searchResultNode">
     <jcr:node var="node" uuid="${searchResultNode.nodeUuid}"/>
-    <div class="modal hide fade" id="filemodal_${searchResultNode.nodeUuid}" tabindex="-1" role="dialog"
+    <div class="modal hide fade" id="contentsfoldermodal_${searchResultNode.nodeUuid}" tabindex="-1" role="dialog"
          aria-labelledby="modalTitle_${searchResultNode.nodeUuid}" aria-hidden="true">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
