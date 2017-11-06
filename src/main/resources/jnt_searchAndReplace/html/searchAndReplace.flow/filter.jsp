@@ -55,7 +55,6 @@
                     anNodes.splice(iIndex, 1);
                 }
             }
-
             /* Fire back the array to the caller */
             return anNodes;
         };
@@ -79,6 +78,14 @@
                 //Empty Form boolean
                 hiddenFieldsBoolean = true;
             });
+        }
+
+        function selectAllCheck(){
+            if($('#selectAll').is(':checked')){
+                $(':checkbox').each(function () {
+                    this.checked = true;
+                });
+            }
         }
 
         $(document).ready(function () {
@@ -178,7 +185,6 @@
             $('#' + field).val('');
             formSubmit();
         }
-
     </script>
 </template:addResources>
 
@@ -458,6 +464,10 @@
         </div>
     </div>
 </c:forEach>
+
+<script type="text/javascript">
+    selectAllCheck();
+</script>
 
 
 <%-- modal for the page preview (where the node is displayed) !--%>
