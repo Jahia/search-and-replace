@@ -30,8 +30,6 @@
 <template:addResources type="javascript" resources="bootstrap-datepicker.js"/>
 <template:addResources type="javascript" resources="bootstrap-datepicker.${renderContext.UILocale}.js"/>
 
-<template:addResources type="javascript" resources="date-sort.js"/>
-
 <fmt:message key="label.workInProgressTitle" var="i18nWaiting"/><c:set var="i18nWaiting"
                                                                        value="${functions:escapeJavaScript(i18nWaiting)}"/>
 
@@ -97,10 +95,14 @@
                 "iDisplayLength": 25,
                 "sPaginationType": "bootstrap",
                 "aaSorting": [], //this option disable sort by default, the user steal can use column names to sort the table
-                "aoColumnDefs": [{"bSortable": true, "sType": "date-eu", "aTargets": [3]}, {
-                    "bSortable": true, "sType": "date-eu",
-                    "aTargets": [4]
-                }]
+                "aoColumnDefs": [{
+                    "bSortable": true, "iDataSort": 4, "aTargets": [3]},
+                    {
+                    "bSortable": true, "bVisible": false, "aTargets": [4]},
+                    {
+                    "bSortable": true, "iDataSort": 6, "aTargets": [5]},
+                    {
+                    "bSortable": true, "bVisible": false, "aTargets": [6]}]
 
             });
 
@@ -355,10 +357,11 @@
             <th class="span3">
                 <fmt:message key='mix_created'/>
             </th>
+            <th></th>
             <th class="span3">
                 <fmt:message key='jmix_contentmetadata.j_lastModificationDate'/>
             </th>
-
+            <th></th>
                 <%-- page/folder column !--%>
 
             <th class="span3">
@@ -389,10 +392,16 @@
                     <strong>${node.properties['jcr:createdBy'].string}</strong>
                 </td>
                 <td>
+                        ${node.properties['jcr:created'].date.timeInMillis}
+                </td>
+                <td>
                     <em><fmt:formatDate value="${node.properties['jcr:lastModified'].date.time}"
                                         pattern="dd, MMMM yyyy HH:mm"/></em>
                     &nbsp;<fmt:message key="label.by"/>&nbsp;
                     <strong>${node.properties['jcr:lastModifiedBy'].string}</strong>
+                </td>
+                <td>
+                        ${node.properties['jcr:lastModified'].date.timeInMillis}
                 </td>
                     <%-- page/folder column !--%>
 
