@@ -30,6 +30,8 @@
 <template:addResources type="javascript" resources="bootstrap-datepicker.js"/>
 <template:addResources type="javascript" resources="bootstrap-datepicker.${renderContext.UILocale}.js"/>
 
+<template:addResources type="javascript" resources="date-sort.js"/>
+
 <fmt:message key="label.workInProgressTitle" var="i18nWaiting"/><c:set var="i18nWaiting"
                                                                        value="${functions:escapeJavaScript(i18nWaiting)}"/>
 
@@ -89,11 +91,17 @@
         }
 
         $(document).ready(function () {
-            var oTable = $('#listNodes_table').dataTable({
+            var oTable;
+            oTable = $('#listNodes_table').dataTable({
                 "sDom": "<'row-fluid'<'span6'l><'span6 text-right'f>r>t<'row-fluid'<'span6'i><'span6 text-right'p>>",
                 "iDisplayLength": 25,
                 "sPaginationType": "bootstrap",
-                "aaSorting": [] //this option disable sort by default, the user steal can use column names to sort the table
+                "aaSorting": [], //this option disable sort by default, the user steal can use column names to sort the table
+                "aoColumnDefs": [{"bSortable": true, "sType": "date-eu", "aTargets": [3]}, {
+                    "bSortable": true, "sType": "date-eu",
+                    "aTargets": [4]
+                }]
+
             });
 
             $('.searchAndReplaceSubmit').on('click', function () {
