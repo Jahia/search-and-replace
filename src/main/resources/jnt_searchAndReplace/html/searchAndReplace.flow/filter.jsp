@@ -238,7 +238,7 @@
                     <form:select path="selectedNodeType" onchange="formSubmit()">
                         <form:option value=""></form:option>
                         <c:forEach items="${searchAndReplace.mapNodeTypeNames}" var="properties">
-                            <form:option value="${properties.key}">${properties.value}</form:option>
+                            <form:option value="${properties.key}">${properties.key}</form:option>
                         </c:forEach>
                     </form:select>
                     <c:if test="${not empty searchAndReplace.selectedNodeType}">
