@@ -56,6 +56,26 @@
                     document.getElementById("selectAllProperties").checked = false;
                 }
             });
+
+            $('.replaceSubmit').on('click', function () {
+                var boolean = true;
+
+                if (!$(".select").is(':checked')) {
+                    $('#listPropertiesToBeReplacedError').fadeIn('slow').delay(4000).fadeOut('slow');
+                    boolean = false;
+                }
+                return boolean;
+            });
+
+            $('.replaceSubmitAll').on('click', function () {
+                var boolean = true;
+
+                if (!$(".select").is(':checked')) {
+                    $('#listPropertiesToBeReplacedError2').fadeIn('slow').delay(4000).fadeOut('slow');
+                    boolean = false;
+                }
+                return boolean;
+            });
         });
     </script>
 </template:addResources>
@@ -163,13 +183,19 @@
                     <fmt:message key="jnt_searchAndReplace.skipAllNode"/>
                 </button>
             </c:if>
-            <button class="btn btn-primary" name="_eventId_replaceInCurrentNode">
+            <button class="btn btn-primary replaceSubmit" name="_eventId_replaceInCurrentNode">
                 <fmt:message key="jnt_searchAndReplace.replaceInCurrentNode"/>
             </button>
+            <span id="listPropertiesToBeReplacedError" class="hide text-error"><fmt:message
+                    key="jnt_searchAndReplace.listPropertiesToBeReplaced.error"/></span>
+            <form:errors path="listPropertiesToBeReplaced" cssClass="text-error"/>
             <c:if test="${fn:length(searchAndReplace.listNodesToBeUpdated) gt 1}">
-                <button class="btn btn-success" name="_eventId_replaceAllNode">
+                <button class="btn btn-success replaceSubmitAll" name="_eventId_replaceAllNode">
                     <fmt:message key="jnt_searchAndReplace.replaceAllNode"/>
                 </button>
+                <span id="listPropertiesToBeReplacedError2" class="hide text-error"><fmt:message
+                        key="jnt_searchAndReplace.listPropertiesToBeReplaced.error"/></span>
+                <form:errors path="listPropertiesToBeReplaced" cssClass="text-error"/>
             </c:if>
         </div>
     </form:form>
