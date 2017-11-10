@@ -493,7 +493,7 @@
     <jcr:node var="node" uuid="${searchResultNode.nodeUuid}"/>
     <div class="modal hide fade" id="pagemodal_${searchResultNode.nodeUuid}" role="dialog"
          aria-labelledby="modalTitle_${jcr:getParentOfType(node ,'jnt:page').path}.html" aria-hidden="true"
-         style="width: 70%;">
+         style="width: 60%;">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
             <h3 id="modalTitle_${searchResultNode.nodeUuid}">Page
