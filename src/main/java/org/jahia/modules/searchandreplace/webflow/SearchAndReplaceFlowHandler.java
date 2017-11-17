@@ -17,10 +17,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -438,6 +435,8 @@ public class SearchAndReplaceFlowHandler implements Serializable {
                     logger.error(e.getMessage(), e);
                 }
             }
+            Map<String, String> sortedMap = new TreeMap<String, String>(searchAndReplace.getMapNodeTypeNames());
+            searchAndReplace.setMapNodeTypeNames(sortedMap);
         }
         if (logger.isDebugEnabled()) {
             logger.debug("getNodesTypesList() - End");
