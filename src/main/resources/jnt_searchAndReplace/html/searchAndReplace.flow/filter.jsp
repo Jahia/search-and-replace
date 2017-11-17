@@ -238,7 +238,7 @@
                     <form:select path="selectedNodeType" onchange="formSubmit()">
                         <form:option value=""></form:option>
                         <c:forEach items="${searchAndReplace.mapNodeTypeNames}" var="properties">
-                            <form:option value="${properties.key}">${properties.key}</form:option>
+                            <form:option value="${properties.key}">${properties.value} : ${properties.key}</form:option>
                         </c:forEach>
                     </form:select>
                     <c:if test="${not empty searchAndReplace.selectedNodeType}">
@@ -493,7 +493,7 @@
     <jcr:node var="node" uuid="${searchResultNode.nodeUuid}"/>
     <div class="modal hide fade" id="pagemodal_${searchResultNode.nodeUuid}" role="dialog"
          aria-labelledby="modalTitle_${jcr:getParentOfType(node ,'jnt:page').path}.html" aria-hidden="true"
-         style="width: 60%;">
+         style="width: 65%;">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
             <h3 id="modalTitle_${searchResultNode.nodeUuid}">Page
