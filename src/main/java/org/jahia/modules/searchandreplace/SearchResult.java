@@ -13,6 +13,7 @@ import java.util.Map;
  */
 public class SearchResult implements Serializable {
     private String nodeUuid;
+    private String nodeTypeLabel;
     private Map<String, List<String>> replaceableProperties;
 
     public SearchResult(String nodeUuid, Map<String, List<String>> replaceableProperties) {
@@ -28,6 +29,14 @@ public class SearchResult implements Serializable {
         this.nodeUuid = nodeUuid;
     }
 
+    public String getNodeTypeLabel() {
+        return nodeTypeLabel;
+    }
+
+    public void setNodeTypeLabel(String nodeTypeLabel) {
+        this.nodeTypeLabel = nodeTypeLabel;
+    }
+
     public Map<String, List<String>> getReplaceableProperties() {
         return replaceableProperties;
     }
@@ -40,8 +49,7 @@ public class SearchResult implements Serializable {
         this.getReplaceableProperties().put(propertyName, propertyValues);
     }
 
-    @Override
-    protected SearchResult clone() {
+    @Override protected SearchResult clone() {
         return new SearchResult(this.getNodeUuid(), this.getReplaceableProperties());
     }
 }

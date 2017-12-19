@@ -17,12 +17,9 @@ import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.slf4j.LoggerFactory.getLogger;
-
 
 /**
  * This class handle data from the Sping Webflow model to execute Global Term search and replacement
@@ -35,8 +32,7 @@ public class SearchAndReplaceFlowHandler implements Serializable {
 
     private static final long serialVersionUID = -16287862741718967L;
 
-    @Autowired
-    private transient GlobalReplaceService replaceService;
+    @Autowired private transient GlobalReplaceService replaceService;
 
     /**
      * This function initialize the webflow model
@@ -57,7 +53,8 @@ public class SearchAndReplaceFlowHandler implements Serializable {
      * @return SearchAndReplace :
      */
     public SearchAndReplace resetSearchAndReplace(SearchAndReplace searchAndReplace) {
-        if (CollectionUtils.isEmpty(searchAndReplace.getListNodesToBeUpdated()) && CollectionUtils.isNotEmpty(searchAndReplace.getListSearchResult())) {
+        if (CollectionUtils.isEmpty(searchAndReplace.getListNodesToBeUpdated()) && CollectionUtils
+                .isNotEmpty(searchAndReplace.getListSearchResult())) {
             searchAndReplace = new SearchAndReplace(searchAndReplace);
         }
         return searchAndReplace;
@@ -112,17 +109,19 @@ public class SearchAndReplaceFlowHandler implements Serializable {
         if (logger.isDebugEnabled()) {
             logger.debug("getNodesContains() - Building query base");
         }
-        StringBuilder query = new StringBuilder().append("SELECT * FROM [nt:base] AS result WHERE ISDESCENDANTNODE(result, '").append(sitePath).append("') AND CONTAINS(result.");
+        StringBuilder query = new StringBuilder().append("SELECT * FROM [nt:base] AS result WHERE ISDESCENDANTNODE(result, '")
+                .append(sitePath).append("') AND CONTAINS(result.");
 
-        if (CollectionUtils.isNotEmpty(searchAndReplace.getListSelectedFieldsOfNodeType()) && searchAndReplace.getListSelectedFieldsOfNodeType().size() == 1) {
+        if (CollectionUtils.isNotEmpty(searchAndReplace.getListSelectedFieldsOfNodeType())
+                && searchAndReplace.getListSelectedFieldsOfNodeType().size() == 1) {
             query.append("[").append(searchAndReplace.getListSelectedFieldsOfNodeType().get(0)).append("]");
         } else {
             query.append("*");
         }
 
-
         //Query nodeType restriction
-        query.append(",").append(searchAndReplace.getEscapedTermToReplace()).append(") AND ([jcr:primaryType] NOT LIKE 'jnt:file') AND ([jcr:primaryType] NOT LIKE 'jnt:resource')");
+        query.append(",").append(searchAndReplace.getEscapedTermToReplace())
+                .append(") AND ([jcr:primaryType] NOT LIKE 'jnt:file') AND ([jcr:primaryType] NOT LIKE 'jnt:resource')");
 
         //Filter restrictions
         if (logger.isDebugEnabled()) {
@@ -135,19 +134,23 @@ public class SearchAndReplaceFlowHandler implements Serializable {
 
         //Filter date created before filter restriction
         if (!searchAndReplace.getDateCreatedBefore().isEmpty()) {
-            query.append(" AND ([jcr:created] < CAST ('+").append(searchAndReplace.getDateCreatedBefore()).append("T23:59:59.999Z' as date))");
+            query.append(" AND ([jcr:created] < CAST ('+").append(searchAndReplace.getDateCreatedBefore())
+                    .append("T23:59:59.999Z' as date))");
         }
         //Filter date created after filter restriction
         if (!searchAndReplace.getDateCreatedAfter().isEmpty()) {
-            query.append(" AND ([jcr:created] > CAST ('+").append(searchAndReplace.getDateCreatedAfter()).append("T00:00:00.000Z' as date))");
+            query.append(" AND ([jcr:created] > CAST ('+").append(searchAndReplace.getDateCreatedAfter())
+                    .append("T00:00:00.000Z' as date))");
         }
         //Filter date modified before filter restriction
         if (!searchAndReplace.getDateModifiedBefore().isEmpty()) {
-            query.append(" AND ([jcr:lastModified] < CAST ('+").append(searchAndReplace.getDateModifiedBefore()).append("T23:59:59.999Z' as date))");
+            query.append(" AND ([jcr:lastModified] < CAST ('+").append(searchAndReplace.getDateModifiedBefore())
+                    .append("T23:59:59.999Z' as date))");
         }
         //Filter date modified after filter restriction
         if (!searchAndReplace.getDateModifiedAfter().isEmpty()) {
-            query.append(" AND ([jcr:lastModified] > CAST ('+").append(searchAndReplace.getDateModifiedAfter()).append("T00:00:00.000Z' as date))");
+            query.append(" AND ([jcr:lastModified] > CAST ('+").append(searchAndReplace.getDateModifiedAfter())
+                    .append("T00:00:00.000Z' as date))");
         }
         if (logger.isDebugEnabled()) {
             logger.debug("getNodesContains() - Query built");
@@ -170,9 +173,25 @@ public class SearchAndReplaceFlowHandler implements Serializable {
             if (logger.isDebugEnabled()) {
                 logger.debug("getNodesContains() - Getting nodes replaceable properties ");
             }
-            searchAndReplace.setListSearchResult(replaceService.getReplaceableProperties(listNodes, searchAndReplace.getTermToReplace(), GlobalReplaceService.SearchMode.EXACT_MATCH, session).get(GlobalReplaceService.ReplaceStatus.SUCCESS));
+            String localeAsString = renderContext.getRequest().getParameter("webflowLocale");
+            Locale locale = session.getLocale();
+            if (localeAsString != null) {
+                locale = locale.forLanguageTag(localeAsString);
+            }
 
-            if (CollectionUtils.isNotEmpty(searchAndReplace.getListSelectedFieldsOfNodeType()) && searchAndReplace.getListSelectedFieldsOfNodeType().size() > 1) {
+            List<SearchResult> searchResults = replaceService
+                    .getReplaceableProperties(listNodes, searchAndReplace.getTermToReplace(), GlobalReplaceService.SearchMode.EXACT_MATCH,
+                            session).get(GlobalReplaceService.ReplaceStatus.SUCCESS);
+
+            for (SearchResult result : searchResults) {
+                JCRNodeWrapper node = session.getNodeByIdentifier(result.getNodeUuid());
+                result.setNodeTypeLabel(node.getPrimaryNodeType().getLabel(locale));
+            }
+
+            searchAndReplace.setListSearchResult(searchResults);
+
+            if (CollectionUtils.isNotEmpty(searchAndReplace.getListSelectedFieldsOfNodeType())
+                    && searchAndReplace.getListSelectedFieldsOfNodeType().size() > 1) {
                 for (SearchResult searchResult : searchAndReplace.getListSearchResult()) {
                     if (!searchResult.getReplaceableProperties().containsKey(searchAndReplace.getListSelectedFieldsOfNodeType())) {
                         searchAndReplace.getListSearchResult().indexOf(searchResult);
@@ -267,14 +286,30 @@ public class SearchAndReplaceFlowHandler implements Serializable {
             List<String> uuids = new ArrayList<String>();
             uuids.add(nodeID);
 
-            //Calling Replace Service
-            if (logger.isDebugEnabled()) {
-                logger.debug("replaceThisNode() - Calling replace of " + searchAndReplace.getTermToReplace() + " on node " + nodeID);
-            }
-            if (CollectionUtils.isNotEmpty(searchAndReplace.getListSelectedFieldsOfNodeType())) {
-                replaceResult = replaceService.replaceByUuid(uuids, searchAndReplace.getTermToReplace(), searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, searchAndReplace.getListSelectedFieldsOfNodeType(), session);
+            //if select all properties
+            if (searchAndReplace.isSelectAllProperties()) {
+                //Calling Replace Service
+                if (logger.isDebugEnabled()) {
+                    logger.debug("replaceThisNode() - Calling replace of " + searchAndReplace.getTermToReplace() + " on node " + nodeID);
+                }
+                if (CollectionUtils.isNotEmpty(searchAndReplace.getListSelectedFieldsOfNodeType())) {
+                    replaceResult = replaceService
+                            .replaceByUuid(uuids, searchAndReplace.getTermToReplace(), searchAndReplace.getReplacementTerm(),
+                                    GlobalReplaceService.SearchMode.EXACT_MATCH, searchAndReplace.getListSelectedFieldsOfNodeType(),
+                                    session);
+                } else {
+                    replaceResult = replaceService
+                            .replaceByUuid(uuids, searchAndReplace.getTermToReplace(), searchAndReplace.getReplacementTerm(),
+                                    GlobalReplaceService.SearchMode.EXACT_MATCH, session);
+                }
             } else {
-                replaceResult = replaceService.replaceByUuid(uuids, searchAndReplace.getTermToReplace(), searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, session);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("replaceThisNode() - Calling replace of " + searchAndReplace.getTermToReplace() + " on node " + nodeID);
+                }
+                replaceResult = replaceService
+                        .replaceByUuid(uuids, searchAndReplace.getTermToReplace(), searchAndReplace.getReplacementTerm(),
+                                GlobalReplaceService.SearchMode.EXACT_MATCH, searchAndReplace.getListPropertiesToBeReplaced(), session);
+
             }
 
             //Getting Failed Replaced Nodes
@@ -323,10 +358,26 @@ public class SearchAndReplaceFlowHandler implements Serializable {
             if (logger.isDebugEnabled()) {
                 logger.debug("replaceThisNode() - Calling replace of " + searchAndReplace.getListNodesToBeUpdated().size() + " nodes ");
             }
-            if (CollectionUtils.isNotEmpty(searchAndReplace.getListSelectedFieldsOfNodeType())) {
-                replaceResult = replaceService.replaceByUuid(searchAndReplace.getListNodesToBeUpdated(), searchAndReplace.getTermToReplace(), searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, searchAndReplace.getListSelectedFieldsOfNodeType(), session);
+            //if select all properties
+            if (searchAndReplace.isSelectAllProperties()) {
+                if (CollectionUtils.isNotEmpty(searchAndReplace.getListSelectedFieldsOfNodeType())) {
+                    replaceResult = replaceService
+                            .replaceByUuid(searchAndReplace.getListNodesToBeUpdated(), searchAndReplace.getTermToReplace(),
+                                    searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH,
+                                    searchAndReplace.getListSelectedFieldsOfNodeType(), session);
+                } else {
+                    replaceResult = replaceService
+                            .replaceByUuid(searchAndReplace.getListNodesToBeUpdated(), searchAndReplace.getTermToReplace(),
+                                    searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, session);
+                }
             } else {
-                replaceResult = replaceService.replaceByUuid(searchAndReplace.getListNodesToBeUpdated(), searchAndReplace.getTermToReplace(), searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH, session);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("replaceThisNode() - Calling replace of " + searchAndReplace.getListNodesToBeUpdated().size() + " nodes ");
+                }
+                replaceResult = replaceService
+                        .replaceByUuid(searchAndReplace.getListNodesToBeUpdated(), searchAndReplace.getTermToReplace(),
+                                searchAndReplace.getReplacementTerm(), GlobalReplaceService.SearchMode.EXACT_MATCH,
+                                searchAndReplace.getListPropertiesToBeReplaced(), session);
             }
 
             //Getting Failed Replaced Nodes
@@ -362,21 +413,30 @@ public class SearchAndReplaceFlowHandler implements Serializable {
         if (logger.isDebugEnabled()) {
             logger.debug("getNodesTypesList() - Start");
         }
-        if (CollectionUtils.isEmpty(searchAndReplace.getListNodesTypes())) {
+        if (searchAndReplace.getMapNodeTypeNames().isEmpty()) {
             for (SearchResult searchResult : searchAndReplace.getListSearchResult()) {
                 //Browsing Search results list to get node types
                 try {
                     JCRSessionWrapper session = renderContext.getMainResource().getNode().getSession();
                     JCRNodeWrapper node = session.getNodeByIdentifier(searchResult.getNodeUuid());
 
+                    String localeAsString = renderContext.getRequest().getParameter("webflowLocale");
+                    Locale locale = session.getLocale();
+                    if (localeAsString != null) {
+                        locale = locale.forLanguageTag(localeAsString);
+                    }
+
                     //getting the current result node type if it is not already in the list
-                    if (!searchAndReplace.getListNodesTypes().contains(node.getPrimaryNodeTypeName())) {
-                        searchAndReplace.getListNodesTypes().add(node.getPrimaryNodeTypeName());
+                    if (!searchAndReplace.getMapNodeTypeNames().containsKey(node.getPrimaryNodeTypeName())) {
+                        searchAndReplace.getMapNodeTypeNames()
+                                .put(node.getPrimaryNodeTypeName(), node.getPrimaryNodeType().getLabel(locale));
                     }
                 } catch (RepositoryException e) {
                     logger.error(e.getMessage(), e);
                 }
             }
+            Map<String, String> sortedMap = new TreeMap<String, String>(searchAndReplace.getMapNodeTypeNames());
+            searchAndReplace.setMapNodeTypeNames(sortedMap);
         }
         if (logger.isDebugEnabled()) {
             logger.debug("getNodesTypesList() - End");
@@ -394,7 +454,8 @@ public class SearchAndReplaceFlowHandler implements Serializable {
             logger.debug("getNodePropertiesList() - Start");
         }
         //Clearing the list before filling it if needed
-        if (CollectionUtils.isNotEmpty(searchAndReplace.getListFieldsOfNodeType()) && searchAndReplace.isDifferentNodeType() || searchAndReplace.getSelectedNodeType().isEmpty()) {
+        if (CollectionUtils.isNotEmpty(searchAndReplace.getListFieldsOfNodeType()) && searchAndReplace.isDifferentNodeType()
+                || searchAndReplace.getSelectedNodeType().isEmpty()) {
             searchAndReplace.getListFieldsOfNodeType().clear();
         }
         if (CollectionUtils.isNotEmpty(searchAndReplace.getListSelectedFieldsOfNodeType()) && searchAndReplace.isDifferentNodeType()) {
