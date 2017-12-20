@@ -13,10 +13,6 @@ The Search and Replace module provide an interface to search and replace a term 
 - Provide the possibility to choose different matching.
 - Expose an OSGi service, who permit the user to call different method to execute search and replace on nodes from another module.
 
-## Version
-
-Search and Replace v1.0.0
-
 ---
 
 ## TODO
