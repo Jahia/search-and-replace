@@ -5,6 +5,7 @@ window.jahia.uiExtender.registry.add('adminRoute', 'search-and-replace', {
     label: 'search-and-replace:label.title',
     icon: null,
     isSelectable: true,
+    requiredPermission: 'editSearchAndReplace',
     requireModuleInstalledOnSite: 'search-and-replace',
-    iframeUrl: window.contextJsParameters.contextPath + '/cms/editframe/default/en/sites/$site-key.searchAndReplace.html'
+    iframeUrl: window.contextJsParameters.contextPath + '/cms/editframe/default/$lang/sites/$site-key.searchAndReplace.html'
 });
