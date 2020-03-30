@@ -1,7 +1,7 @@
 window.jahia.i18n.loadNamespaces('search-and-replace');
 
 window.jahia.uiExtender.registry.add('adminRoute', 'search-and-replace', {
-    targets: ['jcontent:50'],
+    targets: ['jcontent:30'],
     label: 'search-and-replace:label.title',
     icon: null,
     isSelectable: true,
